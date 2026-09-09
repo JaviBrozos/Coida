@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+        Tema mínimo de la plataforma: Compose se encarga de todo el color y la
+        tipografía (ver core/ui/Theme.kt). Aquí solo se define el fondo de la
+        ventana y se piden barras transparentes para dibujar a pantalla completa.
+    -->
+    <style name="Theme.Doado" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/doado_window_background</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+</resources>

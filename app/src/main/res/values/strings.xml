@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Doado</string>
+    <string name="app_tagline">Una app para tus mayores</string>
+
+    <!-- Apps favoritas de ejemplo del MVP -->
+    <string name="app_phone">Llamar</string>
+    <string name="app_messages">Mensajes</string>
+    <string name="app_camera">Cámara</string>
+    <string name="app_contacts">Contactos</string>
+
+    <!-- Accesibilidad -->
+    <string name="cd_open_app">Abrir %1$s</string>
+    <string name="app_unavailable">No disponible</string>
+    <string name="cd_app_unavailable">%1$s no está instalada en este móvil</string>
+    <string name="error_cannot_open">No se ha podido abrir %1$s</string>
+</resources>

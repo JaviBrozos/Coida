@@ -1,0 +1,37 @@
+# Version Catalog: única fuente de verdad para versiones de dependencias.
+# Se referencia desde los build.gradle.kts como libs.xxx / libs.plugins.xxx
+
+[versions]
+agp = "9.4.0"
+# Kotlin llega integrado en AGP 9; esta versión es la del plugin de Compose,
+# que debe ir alineado con el Kotlin que use AGP.
+kotlin = "2.4.20"
+
+# Android SDK
+compileSdk = "37"
+minSdk = "24"
+targetSdk = "37"
+
+# AndroidX
+coreKtx = "1.19.0"
+activityCompose = "1.13.0"
+lifecycleRuntimeKtx = "2.11.0"
+composeBom = "2026.08.00"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+
+# El BOM fija de forma coherente las versiones de todos los artefactos de Compose.
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }

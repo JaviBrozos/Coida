@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Capa monocroma del icono (Android 13+, "iconos temáticos"): el sistema la
+    rellena con un color suyo, así que solo cuenta la silueta. Es la "D" de la
+    marca: lado izquierdo recto y derecho semicircular. Lienzo de 108 con la
+    figura dentro de la zona segura central de 72.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M34,28 h12 a26,26 0 0 1 0,52 h-12 z" />
+</vector>

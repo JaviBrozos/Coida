@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Los favoritos del usuario sí se restauran en un móvil nuevo. -->
+    <include domain="sharedpref" path="doado_favorites.xml" />
+</full-backup-content>

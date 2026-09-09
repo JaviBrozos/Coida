@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Visibilidad de paquetes (Android 11+ / API 30).
+        Sin este bloque el PackageManager no nos deja ver el resto de apps del
+        dispositivo y el grid de favoritos saldría vacío. Declaramos solo lo que
+        Doado necesita resolver, en lugar de pedir QUERY_ALL_PACKAGES.
+    -->
+    <queries>
+        <!-- Todas las apps que se pueden abrir desde un lanzador. -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent>
+        <!-- Teléfono -->
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
+        <!-- Mensajes -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.APP_MESSAGING" />
+        </intent>
+        <!-- Cámara -->
+        <intent>
+            <action android:name="android.media.action.STILL_IMAGE_CAMERA" />
+        </intent>
+        <!-- Contactos -->
+        <intent>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.APP_CONTACTS" />
+        </intent>
+    </queries>
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.Doado">
+
+        <!--
+            Actividad de inicio.
+            · HOME + DEFAULT  -> el sistema ofrece Doado como pantalla de inicio.
+            · LAUNCHER        -> además aparece en el cajón de aplicaciones, lo que
+                                 resulta cómodo mientras se desarrolla. Se puede
+                                 quitar cuando Doado sea el lanzador definitivo.
+            · singleTask + stateNotNeeded + excludeFromRecents es la configuración
+              habitual de un lanzador: pulsar Inicio siempre vuelve a esta misma
+              instancia y no deja tarjeta en "recientes".
+        -->
+        <activity
+            android:name=".launcher.LauncherActivity"
+            android:configChanges="keyboardHidden|navigation|orientation|screenSize|screenLayout|smallestScreenSize|uiMode|density"
+            android:excludeFromRecents="true"
+            android:exported="true"
+            android:launchMode="singleTask"
+            android:stateNotNeeded="true"
+            android:theme="@style/Theme.Doado">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.HOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+
+</manifest>

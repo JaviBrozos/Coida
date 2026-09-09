@@ -1,0 +1,17 @@
+# Normaliza finales de línea. Sin esto, en Windows (autocrlf=true) gradlew se
+# guardaría con CRLF y dejaría de funcionar en Linux/macOS y en CI.
+* text=auto eol=lf
+
+# Scripts de Windows: tienen que ir con CRLF.
+*.bat text eol=crlf
+
+# El wrapper de Unix, siempre con LF.
+gradlew text eol=lf
+
+# Binarios: que git no los toque.
+*.png binary
+*.jpg binary
+*.webp binary
+*.jar binary
+*.keystore binary
+*.jks binary
