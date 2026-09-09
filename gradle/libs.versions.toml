@@ -2,7 +2,7 @@
 # Se referencia desde los build.gradle.kts como libs.xxx / libs.plugins.xxx
 
 [versions]
-agp = "9.3.0"
+agp = "9.3.2"
 # Kotlin llega integrado en AGP 9; esta versión es la del plugin de Compose,
 # que debe ir alineado con el Kotlin que use AGP.
 kotlin = "2.4.20"
