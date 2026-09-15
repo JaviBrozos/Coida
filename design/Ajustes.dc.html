@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", system-ui, "Segoe UI", sans-serif; }
+    a { color: #29B6F0; } a:hover { color: #F2F7FB; }
+    .fila { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 90ms linear, border-color 90ms linear; }
+    .fila:active { background-color: #17384F !important; border-color: #29B6F0 !important; }
+  </style>
+</helmet>
+<div style="width: 411px; height: 891px; box-sizing: border-box; padding: 20px; background: #0A1622; color: #F2F7FB; display: flex; flex-direction: column; gap: 16px;">
+  <div style="display: flex; flex-direction: row; align-items: center; gap: 16px;">
+    <div class="fila" role="button" tabindex="0" aria-label="Volver a la pantalla de inicio" style="width: 56px; height: 56px; border-radius: 16px; border: 2px solid #3D7AA6; display: flex; align-items: center; justify-content: center; color: #9FC4DC; flex-shrink: 0;">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7"></path></svg>
+    </div>
+    <div style="display: flex; flex-direction: column;">
+      <div style="font-size: 30px; line-height: 38px; font-weight: 700;">Ajustes</div>
+      <div style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">Para el familiar o la persona cuidadora</div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 18px; line-height: 26px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9FC4DC;">Personalizar</div>
+    <div class="fila" role="button" tabindex="0" style="height: 86px; display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 0 18px; box-sizing: border-box; background: #122A3E; border: 2px solid #3D7AA6; border-radius: 20px;">
+      <div style="width: 44px; height: 44px; border-radius: 14px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#29B6F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h10"></path><path d="M18 7h2"></path><circle cx="16" cy="7" r="2"></circle><path d="M4 17h4"></path><path d="M12 17h8"></path><circle cx="10" cy="17" r="2"></circle></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1;">
+        <span style="font-size: 24px; line-height: 32px; font-weight: 600;">Interfaz</span>
+        <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">Letra, casillas, tema y reloj</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9FC4DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5l7 7-7 7"></path></svg>
+    </div>
+    <div class="fila" role="button" tabindex="0" style="height: 86px; display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 0 18px; box-sizing: border-box; background: #122A3E; border: 2px solid #3D7AA6; border-radius: 20px;">
+      <div style="width: 44px; height: 44px; border-radius: 14px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#29B6F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20c0-3.4 3.2-5.6 7.2-5.6s7.2 2.2 7.2 5.6"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1;">
+        <span style="font-size: 24px; line-height: 32px; font-weight: 600;">Contactos</span>
+        <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">2 accesos directos en el inicio</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9FC4DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5l7 7-7 7"></path></svg>
+    </div>
+    <div class="fila" role="button" tabindex="0" style="height: 86px; display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 0 18px; box-sizing: border-box; background: #122A3E; border: 2px solid #3D7AA6; border-radius: 20px;">
+      <div style="width: 44px; height: 44px; border-radius: 14px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#29B6F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="7" height="7" rx="2"></rect><rect x="13" y="4" width="7" height="7" rx="2"></rect><rect x="4" y="13" width="7" height="7" rx="2"></rect><path d="M16.5 13.5v6"></path><path d="M13.5 16.5h6"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1;">
+        <span style="font-size: 24px; line-height: 32px; font-weight: 600;">Aplicaciones</span>
+        <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">Qué se ve e instalar nuevas</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9FC4DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5l7 7-7 7"></path></svg>
+    </div>
+    <div class="fila" role="button" tabindex="0" style="height: 86px; display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 0 18px; box-sizing: border-box; background: #122A3E; border: 2px solid #3D7AA6; border-radius: 20px;">
+      <div style="width: 44px; height: 44px; border-radius: 14px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#29B6F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5.5 6.5 9H4v6h2.5L11 18.5z"></path><path d="M15 9.5a4 4 0 0 1 0 5"></path><path d="M17.8 7a7.5 7.5 0 0 1 0 10"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1;">
+        <span style="font-size: 24px; line-height: 32px; font-weight: 600;">Sonido y pantalla</span>
+        <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">Volumen, brillo y vibración</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9FC4DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5l7 7-7 7"></path></svg>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 18px; line-height: 26px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9FC4DC;">Avanzado</div>
+    <div class="fila" role="button" tabindex="0" style="height: 86px; display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 0 18px; box-sizing: border-box; background: #122A3E; border: 2px solid #29B6F0; border-radius: 20px;">
+      <div style="width: 44px; height: 44px; border-radius: 14px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#29B6F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6.2v5.3c0 4 2.9 7.6 7 9 4.1-1.4 7-5 7-9V6.2z"></path><path d="M9.2 12.2l2 2 3.6-3.8"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1;">
+        <span style="font-size: 24px; line-height: 32px; font-weight: 600;">Modo administrador</span>
+        <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">Salir de Doado para instalar apps</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9FC4DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5l7 7-7 7"></path></svg>
+    </div>
+    <div class="fila" role="button" tabindex="0" style="height: 86px; display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 0 18px; box-sizing: border-box; background: #122A3E; border: 2px solid #3D7AA6; border-radius: 20px;">
+      <div style="width: 44px; height: 44px; border-radius: 14px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#29B6F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="9.5" rx="2"></rect><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7"></path></svg>
+      </div>
+      <div style="display: flex; flex-direction: column; flex-grow: 1;">
+        <span style="font-size: 24px; line-height: 32px; font-weight: 600;">PIN de ajustes</span>
+        <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">Cambiar las 4 cifras</span>
+      </div>
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#9FC4DC" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 5l7 7-7 7"></path></svg>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

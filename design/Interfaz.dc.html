@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+  <style>
+    body { margin: 0; font-family: "IBM Plex Sans", system-ui, "Segoe UI", sans-serif; }
+    a { color: #29B6F0; } a:hover { color: #F2F7FB; }
+    .opcion { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 90ms linear, border-color 90ms linear; }
+    .volver { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+    .volver:active { border-color: #29B6F0 !important; }
+  </style>
+</helmet>
+<div style="width: 411px; height: 891px; box-sizing: border-box; padding: 20px; background: #0A1622; color: #F2F7FB; display: flex; flex-direction: column; gap: 16px;">
+  <div style="display: flex; flex-direction: row; align-items: center; gap: 16px;">
+    <div class="volver" role="button" tabindex="0" aria-label="Volver a ajustes" style="width: 56px; height: 56px; border-radius: 16px; border: 2px solid #3D7AA6; display: flex; align-items: center; justify-content: center; color: #9FC4DC; flex-shrink: 0;">
+      <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 5 7.5 12l7 7"></path></svg>
+    </div>
+    <div style="font-size: 30px; line-height: 38px; font-weight: 700;">Interfaz</div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 10px;">
+    <div style="font-size: 18px; line-height: 26px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #9FC4DC;">Vista previa</div>
+    <div style="height: 236px; border-radius: 20px; border: 2px solid #3D7AA6; overflow: hidden; padding: 14px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; background: {{v.fondo}};">
+      <div style="display: {{v.reloj}}; flex-direction: row; align-items: baseline; gap: 10px;">
+        <span style="font-size: 28px; line-height: 34px; font-weight: 700; color: {{v.texto}};">10:45</span>
+        <span style="font-size: 14px; line-height: 20px; font-weight: 500; color: {{v.suave}};">martes, 16 de septiembre</span>
+      </div>
+      <div style="display: grid; grid-template-columns: {{v.columnas}}; gap: 10px;">
+        <div style="height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: {{v.superficie}}; border: 2px solid {{v.linea}};">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="{{v.acento}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6.4 3.6h3.2l1.5 4-2.1 1.5a12.5 12.5 0 0 0 6 6l1.5-2.1 4 1.5v3.2a1.6 1.6 0 0 1-1.7 1.6A16.8 16.8 0 0 1 4.8 5.3a1.6 1.6 0 0 1 1.6-1.7z"></path></svg>
+          <span style="font-size: {{v.etiqueta}}; line-height: 1.3; font-weight: 600; color: {{v.texto}};">Llamar</span>
+        </div>
+        <div style="height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: {{v.superficie}}; border: 2px solid {{v.linea}};">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="{{v.acento}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6.2A2.2 2.2 0 0 1 6.2 4h11.6A2.2 2.2 0 0 1 20 6.2v7.6a2.2 2.2 0 0 1-2.2 2.2H10l-4.6 3.4V16h-1.2A2.2 2.2 0 0 1 4 13.8z"></path></svg>
+          <span style="font-size: {{v.etiqueta}}; line-height: 1.3; font-weight: 600; color: {{v.texto}};">Mensajes</span>
+        </div>
+        <div style="height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: {{v.superficie}}; border: 2px solid {{v.linea}};">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="{{v.acento}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.6 8.2A2.2 2.2 0 0 1 5.8 6h2.4l1.3-2h5l1.3 2h2.4a2.2 2.2 0 0 1 2.2 2.2v8.6a2.2 2.2 0 0 1-2.2 2.2H5.8a2.2 2.2 0 0 1-2.2-2.2z"></path><circle cx="12" cy="12.4" r="3.4"></circle></svg>
+          <span style="font-size: {{v.etiqueta}}; line-height: 1.3; font-weight: 600; color: {{v.texto}};">Cámara</span>
+        </div>
+        <div style="height: 78px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; border-radius: 14px; background: {{v.superficie}}; border: 2px solid {{v.linea}};">
+          <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="{{v.acento}}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8.4" r="3.6"></circle><path d="M5 19.4c0-3.4 3.1-5.6 7-5.6s7 2.2 7 5.6"></path></svg>
+          <span style="font-size: {{v.etiqueta}}; line-height: 1.3; font-weight: 600; color: {{v.texto}};">Contactos</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div style="font-size: 22px; line-height: 30px; font-weight: 600;">Tamaño de la letra</div>
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+      <sc-for list="{{tamanos}}" as="t" hint-placeholder-count="3">
+        <div class="opcion" role="button" tabindex="0" onClick="{{t.elige}}" style="flex-grow: 1; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 20px; font-weight: 600; background: {{t.fondo}}; color: {{t.color}}; border: 2px solid {{t.borde}};">{{t.etiqueta}}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div style="font-size: 22px; line-height: 30px; font-weight: 600;">Casillas por fila</div>
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+      <sc-for list="{{columnas}}" as="c" hint-placeholder-count="2">
+        <div class="opcion" role="button" tabindex="0" onClick="{{c.elige}}" style="flex-grow: 1; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 20px; font-weight: 600; background: {{c.fondo}}; color: {{c.color}}; border: 2px solid {{c.borde}};">{{c.etiqueta}}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: column; gap: 8px;">
+    <div style="font-size: 22px; line-height: 30px; font-weight: 600;">Tema</div>
+    <div style="display: flex; flex-direction: row; gap: 10px;">
+      <sc-for list="{{temas}}" as="m" hint-placeholder-count="2">
+        <div class="opcion" role="button" tabindex="0" onClick="{{m.elige}}" style="flex-grow: 1; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 14px; font-size: 20px; font-weight: 600; background: {{m.fondo}}; color: {{m.color}}; border: 2px solid {{m.borde}};">{{m.etiqueta}}</div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div class="opcion" role="button" tabindex="0" onClick="{{cambiaReloj}}" style="height: 72px; display: flex; flex-direction: row; align-items: center; gap: 16px; padding: 0 18px; box-sizing: border-box; background: #122A3E; border: 2px solid #3D7AA6; border-radius: 18px;">
+    <span style="font-size: 22px; line-height: 30px; font-weight: 600; flex-grow: 1;">Mostrar el reloj</span>
+    <div style="width: 72px; height: 40px; border-radius: 20px; padding: 4px; box-sizing: border-box; display: flex; flex-direction: row; justify-content: {{interruptor.lado}}; background: {{interruptor.fondo}}; border: 2px solid {{interruptor.borde}};">
+      <div style="width: 28px; height: 28px; border-radius: 14px; background: {{interruptor.bola}};"></div>
+    </div>
+  </div>
+</div>
+</x-dc>
+<script data-dc-script>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { tamano: 'normal', columnas: 2, tema: 'oscuro', reloj: true };
+  }
+  opcion(etiqueta, activa, elige) {
+    return {
+      etiqueta: etiqueta,
+      elige: elige,
+      fondo: activa ? '#29B6F0' : '#122A3E',
+      color: activa ? '#0A1622' : '#F2F7FB',
+      borde: activa ? '#29B6F0' : '#3D7AA6'
+    };
+  }
+  renderVals() {
+    var self = this;
+    var s = this.state;
+    var claro = s.tema === 'claro';
+    var letras = { normal: '13px', grande: '15px', muy: '17px' };
+
+    return {
+      v: {
+        fondo: claro ? '#F2F7FB' : '#0A1622',
+        superficie: claro ? '#FFFFFF' : '#122A3E',
+        linea: claro ? '#0B1D2E' : '#3D7AA6',
+        texto: claro ? '#0B1D2E' : '#F2F7FB',
+        suave: claro ? '#10618F' : '#9FC4DC',
+        acento: claro ? '#10618F' : '#29B6F0',
+        etiqueta: letras[s.tamano],
+        columnas: s.columnas === 1 ? 'repeat(1, minmax(0, 1fr))' : 'repeat(2, minmax(0, 1fr))',
+        reloj: s.reloj ? 'flex' : 'none'
+      },
+      tamanos: [
+        this.opcion('Normal', s.tamano === 'normal', function () { self.setState({ tamano: 'normal' }); }),
+        this.opcion('Grande', s.tamano === 'grande', function () { self.setState({ tamano: 'grande' }); }),
+        this.opcion('Muy grande', s.tamano === 'muy', function () { self.setState({ tamano: 'muy' }); })
+      ],
+      columnas: [
+        this.opcion('1 por fila', s.columnas === 1, function () { self.setState({ columnas: 1 }); }),
+        this.opcion('2 por fila', s.columnas === 2, function () { self.setState({ columnas: 2 }); })
+      ],
+      temas: [
+        this.opcion('Oscuro', s.tema === 'oscuro', function () { self.setState({ tema: 'oscuro' }); }),
+        this.opcion('Claro', s.tema === 'claro', function () { self.setState({ tema: 'claro' }); })
+      ],
+      cambiaReloj: function () { self.setState({ reloj: !s.reloj }); },
+      interruptor: {
+        lado: s.reloj ? 'flex-end' : 'flex-start',
+        fondo: s.reloj ? '#29B6F0' : '#0A1622',
+        borde: s.reloj ? '#29B6F0' : '#3D7AA6',
+        bola: s.reloj ? '#0A1622' : '#9FC4DC'
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

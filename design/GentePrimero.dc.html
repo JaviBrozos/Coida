@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: system-ui, "Segoe UI", Roboto, sans-serif; }
+    a { color: #10618F; } a:hover { color: #0B1D2E; }
+    .casilla { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 90ms linear; }
+    .casilla:active { background-color: #E9F3FA; }
+    .persona { cursor: pointer; -webkit-tap-highlight-color: transparent; transition: background-color 90ms linear; }
+    .persona:active { background-color: #DCEBF5; }
+  </style>
+</helmet>
+<div style="width: 411px; height: 891px; box-sizing: border-box; padding: 20px; background: #FFFFFF; color: #0B1D2E; display: flex; flex-direction: column; gap: 16px;">
+  <div style="padding-bottom: 12px;">
+    <div style="font-size: 44px; line-height: 52px; font-weight: 700;">Doado</div>
+    <div style="font-size: 22px; line-height: 30px; font-weight: 500; color: #10618F; margin-top: 4px;">Una app para tus mayores</div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; height: 288px;">
+    <div class="persona" role="button" tabindex="0" aria-label="Llamar a Nombre 1" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px 12px; box-sizing: border-box; border: 3px solid #0B1D2E; border-radius: 24px; background: #E9F3FA;">
+      <div style="width: 120px; height: 120px; border-radius: 60px; background: #FFFFFF; border: 3px solid #0B1D2E; display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor" aria-hidden="true"><path d="M12,3.5 a3.8,3.8 0 1 0 0.01,0 z M12,13.2 c-4.6,0 -8,2.4 -8,5.6 v1.7 h16 v-1.7 c0,-3.2 -3.4,-5.6 -8,-5.6 z"></path></svg>
+      </div>
+      <span style="font-size: 26px; line-height: 34px; font-weight: 600; text-align: center;">[Nombre 1]</span>
+      <span style="font-size: 20px; line-height: 28px; font-weight: 600; text-align: center; color: #10618F;">Llamar</span>
+    </div>
+    <div class="persona" role="button" tabindex="0" aria-label="Llamar a Nombre 2" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px 12px; box-sizing: border-box; border: 3px solid #0B1D2E; border-radius: 24px; background: #E9F3FA;">
+      <div style="width: 120px; height: 120px; border-radius: 60px; background: #FFFFFF; border: 3px solid #0B1D2E; display: flex; align-items: center; justify-content: center;">
+        <svg viewBox="0 0 24 24" width="80" height="80" fill="currentColor" aria-hidden="true"><path d="M12,3.5 a3.8,3.8 0 1 0 0.01,0 z M12,13.2 c-4.6,0 -8,2.4 -8,5.6 v1.7 h16 v-1.7 c0,-3.2 -3.4,-5.6 -8,-5.6 z"></path></svg>
+      </div>
+      <span style="font-size: 26px; line-height: 34px; font-weight: 600; text-align: center;">[Nombre 2]</span>
+      <span style="font-size: 20px; line-height: 28px; font-weight: 600; text-align: center; color: #10618F;">Llamar</span>
+    </div>
+  </div>
+  <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 16px;">
+    <div class="casilla" role="button" tabindex="0" aria-label="Abrir Llamar" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px 12px; box-sizing: border-box; border: 3px solid #0B1D2E; border-radius: 24px; background: #FFFFFF;">
+      <svg viewBox="0 0 24 24" width="76" height="76" fill="currentColor" aria-hidden="true"><path d="M20.01,15.38c-1.23,0 -2.42,-0.2 -3.53,-0.56 -0.35,-0.12 -0.74,-0.03 -1.01,0.24l-1.57,1.97c-2.83,-1.35 -5.48,-3.9 -6.89,-6.83l1.95,-1.66c0.27,-0.28 0.35,-0.67 0.24,-1.02 -0.37,-1.11 -0.56,-2.3 -0.56,-3.53 0,-0.54 -0.45,-0.99 -0.99,-0.99H4.19C3.65,3 3,3.24 3,3.99 3,13.28 10.73,21 20.01,21c0.71,0 0.99,-0.63 0.99,-1.18v-3.45c0,-0.54 -0.45,-0.99 -0.99,-0.99z"></path></svg>
+      <span style="font-size: 24px; line-height: 32px; font-weight: 600; text-align: center;">Llamar</span>
+    </div>
+    <div class="casilla" role="button" tabindex="0" aria-label="Abrir Mensajes" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px 12px; box-sizing: border-box; border: 3px solid #0B1D2E; border-radius: 24px; background: #FFFFFF;">
+      <svg viewBox="0 0 24 24" width="76" height="76" fill="currentColor" aria-hidden="true"><path d="M4,3 h16 a2,2 0 0 1 2,2 v10 a2,2 0 0 1 -2,2 h-8.5 l-5.5,4 v-4 h-2 a2,2 0 0 1 -2,-2 v-10 a2,2 0 0 1 2,-2 z"></path></svg>
+      <span style="font-size: 24px; line-height: 32px; font-weight: 600; text-align: center;">Mensajes</span>
+    </div>
+    <div class="casilla" role="button" tabindex="0" aria-label="Abrir Cámara" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px 12px; box-sizing: border-box; border: 3px solid #0B1D2E; border-radius: 24px; background: #FFFFFF;">
+      <svg viewBox="0 0 24 24" width="76" height="76" fill="currentColor" fill-rule="evenodd" aria-hidden="true"><path d="M9.5,3 h5 l1.3,2 h3.2 a2,2 0 0 1 2,2 v10 a2,2 0 0 1 -2,2 h-15 a2,2 0 0 1 -2,-2 v-10 a2,2 0 0 1 2,-2 h3.2 z M12,8.5 a3.6,3.6 0 1 0 0.01,0 z"></path></svg>
+      <span style="font-size: 24px; line-height: 32px; font-weight: 600; text-align: center;">Cámara</span>
+    </div>
+    <div class="casilla" role="button" tabindex="0" aria-label="Abrir Contactos" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 16px 12px; box-sizing: border-box; border: 3px solid #0B1D2E; border-radius: 24px; background: #FFFFFF;">
+      <svg viewBox="0 0 24 24" width="76" height="76" fill="currentColor" aria-hidden="true"><path d="M12,3.5 a3.8,3.8 0 1 0 0.01,0 z M12,13.2 c-4.6,0 -8,2.4 -8,5.6 v1.7 h16 v-1.7 c0,-3.2 -3.4,-5.6 -8,-5.6 z"></path></svg>
+      <span style="font-size: 24px; line-height: 32px; font-weight: 600; text-align: center;">Contactos</span>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
