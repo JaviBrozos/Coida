@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Los favoritos del usuario sí se restauran en un móvil nuevo. -->
+    <!-- Lo configurado sí se restaura en un móvil nuevo: casillas, contactos y ajustes. -->
     <include domain="sharedpref" path="doado_favorites.xml" />
+    <include domain="sharedpref" path="doado_contacts.xml" />
+    <include domain="sharedpref" path="doado_settings.xml" />
 </full-backup-content>

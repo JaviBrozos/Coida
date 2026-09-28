@@ -37,12 +37,17 @@ con todo lo suyo dentro, en vez de tener un cajón de "viewmodels" y otro de
 
 ```
 app/src/main/java/com/doado/
-├── launcher/       Pantalla de inicio: grid de favoritos y lógica del lanzador.
+├── launcher/       Pantalla de inicio (reloj, contactos, casillas) y la Activity,
+│                   que lleva la navegación y todo lo que abre Intents.
+├── settings/       Ajustes para el familiar: PIN, interfaz, contactos, apps y
+│                   modo administrador.
 ├── accessibility/  (vacío) Servicio del botón flotante de "atrás".
 ├── assistant/      (vacío) Asistente de voz.
 ├── core/ui/        Tema: paleta de alto contraste, escala tipográfica ampliada,
-│                   medidas compartidas. Todo lo visual bebe de aquí.
-└── data/           Apps instaladas (PackageManager) y favoritos guardados.
+│                   medidas compartidas y piezas comunes (Components.kt).
+│                   Todo lo visual bebe de aquí.
+└── data/           Apps instaladas (PackageManager), casillas, contactos y ajustes
+                    guardados (SharedPreferences).
 ```
 
 Detalle a tener presente: el `namespace` es `com.doado` mientras que el

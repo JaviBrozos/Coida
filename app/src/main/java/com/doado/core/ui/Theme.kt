@@ -10,6 +10,14 @@ import androidx.compose.ui.graphics.Color
 /**
  * Esquema claro. Texto marino sobre blanco (~16.8:1) y bordes del mismo marino,
  * para que cada casilla tenga un límite visible sin depender de sombras suaves.
+ *
+ * Convención de roles que usan las pantallas de Doado (en los dos esquemas):
+ *  · primary          -> iconos de acento, botón principal, estado activo.
+ *  · surfaceContainer -> fondo de casillas y filas.
+ *  · surfaceContainerHigh -> casilla pulsada y cuadrito detrás de un icono.
+ *  · outline          -> contorno de casillas y botones.
+ *  · onSurfaceVariant -> texto secundario.
+ *  · outlineVariant   -> contenido apagado (app no disponible, acción bloqueada).
  */
 private val DoadoLightColors = lightColorScheme(
     primary = DoadoNavy,
@@ -37,11 +45,12 @@ private val DoadoLightColors = lightColorScheme(
     surface = DoadoWhite,
     onSurface = DoadoNavy,
     surfaceVariant = DoadoMist,
-    onSurfaceVariant = DoadoNavy,
+    // Cian oscurecido: ~4.6:1 sobre blanco, cumple AA aun siendo secundario.
+    onSurfaceVariant = DoadoCyanDeep,
 
     surfaceContainerLowest = DoadoWhite,
     surfaceContainerLow = DoadoWhite,
-    surfaceContainer = DoadoMist,
+    surfaceContainer = DoadoWhite,
     surfaceContainerHigh = DoadoMist,
     surfaceContainerHighest = DoadoMistDim,
 
@@ -56,46 +65,50 @@ private val DoadoLightColors = lightColorScheme(
     surfaceTint = Color.Transparent,
 )
 
-/** Esquema oscuro: negro puro de fondo y blanco de texto, ~21:1. */
+/**
+ * Esquema oscuro, el de fábrica: fondo tinta, casillas elevadas con contorno
+ * fino y el cian de la marca como acento. Todo el texto pasa de 9:1.
+ */
 private val DoadoDarkColors = darkColorScheme(
-    primary = DoadoCyanLight,
-    onPrimary = Color(0xFF00243A),
-    primaryContainer = DoadoNavy,
-    onPrimaryContainer = Color(0xFFDCF3FF),
+    primary = DoadoCyan,
+    onPrimary = DoadoInk,
+    primaryContainer = DoadoSurfaceHigh,
+    onPrimaryContainer = DoadoText,
 
-    secondary = DoadoCyanLight,
-    onSecondary = Color(0xFF00243A),
-    secondaryContainer = DoadoNavy,
-    onSecondaryContainer = Color(0xFFDCF3FF),
+    secondary = DoadoTextMuted,
+    onSecondary = DoadoInk,
+    secondaryContainer = DoadoSurfaceHigh,
+    onSecondaryContainer = DoadoText,
 
-    tertiary = DoadoCyanLight,
-    onTertiary = Color(0xFF00243A),
-    tertiaryContainer = DoadoNavy,
-    onTertiaryContainer = Color(0xFFDCF3FF),
+    tertiary = DoadoCyan,
+    onTertiary = DoadoInk,
+    tertiaryContainer = DoadoSurfaceHigh,
+    onTertiaryContainer = DoadoText,
 
     error = DoadoErrorLight,
     onError = DoadoOnErrorLight,
     errorContainer = Color(0xFF93000A),
     onErrorContainer = Color(0xFFFFDAD6),
 
-    background = DoadoBlack,
-    onBackground = DoadoWhite,
+    background = DoadoInk,
+    onBackground = DoadoText,
     surface = DoadoInk,
-    onSurface = DoadoWhite,
-    surfaceVariant = DoadoNavy,
-    onSurfaceVariant = DoadoWhite,
+    onSurface = DoadoText,
+    surfaceVariant = DoadoSurfaceHigh,
+    onSurfaceVariant = DoadoTextMuted,
 
-    surfaceContainerLowest = DoadoBlack,
+    surfaceContainerLowest = DoadoInk,
     surfaceContainerLow = DoadoInk,
-    surfaceContainer = DoadoInk,
-    surfaceContainerHigh = DoadoNavy,
-    surfaceContainerHighest = DoadoNavy,
+    surfaceContainer = DoadoSurface,
+    surfaceContainerHigh = DoadoSurfaceHigh,
+    surfaceContainerHighest = DoadoSurfaceHigh,
 
-    inverseSurface = DoadoWhite,
-    inverseOnSurface = DoadoNavy,
+    inverseSurface = DoadoText,
+    inverseOnSurface = DoadoInk,
     inversePrimary = DoadoNavy,
 
-    outline = DoadoWhite,
+    outline = DoadoLine,
+    // Gris acero: ~5.7:1 sobre tinta. Legible, pero claramente apagado.
     outlineVariant = DoadoSteel,
     scrim = DoadoBlack,
     surfaceTint = Color.Transparent,
@@ -107,6 +120,9 @@ private val DoadoDarkColors = darkColorScheme(
  * A propósito **no** usamos color dinámico (Material You): tomar los colores del
  * fondo de pantalla del usuario haría imposible garantizar el contraste, que es
  * justo lo que esta app no se puede permitir perder.
+ *
+ * El claro/oscuro lo decide quien configura el móvil desde Ajustes → Interfaz;
+ * el valor por defecto del parámetro solo sirve para las previews.
  */
 @Composable
 fun DoadoTheme(

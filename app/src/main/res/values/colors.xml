@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Fondo de la ventana antes de que Compose dibuje: evita el "flash" blanco. -->
-    <color name="doado_window_background">#FFFFFFFF</color>
-    <color name="doado_window_background_night">#FF000000</color>
+    <!--
+        Fondo de la ventana antes de que Compose dibuje: evita el "flash" de otro
+        color. Es el tinta del tema oscuro, que es el de fábrica.
+    -->
+    <color name="doado_window_background">#FF0A1622</color>
+    <color name="doado_window_background_night">#FF0A1622</color>
 
     <!-- Azul marino de la marca, usado como fondo del icono adaptativo. -->
     <color name="ic_launcher_background">#FF0B1D2E</color>

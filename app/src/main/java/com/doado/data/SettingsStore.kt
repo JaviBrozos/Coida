@@ -1,0 +1,63 @@
+package com.doado.data
+
+import android.content.Context
+import androidx.core.content.edit
+
+/**
+ * Ajustes de Doado que decide quien configura el móvil: aspecto de la interfaz,
+ * el PIN que protege los ajustes y hasta cuándo dura el modo administrador.
+ */
+class SettingsStore(context: Context) {
+
+    private val prefs =
+        context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    fun interfaceSettings(): InterfaceSettings = InterfaceSettings(
+        theme = enumOrDefault(prefs.getString(KEY_THEME, null), ThemeMode.DARK),
+        textSize = enumOrDefault(prefs.getString(KEY_TEXT_SIZE, null), TextSize.NORMAL),
+        columns = prefs.getInt(KEY_COLUMNS, 2).coerceIn(1, 2),
+        showClock = prefs.getBoolean(KEY_SHOW_CLOCK, true),
+    )
+
+    fun saveInterfaceSettings(settings: InterfaceSettings) {
+        prefs.edit {
+            putString(KEY_THEME, settings.theme.name)
+            putString(KEY_TEXT_SIZE, settings.textSize.name)
+            putInt(KEY_COLUMNS, settings.columns)
+            putBoolean(KEY_SHOW_CLOCK, settings.showClock)
+        }
+    }
+
+    /** true si todavía no se ha creado un PIN: la primera entrada a ajustes lo pide. */
+    fun hasPin(): Boolean = prefs.getString(KEY_PIN, null) != null
+
+    fun checkPin(pin: String): Boolean = prefs.getString(KEY_PIN, null) == pin
+
+    fun savePin(pin: String) {
+        prefs.edit { putString(KEY_PIN, pin) }
+    }
+
+    /**
+     * Momento (reloj del sistema, en ms) en que se vuelve a bloquear el modo
+     * administrador. Un valor pasado equivale a bloqueado.
+     */
+    fun adminUnlockedUntil(): Long = prefs.getLong(KEY_ADMIN_UNTIL, 0L)
+
+    fun saveAdminUnlockedUntil(epochMillis: Long) {
+        prefs.edit { putLong(KEY_ADMIN_UNTIL, epochMillis) }
+    }
+
+    private inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =
+        enumValues<T>().firstOrNull { it.name == name } ?: default
+
+    private companion object {
+        // Coincide con el fichero declarado en res/xml/backup_rules.xml.
+        const val PREFS_NAME = "doado_settings"
+        const val KEY_THEME = "theme"
+        const val KEY_TEXT_SIZE = "text_size"
+        const val KEY_COLUMNS = "columns"
+        const val KEY_SHOW_CLOCK = "show_clock"
+        const val KEY_PIN = "settings_pin"
+        const val KEY_ADMIN_UNTIL = "admin_unlocked_until"
+    }
+}

@@ -2,6 +2,16 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <!--
+        Llamar a un contacto fijado con una sola pulsación. Sin este permiso (o si
+        se deniega) la casilla abre el marcador con el número ya puesto.
+    -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <!-- El permiso de llamar no debe dejar fuera de Play a tablets sin teléfono. -->
+    <uses-feature
+        android:name="android.hardware.telephony"
+        android:required="false" />
+
+    <!--
         Visibilidad de paquetes (Android 11+ / API 30).
         Sin este bloque el PackageManager no nos deja ver el resto de apps del
         dispositivo y el grid de favoritos saldría vacío. Declaramos solo lo que
@@ -30,6 +40,18 @@
         <intent>
             <action android:name="android.intent.action.MAIN" />
             <category android:name="android.intent.category.APP_CONTACTS" />
+        </intent>
+        <!--
+            Apps recomendadas y la tienda. Ya las cubre la consulta de LAUNCHER de
+            arriba, pero se declaran para que quede claro que Doado las busca.
+        -->
+        <package android:name="com.whatsapp" />
+        <package android:name="com.sofascore.results" />
+        <package android:name="com.android.vending" />
+        <!-- Ficha de una app en la tienda (market://). -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="market" />
         </intent>
     </queries>
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Isotipo de Doado para fondo claro: D marina con visto blanco (el cian no llega a 3:1 sobre blanco). -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <path
+        android:fillColor="#FF0B1D2E"
+        android:pathData="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" />
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.4"
+        android:strokeLineCap="square"
+        android:pathData="M18.1,34.1 L23.8,39.8 L36,27.8" />
+</vector>

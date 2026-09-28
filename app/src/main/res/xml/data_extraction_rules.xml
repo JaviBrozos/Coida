@@ -2,8 +2,12 @@
 <data-extraction-rules>
     <cloud-backup>
         <include domain="sharedpref" path="doado_favorites.xml" />
+        <include domain="sharedpref" path="doado_contacts.xml" />
+        <include domain="sharedpref" path="doado_settings.xml" />
     </cloud-backup>
     <device-transfer>
         <include domain="sharedpref" path="doado_favorites.xml" />
+        <include domain="sharedpref" path="doado_contacts.xml" />
+        <include domain="sharedpref" path="doado_settings.xml" />
     </device-transfer>
 </data-extraction-rules>

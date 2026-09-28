@@ -1,111 +1,426 @@
 package com.doado.launcher
 
+import android.text.format.DateFormat
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import com.doado.R
+import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
+import com.doado.data.AppIcon
+import com.doado.data.ContactAction
+import com.doado.data.ContactShortcut
 import com.doado.data.FavoriteApp
+import kotlinx.coroutines.delay
+import java.text.SimpleDateFormat
+import java.util.Date
+import kotlin.math.ceil
+
+/** Un contacto listo para pintar en el inicio. */
+data class HomeContact(
+    val shortcut: ContactShortcut,
+    /** false si la acción no se puede hacer aquí (WhatsApp sin instalar). */
+    val isAvailable: Boolean,
+)
 
 /**
  * Pantalla de inicio de Doado.
  *
- * Es deliberadamente tonta: recibe la lista ya resuelta y avisa de los toques
- * hacia arriba. Así se puede previsualizar y probar sin PackageManager, y toda la
+ * Es deliberadamente tonta: recibe todo ya resuelto y avisa de los toques hacia
+ * arriba. Así se puede previsualizar y probar sin PackageManager, y toda la
  * fontanería de Android se queda en [LauncherActivity].
  *
- * Dos columnas y no tres: con tres, cada casilla se queda por debajo del tamaño
- * al que un icono se distingue con la vista cansada.
+ * De arriba abajo: reloj (o el nombre, si se ha quitado el reloj), contactos
+ * fijados, las casillas de apps y, abajo del todo y en tono apagado, Ajustes.
  */
 @Composable
 fun HomeScreen(
-    favorites: List<FavoriteApp>,
+    apps: List<FavoriteApp>,
+    contacts: List<HomeContact>,
+    columns: Int,
+    showClock: Boolean,
+    darkTheme: Boolean,
+    adminUnlockedUntil: Long,
     onAppClick: (FavoriteApp) -> Unit,
+    onContactClick: (ContactShortcut) -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
     ) { innerPadding ->
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(COLUMNS),
+        val now = rememberCurrentMinute()
+        val context = LocalContext.current
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentPadding = PaddingValues(DoadoDimens.ScreenPadding),
-            horizontalArrangement = Arrangement.spacedBy(DoadoDimens.GridSpacing),
+                .padding(innerPadding)
+                .padding(DoadoDimens.ScreenPadding),
             verticalArrangement = Arrangement.spacedBy(DoadoDimens.GridSpacing),
         ) {
-            item(span = { GridItemSpan(maxLineSpan) }) {
-                HomeHeader()
+            HomeHeader(now = now, showClock = showClock, darkTheme = darkTheme)
+
+            if (adminUnlockedUntil > now) {
+                val until = remember(adminUnlockedUntil) {
+                    DateFormat.getTimeFormat(context).format(Date(adminUnlockedUntil))
+                }
+                AdminBanner(untilLabel = until, onClick = onSettingsClick)
             }
 
-            items(items = favorites, key = { it.id }) { app ->
-                AppTile(
-                    app = app,
-                    onClick = { onAppClick(app) },
+            if (contacts.isNotEmpty()) {
+                ContactsBlock(contacts = contacts, onContactClick = onContactClick)
+            }
+
+            AppsGrid(
+                apps = apps,
+                columns = columns,
+                onAppClick = onAppClick,
+                modifier = Modifier.weight(1f),
+            )
+
+            SettingsButton(onClick = onSettingsClick)
+        }
+    }
+}
+
+@Composable
+private fun HomeHeader(now: Long, showClock: Boolean, darkTheme: Boolean) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            if (showClock) {
+                val context = LocalContext.current
+                val locale = LocalConfiguration.current.locales[0]
+                val time = remember(now) { DateFormat.getTimeFormat(context).format(Date(now)) }
+                val date = remember(now, locale) {
+                    val pattern = DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM")
+                    SimpleDateFormat(pattern, locale).format(Date(now))
+                }
+                Text(
+                    text = time,
+                    style = MaterialTheme.typography.displayMedium,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.semantics { heading() },
+                )
+                Text(
+                    text = date,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.app_name),
+                    style = MaterialTheme.typography.displaySmall,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.semantics { heading() },
+                )
+                Text(
+                    text = stringResource(R.string.app_tagline),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        // El isotipo es marca, no información: decorativo para TalkBack.
+        Image(
+            painter = painterResource(
+                if (darkTheme) R.drawable.ic_doado_mark else R.drawable.ic_doado_mark_light,
+            ),
+            contentDescription = null,
+            modifier = Modifier.size(52.dp),
+        )
+    }
+}
+
+/**
+ * Hora actual redondeada al minuto, que se refresca sola en el cambio de minuto.
+ * Solo corre con la pantalla a la vista: al volver de estar bloqueado, se
+ * recalcula en el acto en vez de enseñar la hora de cuando se apagó.
+ */
+@Composable
+private fun rememberCurrentMinute(): Long {
+    var now by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(lifecycle) {
+        lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (true) {
+                val current = System.currentTimeMillis()
+                now = current
+                delay(MINUTE_MS - current % MINUTE_MS + 50)
+            }
+        }
+    }
+    return now
+}
+
+@Composable
+private fun AdminBanner(untilLabel: String, onClick: () -> Unit) {
+    DoadoCard(onClick = onClick, highlighted = true, modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_shield),
+                contentDescription = null,
+                modifier = Modifier.size(28.dp),
+                tint = MaterialTheme.colorScheme.primary,
+            )
+            Text(
+                text = stringResource(R.string.home_admin_banner, untilLabel),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+/** Contactos fijados, de dos en dos. */
+@Composable
+private fun ContactsBlock(
+    contacts: List<HomeContact>,
+    onContactClick: (ContactShortcut) -> Unit,
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        contacts.chunked(2).forEach { pair ->
+            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                pair.forEach { contact ->
+                    ContactTile(
+                        contact = contact,
+                        onClick = { onContactClick(contact.shortcut) },
+                        modifier = Modifier.weight(1f),
+                    )
+                }
+                // Con un número impar, el último no se estira: mantiene su tamaño.
+                if (pair.size == 1) Spacer(Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ContactTile(
+    contact: HomeContact,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    val shortcut = contact.shortcut
+    val colors = MaterialTheme.colorScheme
+    val actionText = stringResource(
+        when (shortcut.action) {
+            ContactAction.CALL -> R.string.contact_action_call
+            ContactAction.WHATSAPP -> R.string.contact_action_whatsapp
+        },
+    )
+    val clickLabel = stringResource(R.string.cd_contact_action, actionText, shortcut.name)
+    val unavailableLabel = stringResource(R.string.cd_contact_unavailable, shortcut.name)
+    val contentColor = if (contact.isAvailable) colors.onSurface else colors.outlineVariant
+
+    DoadoCard(
+        onClick = onClick,
+        enabled = contact.isAvailable,
+        modifier = modifier
+            .heightIn(min = 104.dp)
+            .semantics {
+                if (contact.isAvailable) {
+                    onClick(label = clickLabel) { onClick(); true }
+                } else {
+                    contentDescription = unavailableLabel
+                }
+            },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(52.dp)
+                    .background(colors.surfaceContainerHigh, CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(
+                    painter = painterResource(
+                        if (shortcut.action == ContactAction.WHATSAPP) R.drawable.ic_messages
+                        else R.drawable.ic_call,
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp),
+                    tint = if (contact.isAvailable) colors.primary else colors.outlineVariant,
+                )
+            }
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = shortcut.name,
+                    style = MaterialTheme.typography.titleSmall,
+                    color = contentColor,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                )
+                Text(
+                    text = if (contact.isAvailable) actionText else stringResource(R.string.app_unavailable),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = if (contact.isAvailable) colors.onSurfaceVariant else colors.outlineVariant,
                 )
             }
         }
     }
 }
 
-/** Cabecera con el nombre de la app y su lema. */
+/**
+ * La rejilla de apps ocupa todo el alto que queda: con pocas apps las casillas
+ * crecen (hasta un tope, para que no parezcan carteles) y con muchas bajan hasta
+ * el mínimo y la rejilla pasa a desplazarse.
+ */
 @Composable
-private fun HomeHeader(modifier: Modifier = Modifier) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(bottom = 12.dp),
-    ) {
-        Text(
-            text = stringResource(R.string.app_name),
-            style = MaterialTheme.typography.displaySmall,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.semantics { heading() },
-        )
-        Text(
-            text = stringResource(R.string.app_tagline),
-            style = MaterialTheme.typography.bodyMedium,
-            // Cian oscurecido: ~4.6:1 sobre blanco, cumple AA aun siendo secundario.
-            color = MaterialTheme.colorScheme.secondary,
-            modifier = Modifier.padding(top = 4.dp),
-        )
+private fun AppsGrid(
+    apps: List<FavoriteApp>,
+    columns: Int,
+    onAppClick: (FavoriteApp) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
+        val gap = DoadoDimens.GridSpacing
+        val rows = ceil(apps.size / columns.toFloat()).toInt().coerceAtLeast(1)
+        val fitHeight = (maxHeight - gap * (rows - 1)) / rows
+        val tileHeight = if (columns == 1) {
+            fitHeight.coerceIn(ONE_COLUMN_MIN, ONE_COLUMN_MAX)
+        } else {
+            fitHeight.coerceIn(DoadoDimens.TileMinHeight, TWO_COLUMN_MAX)
+        }
+
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(columns),
+            horizontalArrangement = Arrangement.spacedBy(gap),
+            verticalArrangement = Arrangement.spacedBy(gap),
+        ) {
+            items(items = apps, key = { it.id }) { app ->
+                AppTile(
+                    app = app,
+                    horizontal = columns == 1,
+                    onClick = { onAppClick(app) },
+                    modifier = Modifier.height(tileHeight),
+                )
+            }
+        }
     }
 }
 
-private const val COLUMNS = 2
+/** Entrada a Ajustes: siempre visible, pero en segundo plano y con candado. */
+@Composable
+private fun SettingsButton(onClick: () -> Unit) {
+    val label = stringResource(R.string.home_settings)
+    val clickLabel = stringResource(R.string.cd_open_settings)
+    DoadoCard(
+        onClick = onClick,
+        color = Color.Transparent,
+        modifier = Modifier
+            .fillMaxWidth()
+            .heightIn(min = DoadoDimens.ComfortableTouchTarget)
+            .semantics { onClick(label = clickLabel) { onClick(); true } },
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(14.dp),
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.ic_settings),
+                contentDescription = null,
+                modifier = Modifier.size(28.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Text(
+                text = label,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.weight(1f),
+            )
+            Icon(
+                painter = painterResource(R.drawable.ic_lock),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+private const val MINUTE_MS = 60_000L
+private val ONE_COLUMN_MIN = 112.dp
+private val ONE_COLUMN_MAX = 150.dp
+private val TWO_COLUMN_MAX = 300.dp
 
 @Preview(showBackground = true, widthDp = 411, heightDp = 891)
 @Composable
 private fun HomeScreenPreview() {
-    DoadoTheme {
+    DoadoTheme(darkTheme = true) {
         HomeScreen(
-            favorites = listOf(
-                FavoriteApp("phone", "Llamar", R.drawable.ic_call, "com.android.dialer"),
-                FavoriteApp("messages", "Mensajes", R.drawable.ic_messages, "com.android.mms"),
-                FavoriteApp("camera", "Cámara", R.drawable.ic_camera, "com.android.camera"),
-                FavoriteApp("contacts", "Contactos", R.drawable.ic_contacts, null),
+            apps = listOf(
+                FavoriteApp("phone", "Llamar", AppIcon.Vector(R.drawable.ic_call), "com.android.dialer"),
+                FavoriteApp("messages", "Mensajes", AppIcon.Vector(R.drawable.ic_messages), "com.android.mms"),
+                FavoriteApp("camera", "Cámara", AppIcon.Vector(R.drawable.ic_camera), "com.android.camera"),
+                FavoriteApp("contacts", "Contactos", AppIcon.Vector(R.drawable.ic_contacts), null),
             ),
+            contacts = listOf(
+                HomeContact(ContactShortcut("1", "María", "600000000", ContactAction.CALL, true), true),
+                HomeContact(ContactShortcut("2", "Luis", "600000001", ContactAction.WHATSAPP, true), false),
+            ),
+            columns = 2,
+            showClock = true,
+            darkTheme = true,
+            adminUnlockedUntil = 0L,
             onAppClick = {},
+            onContactClick = {},
+            onSettingsClick = {},
         )
     }
 }

@@ -3,15 +3,116 @@
     <string name="app_name">Doado</string>
     <string name="app_tagline">Una app para tus mayores</string>
 
-    <!-- Apps favoritas de ejemplo del MVP -->
+    <!-- Apps favoritas de fábrica -->
     <string name="app_phone">Llamar</string>
     <string name="app_messages">Mensajes</string>
     <string name="app_camera">Cámara</string>
     <string name="app_contacts">Contactos</string>
 
+    <!-- Pantalla de inicio -->
+    <string name="home_settings">Ajustes</string>
+    <string name="home_admin_banner">Modo administrador activo hasta las %1$s</string>
+    <string name="contact_action_call">Llamada</string>
+    <string name="contact_action_whatsapp">WhatsApp</string>
+
     <!-- Accesibilidad -->
     <string name="cd_open_app">Abrir %1$s</string>
     <string name="app_unavailable">No disponible</string>
     <string name="cd_app_unavailable">%1$s no está instalada en este móvil</string>
+    <string name="cd_contact_action">%1$s a %2$s</string>
+    <string name="cd_contact_unavailable">%1$s: no disponible, falta WhatsApp</string>
+    <string name="cd_open_settings">Abrir ajustes, protegidos con PIN</string>
+    <string name="cd_back_home">Volver a la pantalla de inicio</string>
+    <string name="cd_back_settings">Volver a ajustes</string>
+    <string name="cd_pin_progress">%1$d de %2$d cifras</string>
+    <string name="cd_pin_delete">Borrar la última cifra</string>
+
+    <!-- Errores -->
     <string name="error_cannot_open">No se ha podido abrir %1$s</string>
+    <string name="error_cannot_open_generic">No se ha podido abrir</string>
+    <string name="error_contact_pick">No se ha podido leer ese contacto</string>
+    <string name="admin_required">Primero desbloquea el modo administrador</string>
+
+    <!-- PIN -->
+    <string name="pin_title">Ajustes de Doado</string>
+    <string name="pin_subtitle">Introduce el PIN de 4 cifras</string>
+    <string name="pin_create_title">Crea un PIN</string>
+    <string name="pin_create_subtitle">4 cifras que solo sepa quien configura el móvil</string>
+    <string name="pin_repeat_title">Repite el PIN</string>
+    <string name="pin_repeat_subtitle">Para comprobar que está bien escrito</string>
+    <string name="pin_wrong">PIN incorrecto. Prueba otra vez.</string>
+    <string name="pin_mismatch">No coinciden. Vuelve a empezar.</string>
+    <string name="pin_clear">Borrar</string>
+    <string name="pin_note">El PIN lo pone quien configura el móvil. Así nadie entra en los ajustes sin querer.</string>
+
+    <!-- Ajustes -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_subtitle">Para el familiar o la persona cuidadora</string>
+    <string name="settings_section_personalize">Personalizar</string>
+    <string name="settings_section_advanced">Avanzado</string>
+    <string name="settings_interface">Interfaz</string>
+    <string name="settings_interface_subtitle">Letra, casillas, tema y reloj</string>
+    <string name="settings_contacts">Contactos</string>
+    <plurals name="settings_contacts_subtitle">
+        <item quantity="one">%1$d acceso directo en el inicio</item>
+        <item quantity="other">%1$d accesos directos en el inicio</item>
+    </plurals>
+    <string name="settings_apps">Aplicaciones</string>
+    <string name="settings_apps_subtitle">Qué se ve e instalar nuevas</string>
+    <string name="settings_sound">Sonido y pantalla</string>
+    <string name="settings_sound_subtitle">Volumen, brillo y vibración de Android</string>
+    <string name="settings_admin">Modo administrador</string>
+    <string name="settings_admin_subtitle">Salir de Doado para instalar apps</string>
+    <string name="settings_admin_subtitle_active">Desbloqueado ahora mismo</string>
+    <string name="settings_pin">PIN de ajustes</string>
+    <string name="settings_pin_subtitle">Cambiar las 4 cifras</string>
+
+    <!-- Ajustes → Interfaz -->
+    <string name="interface_subtitle">Los cambios se ven al momento</string>
+    <string name="interface_text_size">Tamaño de la letra</string>
+    <string name="interface_text_normal">Normal</string>
+    <string name="interface_text_large">Grande</string>
+    <string name="interface_text_extra_large">Muy grande</string>
+    <string name="interface_columns">Casillas por fila</string>
+    <string name="interface_columns_one">1 por fila</string>
+    <string name="interface_columns_two">2 por fila</string>
+    <string name="interface_theme">Tema</string>
+    <string name="interface_theme_dark">Oscuro</string>
+    <string name="interface_theme_light">Claro</string>
+    <string name="interface_clock">Mostrar el reloj</string>
+    <string name="interface_clock_subtitle">Hora y fecha arriba del inicio</string>
+    <string name="interface_note">El tamaño de letra se suma al que tenga puesto Android en sus ajustes de accesibilidad.</string>
+
+    <!-- Ajustes → Contactos -->
+    <string name="contacts_subtitle">Salen arriba del inicio. Caben %1$d.</string>
+    <string name="contacts_empty">Todavía no hay contactos. Añade a las personas a las que más se llama.</string>
+    <string name="contacts_add">Añadir contacto</string>
+    <string name="contacts_on_home">En la pantalla de inicio</string>
+    <string name="contacts_home_full">El inicio ya está completo</string>
+    <string name="contacts_remove">Quitar</string>
+    <string name="contacts_whatsapp_missing">WhatsApp no está instalada: esos contactos saldrán apagados hasta que se instale desde Aplicaciones.</string>
+
+    <!-- Ajustes → Aplicaciones -->
+    <string name="apps_subtitle">Qué casillas salen en el inicio</string>
+    <string name="apps_section_basic">Básicas</string>
+    <string name="apps_section_suggested">Recomendadas</string>
+    <string name="apps_section_others">Otras apps de este móvil</string>
+    <string name="apps_install">Instalar</string>
+    <string name="apps_install_needs_admin">Instalar (pide modo administrador)</string>
+    <string name="apps_note">Para instalar hace falta el modo administrador. Cuando una app termina de instalarse, aparece en esta lista y se puede poner en el inicio.</string>
+    <string name="suggested_whatsapp_description">Mensajes y videollamadas</string>
+    <string name="suggested_sofascore_description">Resultados y partidos en directo</string>
+
+    <!-- Ajustes → Modo administrador -->
+    <string name="admin_locked">Doado está al mando</string>
+    <string name="admin_locked_detail">La tienda y los ajustes de Android están bajo llave</string>
+    <string name="admin_unlocked">Móvil desbloqueado</string>
+    <string name="admin_unlocked_detail">Puedes salir de Doado e instalar lo que haga falta</string>
+    <string name="admin_countdown_suffix">hasta que se cierre solo</string>
+    <string name="admin_unlock">Desbloquear %1$d minutos</string>
+    <string name="admin_lock_now">Bloquear ya</string>
+    <string name="admin_open_store">Abrir la tienda de apps</string>
+    <string name="admin_open_android_settings">Ajustes de Android</string>
+    <string name="admin_choose_home">Elegir otra pantalla de inicio</string>
+    <string name="admin_note">Mientras está desbloqueado puedes instalar WhatsApp, Sofascore o lo que se necesite. A los %1$d minutos se vuelve a cerrar sin tocar nada.</string>
 </resources>

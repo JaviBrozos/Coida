@@ -46,3 +46,27 @@ val DoadoSteel = Color(0xFF7A93A6)
 val DoadoError = Color(0xFFB3261E)
 val DoadoErrorLight = Color(0xFFFFB4AB)
 val DoadoOnErrorLight = Color(0xFF690005)
+
+// --- Superficies del tema oscuro -------------------------------------------
+//
+// El tema oscuro es el de fábrica. El cian se reserva para acentos (iconos,
+// estado activo, botón principal) y no se usa como relleno de casillas: los
+// bloques de color macizo daban un aspecto de juguete.
+
+/** Casilla elevada sobre [DoadoInk]. El blanco azulado encima da ~13:1. */
+val DoadoSurface = Color(0xFF122A3E)
+
+/** Casilla pulsada o seleccionada, y fondo de los cuadritos de icono. */
+val DoadoSurfaceHigh = Color(0xFF17384F)
+
+/**
+ * Contorno de casillas y botones en oscuro: ~3.3:1 contra [DoadoSurface],
+ * por encima del 3:1 que piden las WCAG para límites de componentes.
+ */
+val DoadoLine = Color(0xFF3D7AA6)
+
+/** Texto principal en oscuro: ~16:1 sobre [DoadoInk]. */
+val DoadoText = Color(0xFFF2F7FB)
+
+/** Texto secundario en oscuro: ~9.9:1 sobre [DoadoInk]. */
+val DoadoTextMuted = Color(0xFF9FC4DC)

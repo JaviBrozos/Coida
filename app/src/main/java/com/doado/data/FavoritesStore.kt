@@ -4,7 +4,11 @@ import android.content.Context
 import androidx.core.content.edit
 
 /**
- * Guarda qué favoritos ha elegido el usuario y en qué orden.
+ * Guarda qué casillas salen en la pantalla de inicio y en qué orden.
+ *
+ * Cada casilla se guarda con un id: los favoritos de fábrica usan el suyo
+ * ("phone", "camera"...) y las apps añadidas después usan "pkg:" + su paquete
+ * ("pkg:com.whatsapp").
  *
  * El orden se guarda como una cadena separada por comas y no como un StringSet
  * de SharedPreferences: un Set no conserva el orden, y en un lanzador para
@@ -20,14 +24,12 @@ class FavoritesStore(context: Context) {
     /** Ids guardados; si no hay nada guardado todavía, los favoritos de fábrica. */
     fun favoriteIds(): List<String> {
         val stored = prefs.getString(KEY_FAVORITES, null)
-            ?.split(SEPARATOR)
-            ?.filter { it.isNotBlank() }
-
-        return if (stored.isNullOrEmpty()) DefaultFavorites.map { it.id } else stored
+            ?: return DefaultFavorites.map { it.id }
+        return stored.split(SEPARATOR).filter { it.isNotBlank() }
     }
 
     fun saveFavoriteIds(ids: List<String>) {
-        prefs.edit { putString(KEY_FAVORITES, ids.joinToString(SEPARATOR)) }
+        prefs.edit { putString(KEY_FAVORITES, ids.distinct().joinToString(SEPARATOR)) }
     }
 
     /** Vuelve a los favoritos de fábrica. */
@@ -35,10 +37,15 @@ class FavoritesStore(context: Context) {
         prefs.edit { remove(KEY_FAVORITES) }
     }
 
-    private companion object {
+    companion object {
+        /** Prefijo de las casillas que apuntan a una app concreta por su paquete. */
+        const val PACKAGE_PREFIX = "pkg:"
+
+        fun packageId(packageName: String) = PACKAGE_PREFIX + packageName
+
         // Coincide con el fichero declarado en res/xml/backup_rules.xml.
-        const val PREFS_NAME = "doado_favorites"
-        const val KEY_FAVORITES = "favorite_ids"
-        const val SEPARATOR = ","
+        private const val PREFS_NAME = "doado_favorites"
+        private const val KEY_FAVORITES = "favorite_ids"
+        private const val SEPARATOR = ","
     }
 }
