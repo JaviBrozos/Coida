@@ -1,0 +1,18 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "x": 0, "y": 0, "w": 1280, "h": 720, "title": "Portada" },
+    { "file": "Perfiles.dc.html", "x": 1360, "y": 0, "w": 1280, "h": 720, "title": "01 · A quién sirve" },
+    { "file": "MapaPantallas.dc.html", "x": 2720, "y": 0, "w": 1280, "h": 720, "title": "02 · Mapa de pantallas" },
+    { "file": "FlujoMayor.dc.html", "x": 4080, "y": 0, "w": 1280, "h": 720, "title": "03 · Flujo de la persona mayor" },
+    { "file": "FlujoFamiliar.dc.html", "x": 5440, "y": 0, "w": 1280, "h": 720, "title": "04 · Flujo del familiar" },
+    { "file": "FlujoAdmin.dc.html", "x": 0, "y": 900, "w": 1280, "h": 720, "title": "05 · Flujo del administrador" },
+    { "file": "Arquitectura.dc.html", "x": 1360, "y": 900, "w": 1280, "h": 720, "title": "06 · Cómo está construido" },
+    { "file": "SistemaVisual.dc.html", "x": 2720, "y": 900, "w": 1280, "h": 720, "title": "07 · Sistema visual" },
+    { "file": "EstadoLimites.dc.html", "x": 4080, "y": 900, "w": 1280, "h": 720, "title": "08 · Estado y límites" },
+    { "file": "Documentacion.dc.html", "x": 5440, "y": 900, "w": 1280, "h": 720, "title": "09 · Cómo queda documentado" }
+  ],
+  "annotations": [
+    { "id": "como-presentar", "x": 0, "y": -250, "w": 1280, "text": "Diez láminas de 1280×720, en orden de lectura: arriba de izquierda a derecha, y luego la fila de abajo.\n\nPara tener el documento suelto: Exportar → PDF. Sale un único PDF con una página por lámina, en ese mismo orden." }
+  ],
+  "launch": { "view": "canvas" }
+}

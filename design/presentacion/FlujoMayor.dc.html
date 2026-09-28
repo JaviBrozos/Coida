@@ -1,0 +1,111 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+    a { color: #10618F; } a:hover { color: #0B1D2E; }
+    .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 26px; }
+    .cab { display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
+    .num { font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #10618F; }
+    .tit { font-size: 44px; line-height: 52px; font-weight: 700; margin: 0; }
+    .paso { flex: 1; background: #FFFFFF; border: 2px solid #C9DCE8; border-radius: 18px; padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .bola { width: 34px; height: 34px; border-radius: 17px; background: #0B1D2E; color: #FFFFFF; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .ptit { font-size: 20px; line-height: 26px; font-weight: 700; margin: 0; text-align: center; }
+    .pdesc { font-size: 15px; line-height: 22px; color: #3C5A70; margin: 0; text-align: center; }
+    .flecha { display: flex; align-items: center; color: #29B6F0; }
+  </style>
+</helmet>
+<div class="hoja">
+  <div class="cab">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div class="num">03 · Flujo de la persona mayor</div>
+      <h1 class="tit">Llamar, en tres toques y sin leer nada</h1>
+    </div>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+  </div>
+
+  <div style="display: flex; flex-direction: row; align-items: stretch; gap: 12px;">
+    <div class="paso">
+      <div class="bola">1</div>
+      <svg viewBox="0 0 120 150" width="104" height="130" aria-hidden="true">
+        <rect x="16" y="4" width="88" height="142" rx="14" fill="#0A1622"></rect>
+        <rect x="40" y="132" width="40" height="5" rx="2.5" fill="#9FC4DC"></rect>
+        <circle cx="60" cy="134" r="22" fill="#29B6F0" opacity="0.25"></circle>
+      </svg>
+      <p class="ptit">Pulsa Inicio</p>
+      <p class="pdesc">Venga de donde venga, el móvil vuelve siempre a la misma pantalla.</p>
+    </div>
+
+    <div class="flecha"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg></div>
+
+    <div class="paso">
+      <div class="bola">2</div>
+      <svg viewBox="0 0 120 150" width="104" height="130" aria-hidden="true">
+        <rect x="16" y="4" width="88" height="142" rx="14" fill="#0A1622"></rect>
+        <rect x="26" y="16" width="40" height="11" rx="3" fill="#F2F7FB"></rect>
+        <rect x="26" y="31" width="56" height="6" rx="3" fill="#9FC4DC"></rect>
+        <rect x="26" y="46" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
+        <rect x="62" y="46" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
+        <rect x="26" y="92" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
+        <rect x="62" y="92" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
+      </svg>
+      <p class="ptit">Ve la hora y cuatro casillas</p>
+      <p class="pdesc">Nada más. Cada casilla ocupa media mano y siempre está en el mismo sitio.</p>
+    </div>
+
+    <div class="flecha"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg></div>
+
+    <div class="paso">
+      <div class="bola">3</div>
+      <svg viewBox="0 0 120 150" width="104" height="130" aria-hidden="true">
+        <rect x="16" y="4" width="88" height="142" rx="14" fill="#0A1622"></rect>
+        <rect x="26" y="46" width="32" height="42" rx="7" fill="#17384F" stroke="#29B6F0" stroke-width="2.4"></rect>
+        <g transform="translate(34,56) scale(0.6)" fill="none" stroke="#29B6F0" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4,3.6 h3.2 l1.5,4 l-2.1,1.5 a12.5,12.5 0 0,0 6,6 l1.5,-2.1 l4,1.5 v3.2 a1.6,1.6 0 0,1 -1.7,1.6 A16.8,16.8 0 0,1 4.8,5.3 a1.6,1.6 0 0,1 1.6,-1.7 z"></path></g>
+        <rect x="62" y="46" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
+        <rect x="26" y="92" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
+        <rect x="62" y="92" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
+        <circle cx="42" cy="67" r="17" fill="#29B6F0" opacity="0.28"></circle>
+      </svg>
+      <p class="ptit">Toca «Llamar»</p>
+      <p class="pdesc">El borde se enciende al pulsar: se ve que el toque ha entrado.</p>
+    </div>
+
+    <div class="flecha"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg></div>
+
+    <div class="paso">
+      <div class="bola">4</div>
+      <svg viewBox="0 0 120 150" width="104" height="130" aria-hidden="true">
+        <rect x="16" y="4" width="88" height="142" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+        <circle cx="60" cy="62" r="26" fill="#E9F3FA"></circle>
+        <g transform="translate(46,48) scale(1.15)" fill="none" stroke="#10618F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4,3.6 h3.2 l1.5,4 l-2.1,1.5 a12.5,12.5 0 0,0 6,6 l1.5,-2.1 l4,1.5 v3.2 a1.6,1.6 0 0,1 -1.7,1.6 A16.8,16.8 0 0,1 4.8,5.3 a1.6,1.6 0 0,1 1.6,-1.7 z"></path></g>
+        <rect x="32" y="100" width="56" height="9" rx="4.5" fill="#C9DCE8"></rect>
+        <rect x="40" y="116" width="40" height="9" rx="4.5" fill="#E9F3FA"></rect>
+      </svg>
+      <p class="ptit">Se abre el teléfono</p>
+      <p class="pdesc">La app de llamadas que ya trae el móvil, sea de la marca que sea.</p>
+    </div>
+  </div>
+
+  <div style="display: flex; flex-direction: row; gap: 18px; align-items: stretch;">
+    <div style="flex: 1.4; background: #0B1D2E; color: #F2F7FB; border-radius: 18px; padding: 20px 24px; display: flex; flex-direction: row; align-items: center; gap: 20px;">
+      <div style="width: 54px; height: 54px; border-radius: 27px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+        <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#29B6F0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20c0-3.4 3.2-5.6 7.2-5.6s7.2 2.2 7.2 5.6"></path></svg>
+      </div>
+      <p style="margin: 0; font-size: 18px; line-height: 26px;">Y para las personas de siempre, ni eso: arriba del todo hay una casilla con <strong>su nombre</strong>. Un toque y le está llamando.</p>
+    </div>
+    <div style="flex: 1; border: 2px solid #C9DCE8; border-radius: 18px; padding: 16px 22px; display: flex; flex-direction: column; justify-content: center; gap: 6px;">
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Casilla:</strong> 260 px de alto (el mínimo de la casa son 168)</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Texto:</strong> 24 sp, y sube si el móvil lo tiene grande</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Contraste:</strong> 13:1 entre texto y casilla</p>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

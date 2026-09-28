@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Doado de un vistazo</title>
+<style>
+  /*
+    Vista local para mirar e imprimir las diez láminas. No es el lienzo de
+    diseño: cada lámina se carga tal cual, en su propio marco de 1280x720.
+    Para tener el PDF: Ctrl+P, orientación horizontal y márgenes "ninguno".
+  */
+  :root { color-scheme: dark; }
+  body {
+    margin: 0;
+    background: #06101A;
+    color: #F2F7FB;
+    font-family: "Segoe UI", system-ui, sans-serif;
+  }
+  header {
+    padding: 28px 32px 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  h1 { font-size: 26px; margin: 0; font-weight: 700; }
+  header p { margin: 0; color: #9FC4DC; font-size: 15px; }
+  main { padding: 16px 32px 48px; display: flex; flex-direction: column; gap: 28px; }
+  figure { margin: 0; }
+  figcaption {
+    font-size: 14px;
+    color: #9FC4DC;
+    padding: 0 0 8px 2px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .marco {
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+    border: 1px solid #1F3B52;
+    background: #F7FAFC;
+  }
+  .marco iframe {
+    width: 1280px;
+    height: 720px;
+    border: 0;
+    display: block;
+    transform-origin: top left;
+  }
+  @media print {
+    body { background: #FFFFFF; }
+    header { display: none; }
+    main { padding: 0; gap: 0; }
+    figcaption { display: none; }
+    .marco { border: 0; border-radius: 0; break-after: page; }
+    @page { size: 1280px 720px; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>Doado de un vistazo</h1>
+  <p>Diez láminas · para el PDF: Ctrl+P, horizontal y sin márgenes</p>
+</header>
+<main id="laminas"></main>
+<script>
+  const laminas = [
+    ["Portada", "Main.dc.html"],
+    ["01 · A quién sirve", "Perfiles.dc.html"],
+    ["02 · Mapa de pantallas", "MapaPantallas.dc.html"],
+    ["03 · Flujo de la persona mayor", "FlujoMayor.dc.html"],
+    ["04 · Flujo del familiar", "FlujoFamiliar.dc.html"],
+    ["05 · Flujo del administrador", "FlujoAdmin.dc.html"],
+    ["06 · Cómo está construido", "Arquitectura.dc.html"],
+    ["07 · Sistema visual", "SistemaVisual.dc.html"],
+    ["08 · Estado y límites", "EstadoLimites.dc.html"],
+    ["09 · Cómo queda documentado", "Documentacion.dc.html"],
+  ];
+
+  const main = document.getElementById("laminas");
+  for (const [titulo, fichero] of laminas) {
+    const figure = document.createElement("figure");
+    const caption = document.createElement("figcaption");
+    caption.textContent = titulo;
+    const marco = document.createElement("div");
+    marco.className = "marco";
+    const iframe = document.createElement("iframe");
+    iframe.src = fichero;
+    iframe.title = titulo;
+    iframe.loading = "lazy";
+    marco.append(iframe);
+    figure.append(caption, marco);
+    main.append(figure);
+  }
+
+  // Las láminas miden 1280x720 fijos: se escalan para que quepan en la ventana.
+  function ajustar() {
+    for (const marco of document.querySelectorAll(".marco")) {
+      const escala = marco.clientWidth / 1280;
+      const iframe = marco.querySelector("iframe");
+      iframe.style.transform = `scale(${escala})`;
+      marco.style.height = `${720 * escala}px`;
+    }
+  }
+  window.addEventListener("resize", ajustar);
+  window.addEventListener("load", ajustar);
+  ajustar();
+</script>
+</body>
+</html>

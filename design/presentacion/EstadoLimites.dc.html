@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+    a { color: #10618F; } a:hover { color: #0B1D2E; }
+    .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
+    .cab { display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
+    .num { font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #10618F; }
+    .tit { font-size: 44px; line-height: 52px; font-weight: 700; margin: 0; }
+    .rot { font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; margin: 0 0 12px 0; }
+    .li { font-size: 16px; line-height: 23px; margin: 0 0 9px 0; display: flex; flex-direction: row; gap: 10px; align-items: flex-start; }
+    .caja { background: #FFFFFF; border: 2px solid #C9DCE8; border-radius: 18px; padding: 20px 22px; }
+    .bolita { width: 10px; height: 10px; border-radius: 5px; flex-shrink: 0; margin-top: 7px; }
+  </style>
+</helmet>
+<div class="hoja">
+  <div class="cab">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div class="num">08 · Dónde estamos</div>
+      <h1 class="tit">Lo hecho, lo que falta y lo que duele</h1>
+    </div>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px;">
+    <div style="flex: 1; display: flex; flex-direction: column; gap: 14px;">
+      <div class="caja" style="border-color: #A9D5B5; background: #F4FBF6;">
+        <p class="rot" style="color: #2E7D4F;">Hecho y probado en el emulador</p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Pantalla de inicio: reloj, contactos y casillas</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>PIN de cuatro cifras, con alta la primera vez</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Interfaz: letra, columnas, tema y reloj</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Contactos que llaman o abren WhatsApp</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Aplicaciones e instalación desde la tienda</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #2E7D4F;"></span><span>Modo administrador con cuenta atrás</span></p>
+      </div>
+      <div class="caja">
+        <p class="rot" style="color: #10618F;">Pendiente</p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>Botón flotante de «atrás» (carpeta vacía)</span></p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>Asistente de voz (carpeta vacía)</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span>Reordenar casillas y editar contactos</span></p>
+      </div>
+    </div>
+
+    <div style="flex: 1.25; display: flex; flex-direction: column; gap: 14px;">
+      <div class="caja" style="border-color: #E8B4AE; background: #FDF5F4;">
+        <p class="rot" style="color: #8C2F26;">Lo que hay que arreglar</p>
+        <p class="li"><span class="bolita" style="background: #B3261E;"></span><span><strong>El PIN se guarda en texto plano</strong> y ese fichero entra en la copia de seguridad en la nube. Toca cifrarlo y sacarlo del backup.</span></p>
+        <p class="li"><span class="bolita" style="background: #C1721E;"></span><span>Cambiar el PIN no pide el anterior.</span></p>
+        <p class="li"><span class="bolita" style="background: #C1721E;"></span><span>Volver desde otra app reabre la pantalla de ajustes donde se estaba, sin pedirlo otra vez.</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #C1721E;"></span><span>«Instalar» se deja pulsar sin modo administrador: avisa y redirige, pero aparenta funcionar.</span></p>
+      </div>
+      <div class="caja">
+        <p class="rot" style="color: #10618F;">Límites asumidos, escritos para no volver a discutirlos</p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>El modo administrador no puede impedir salir a Android.</span></p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>El número de un contacto se congela al añadirlo.</span></p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>No hay videollamada: Android no ofrece una forma estándar.</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span>No hay pruebas automáticas ni traducciones: solo español.</span></p>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

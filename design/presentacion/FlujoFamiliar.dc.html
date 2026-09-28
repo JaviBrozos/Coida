@@ -1,0 +1,103 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <style>
+    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+    a { color: #10618F; } a:hover { color: #0B1D2E; }
+    .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
+    .cab { display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
+    .num { font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #10618F; }
+    .tit { font-size: 44px; line-height: 52px; font-weight: 700; margin: 0; }
+    .paso { flex: 1; background: #FFFFFF; border: 2px solid #C9DCE8; border-radius: 18px; padding: 18px; display: flex; flex-direction: row; align-items: center; gap: 14px; }
+    .bola { width: 32px; height: 32px; border-radius: 16px; background: #0B1D2E; color: #FFFFFF; font-size: 17px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .ptit { font-size: 19px; line-height: 25px; font-weight: 700; margin: 0; }
+    .pdesc { font-size: 15px; line-height: 21px; color: #3C5A70; margin: 0; }
+    .caja { flex: 1; background: #FFFFFF; border: 2px solid #C9DCE8; border-radius: 18px; padding: 22px; display: flex; flex-direction: column; gap: 12px; }
+    .rot { font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #10618F; margin: 0; }
+    .li { font-size: 16px; line-height: 24px; margin: 0; display: flex; flex-direction: row; gap: 10px; }
+    .punto { color: #29B6F0; font-weight: 700; }
+  </style>
+</helmet>
+<div class="hoja">
+  <div class="cab">
+    <div style="display: flex; flex-direction: column; gap: 8px;">
+      <div class="num">04 · Flujo del familiar</div>
+      <h1 class="tit">Configurarlo sin que se note por fuera</h1>
+    </div>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+  </div>
+
+  <div style="display: flex; flex-direction: row; gap: 12px;">
+    <div class="paso">
+      <div class="bola">1</div>
+      <div>
+        <p class="ptit">Toca «Ajustes»</p>
+        <p class="pdesc">Abajo del todo, apagado y con candado: se ve, pero no llama.</p>
+      </div>
+    </div>
+    <div class="paso">
+      <div class="bola">2</div>
+      <div>
+        <p class="ptit">Escribe el PIN</p>
+        <p class="pdesc">Cuatro cifras. La primera vez lo crea él mismo, repitiéndolo.</p>
+      </div>
+    </div>
+    <div class="paso">
+      <div class="bola">3</div>
+      <div>
+        <p class="ptit">Cambia lo que quiera</p>
+        <p class="pdesc">Cada apartado dice debajo qué hay dentro, en una frase.</p>
+      </div>
+    </div>
+    <div class="paso" style="border-color: #29B6F0;">
+      <div class="bola" style="background: #29B6F0; color: #0A1622;">4</div>
+      <div>
+        <p class="ptit">Se aplica al momento</p>
+        <p class="pdesc">Sin botón de guardar. Sale de ajustes y ya está puesto.</p>
+      </div>
+    </div>
+  </div>
+
+  <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px;">
+    <div class="caja">
+      <p class="rot">Interfaz</p>
+      <p class="li"><span class="punto">·</span><span>Tamaño de letra: normal, grande o muy grande</span></p>
+      <p class="li"><span class="punto">·</span><span>Casillas por fila: una o dos</span></p>
+      <p class="li"><span class="punto">·</span><span>Tema: oscuro o claro</span></p>
+      <p class="li"><span class="punto">·</span><span>Reloj: se enseña o se quita</span></p>
+      <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
+        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Debajo hay una maqueta en pequeño que va cambiando según toca.</p>
+      </div>
+    </div>
+
+    <div class="caja">
+      <p class="rot">Contactos</p>
+      <p class="li"><span class="punto">·</span><span>Se eligen del listín del móvil, sin escribir números</span></p>
+      <p class="li"><span class="punto">·</span><span>Cada uno llama o abre WhatsApp</span></p>
+      <p class="li"><span class="punto">·</span><span>Hasta cuatro salen en el inicio</span></p>
+      <p class="li"><span class="punto">·</span><span>El resto se guardan, apagados</span></p>
+      <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
+        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Doado no pide acceso a toda la agenda: solo lee el contacto elegido.</p>
+      </div>
+    </div>
+
+    <div class="caja">
+      <p class="rot">Aplicaciones</p>
+      <p class="li"><span class="punto">·</span><span>Las cuatro básicas se encienden y apagan</span></p>
+      <p class="li"><span class="punto">·</span><span>WhatsApp y Sofascore, recomendadas, con botón de instalar</span></p>
+      <p class="li"><span class="punto">·</span><span>Cualquier otra app del móvil puede subir al inicio</span></p>
+      <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
+        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Instalar exige modo administrador: es salir de Doado.</p>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
