@@ -13,6 +13,18 @@ encarga de dejarlo a punto.
 
 ---
 
+## Así se ve
+
+| Pantalla de inicio | Entrar en los ajustes |
+| --- | --- |
+| ![Pantalla de inicio de Doado: reloj, cuatro casillas grandes y el botón de ajustes abajo](docs/capturas/inicio.png) | ![Pantalla de PIN: cuatro puntos y un teclado numérico grande](docs/capturas/pin.png) |
+
+| Ajustes | Modo administrador |
+| --- | --- |
+| ![Índice de ajustes, con las secciones Personalizar y Avanzado](docs/capturas/ajustes.png) | ![Modo administrador desbloqueado, con la cuenta atrás en marcha](docs/capturas/admin-activo.png) |
+
+---
+
 ## Para quién
 
 | Perfil | Qué hace | Dónde vive en la app |
