@@ -10,17 +10,17 @@
   <style>
     body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
     a { color: #10618F; } a:hover { color: #0B1D2E; }
-    .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 22px; }
+    .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 44px 56px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 16px; }
     .cab { display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
     .num { font-size: 15px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: #10618F; }
     .tit { font-size: 44px; line-height: 52px; font-weight: 700; margin: 0; }
     .rot { font-size: 14px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #10618F; margin: 0 0 10px 0; }
     .muestra { flex: 1; display: flex; flex-direction: column; gap: 8px; }
-    .tono { height: 74px; border-radius: 14px; }
+    .tono { height: 60px; border-radius: 14px; }
     .thex { font-size: 14px; font-family: "Consolas", monospace; margin: 0; color: #0B1D2E; }
     .tnom { font-size: 15px; font-weight: 700; margin: 0; }
     .tdet { font-size: 13px; line-height: 19px; color: #3C5A70; margin: 0; }
-    .caja { background: #FFFFFF; border: 2px solid #C9DCE8; border-radius: 18px; padding: 20px 22px; }
+    .caja { background: #FFFFFF; border: 2px solid #C9DCE8; border-radius: 18px; padding: 16px 20px; }
   </style>
 </helmet>
 <div class="hoja">
@@ -29,7 +29,7 @@
       <div class="num">07 · Sistema visual</div>
       <h1 class="tit">Contraste primero, estética después</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
   </div>
 
   <div>
@@ -75,7 +75,7 @@
   </div>
 
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px;">
-    <div class="caja" style="flex: 1.1; display: flex; flex-direction: column; gap: 14px;">
+    <div class="caja" style="flex: 1.1; display: flex; flex-direction: column; gap: 10px;">
       <p class="rot" style="margin: 0;">Texto: una escala 1,5 veces la de Material</p>
       <div style="display: flex; flex-direction: row; align-items: baseline; gap: 16px;">
         <span style="font-size: 52px; font-weight: 700; line-height: 56px;">7:52</span>
@@ -92,7 +92,7 @@
       <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;">Todo en <strong style="color: #0B1D2E;">sp</strong>, así que crece si el móvil tiene la letra grande. Y encima, el familiar puede subirla otro 30 % desde Ajustes.</p>
     </div>
 
-    <div class="caja" style="flex: 1; display: flex; flex-direction: column; gap: 14px;">
+    <div class="caja" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
       <p class="rot" style="margin: 0;">Iconos y medidas</p>
       <div style="display: flex; flex-direction: row; gap: 18px; color: #10618F;">
         <svg viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6.4,3.6 h3.2 l1.5,4 l-2.1,1.5 a12.5,12.5 0 0,0 6,6 l1.5,-2.1 l4,1.5 v3.2 a1.6,1.6 0 0,1 -1.7,1.6 A16.8,16.8 0 0,1 4.8,5.3 a1.6,1.6 0 0,1 1.6,-1.7 z"></path></svg>
@@ -111,7 +111,7 @@
     </div>
   </div>
 
-  <div style="background: #0B1D2E; border-radius: 18px; padding: 18px 24px; display: flex; flex-direction: row; align-items: center; gap: 20px;">
+  <div style="background: #0B1D2E; border-radius: 18px; padding: 14px 20px; display: flex; flex-direction: row; align-items: center; gap: 20px;">
     <div style="width: 46px; height: 46px; border-radius: 23px; background: #29B6F0; flex-shrink: 0;"></div>
     <p style="margin: 0; font-size: 17px; line-height: 25px; color: #F2F7FB;">La regla que explica toda la paleta: <strong>el cian de la marca no vale para texto sobre fondo claro</strong> — se queda en 2,2:1. Sobre la tinta sí (7,3:1). Por eso en el tema claro manda el marino y el cian solo pinta superficies grandes.</p>
   </div>
