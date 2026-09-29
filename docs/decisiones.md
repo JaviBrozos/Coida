@@ -1,4 +1,4 @@
-# Decisiones
+c# Decisiones
 
 > **Fuente única de**: por qué Doado es como es y qué se descartó por el camino.
 > Las entradas **no se reescriben**: si una decisión cambia, se añade otra nueva
@@ -226,3 +226,23 @@ se lee peor que un nombre entero.
 **Consecuencia**: con Android al máximo, el ajuste de Doado deja de agrandar más.
 La hora se ve menor de lo que pediría la escala, a cambio de que las casillas
 quepan.
+
+### D-23 · CON-05 cerrado: pregunta de recuperación que cambia el PIN, no lo devuelve (29/09/2026)
+
+**Contexto**: al guardar el PIN con PBKDF2 (D-19) ya no se puede recuperar si se
+olvida; la única salida era borrar todos los datos de la app.
+**Decisión**: durante la creación o el cambio de PIN se ofrece una pregunta libre
+(texto, opcional). Al contestarla correctamente el familiar puede poner **un PIN
+nuevo** sin perder contactos, casillas ni ajustes. La respuesta se normaliza
+(minúsculas, sin espacios extremos) para que no falle por mayúsculas.
+**Descartado**:
+- *Respuesta que descifra el PIN antiguo*: para eso la respuesta tendría que
+  guardarse de forma reversible, creando el mismo agujero que tenía antes la
+  contraseña en claro. Con la opción elegida, la respuesta vive en `doado_security`
+  —fuera de backup, igual que el PIN— pero en texto plano; quien tenga acceso ADB
+  puede leerla. Eso ya era así con el PIN antiguo y no es peor.
+- *Solo avisar al crear el PIN*: la parte barata, descartada porque no resuelve el
+  problema y sí genera frustración.
+**Consecuencia**: la pregunta de recuperación no exige la solución técnica más
+robusta porque no protege datos sensibles: solo es una vía extra para que el
+familiar recupere el control del móvil sin perder la configuración.

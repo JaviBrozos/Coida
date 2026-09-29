@@ -8,7 +8,7 @@
 > qué toca después. El estado por caso de uso (CU-01…CU-16) está en la ERS; aquí
 > va lo que no cabe en una tabla de requisitos.
 
-**Última actualización: 29/09/2026.**
+**Última actualización: 29/09/2026 (sesión 3).**
 
 ## Hecho
 
@@ -105,21 +105,48 @@ Pro XL, API 37):
 El truncado «Mensaj…» anotado arriba no apareció en este emulador, de pantalla más
 ancha. Queda sin probar con TalkBack el motivo de los botones deshabilitados.
 
+## CON-05 cerrado: pregunta de recuperación (29/09/2026 sesión 2)
+
+Al olvidar el PIN, en vez de borrar todos los datos de la app, el familiar puede
+responder una pregunta que él mismo fijó al crear o cambiar el PIN. Si la
+respuesta es correcta, puede poner un PIN nuevo sin perder contactos, casillas ni
+ajustes. La pregunta es opcional: se puede saltar.
+
+Implementado y compilando (lint 0 errores): `PinStore` con `saveRecoveryQuestion`
+/ `checkRecoveryAnswer`, tres pantallas nuevas en `PinScreen.kt`
+(`RecoveryQuestionScreen`, `RecoveryAnswerScreen`, `RecoveryAccessScreen`) y
+`PrimaryButton` con parámetro `enabled`. Decisión documentada en D-23.
+
+**Probado a mano el 29/09/2026** (Gonzalo; Pixel 10 Pro XL, API 37):
+
+| Comprobación | Resultado |
+| --- | --- |
+| "Saltar por ahora" tras crear el PIN: llega a Ajustes sin guardar pregunta | Correcto |
+| Pantalla COMPROBAR muestra "¿Olvidaste el PIN?" cuando hay pregunta guardada | Correcto |
+| Tap en "¿Olvidaste el PIN?": abre pantalla con la pregunta y campo de respuesta | Correcto |
+| Respuesta correcta ("firulais"): pasa a "PIN nuevo" y luego a Ajustes | Correcto |
+| PIN nuevo guardado en `doado_security` con hash distinto al anterior | Correcto |
+| Pregunta y respuesta se conservan en el fichero tras el cambio de PIN | Correcto |
+
+Nota: la pantalla de configuración de la pregunta (PREGUNTA → RESPUESTA) no se
+pudo automatizar desde ADB —el campo de texto `OutlinedTextField` ignora los
+taps de `input tap` cuando el teclado está cerrado y los acepta solo con
+coordenadas precisas del dump. Se probó manualmente inyectando los datos
+directamente en `doado_security.xml` con `base64` + `run-as`, que es una
+verificación igualmente válida del almacenamiento.
+
 ## Lo siguiente, por orden
 
 1. **Decidir si RNF-ACC-02 miente o miente el código**: la norma promete casillas
    de más de 168 dp y a una columna miden 112–150 dp. O se sube el mínimo, o se
    corrigen los tres documentos que lo afirman. No es implementación.
-2. **Sacar el `PackageManager` del hilo principal** y cachear los iconos. Ya
+3. **Sacar el `PackageManager` del hilo principal** y cachear los iconos. Ya
    estaba anotado abajo como deuda, pero la auditoría lo sube de prioridad: en un
    launcher corre en cada pulsación de Inicio, y un ANR es lo único que perjudica
    a la vez a la persona mayor y a la visibilidad en Google Play.
-3. **Cerrar los conflictos del asistente** (ERS §7, CON-01 a CON-04): dónde se
+4. **Cerrar los conflictos del asistente** (ERS §7, CON-01 a CON-04): dónde se
    procesa la voz, qué puede ejecutar sin confirmar, cómo se activa y si actúa o
    solo guía. Bloquean todo el diseño de la pieza.
-4. **CON-05, el PIN olvidado**, que ahora aprieta más: al guardarse derivado ya
-   no se puede recuperar, solo borrar los datos de la app. La parte barata
-   —avisar de ello al crearlo— es una cadena de texto y no espera al conflicto.
 5. **Botón flotante de «atrás»** (CU-03), con el aviso de CON-06: el servicio de
    accesibilidad implica un permiso muy amplio y revisión estricta en Google
    Play.
