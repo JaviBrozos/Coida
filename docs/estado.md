@@ -70,8 +70,7 @@ botones del modo administrador, y cuatro arreglos menores de TalkBack y
 lenguaje. `docs/diseno.md` corregido: medía los contrastes contra el fondo
 equivocado.
 
-**Abierto**: C-1 (el inicio sin scroll puede quedarse sin rejilla con letra muy
-grande), G-3 (cinco `Toast` que desaparecen solos), M-2 (borde a 3,18:1), M-3
+**Abierto**: G-3 (cinco `Toast` que desaparecen solos), M-2 (borde a 3,18:1), M-3
 (destello oscuro al arrancar en tema claro) y M-4 (medidas a pelo).
 
 **Confirmado en el emulador al 200 % de letra**: los nombres de casilla se
@@ -84,8 +83,12 @@ la rejilla quedaba en una franja de un cuarto de alto (se desplaza, pero apenas 
 ve) y los nombres se partían a media palabra («Cáma / ra», «Conta / ctos»). Con
 Android al 200 % y Doado en normal, todo se leía bien.
 
-**Arreglo en la rama `arreglo/letra-grande`, pendiente de probar**: techo de 2,0
-a la escala total y de 1,3 al reloj y la fecha (D-22).
+**C-1 arreglado y probado el 29/09/2026**: techo de 2,0 a la escala total y de
+1,3 al reloj y la fecha (D-22). Con Android al 200 % y Doado en «Muy grande», el
+reloj cabe en una línea y se ven las cuatro casillas con el nombre entero.
+Consecuencia a vigilar: con Android ya al máximo, cambiar la letra en Doado no se
+nota, y el familiar puede pensar que el ajuste no funciona. Candidato a un aviso
+en Ajustes → Interfaz.
 
 ## Lo siguiente, por orden
 
