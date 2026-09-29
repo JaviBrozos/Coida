@@ -25,6 +25,8 @@
     <string name="cd_back_home">Volver a la pantalla de inicio</string>
     <string name="cd_back_settings">Volver a ajustes</string>
     <string name="cd_pin_progress">%1$d de %2$d cifras</string>
+    <string name="cd_admin_banner">Abrir los ajustes de Doado</string>
+    <string name="cd_disabled_admin">%1$s: hace falta desbloquear antes el modo administrador</string>
     <string name="cd_pin_delete">Borrar la última cifra</string>
 
     <!-- Errores -->
@@ -46,7 +48,7 @@
     <string name="pin_repeat_subtitle">Para comprobar que está bien escrito</string>
     <string name="pin_wrong">PIN incorrecto. Prueba otra vez.</string>
     <string name="pin_mismatch">No coinciden. Vuelve a empezar.</string>
-    <string name="pin_clear">Borrar</string>
+    <string name="pin_clear">Empezar de nuevo</string>
     <string name="pin_note">El PIN lo pone quien configura el móvil. Así nadie entra en los ajustes sin querer.</string>
 
     <!-- Ajustes -->

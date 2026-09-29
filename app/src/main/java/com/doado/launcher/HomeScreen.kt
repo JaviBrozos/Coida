@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -201,7 +200,14 @@ private fun rememberCurrentMinute(): Long {
 
 @Composable
 private fun AdminBanner(untilLabel: String, onClick: () -> Unit) {
-    DoadoCard(onClick = onClick, highlighted = true, modifier = Modifier.fillMaxWidth()) {
+    val clickLabel = stringResource(R.string.cd_admin_banner)
+    DoadoCard(
+        onClick = onClick,
+        highlighted = true,
+        modifier = Modifier
+            .fillMaxWidth()
+            .semantics { onClick(label = clickLabel) { onClick(); true } },
+    ) {
         Row(
             modifier = Modifier.padding(horizontal = 18.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically,
@@ -347,7 +353,10 @@ private fun AppsGrid(
                     app = app,
                     horizontal = columns == 1,
                     onClick = { onAppClick(app) },
-                    modifier = Modifier.height(tileHeight),
+                    // Mínimo, no alto fijo: con la letra muy grande el aviso
+                    // "No disponible" se recortaba y la app apagada se quedaba
+                    // distinguida solo por el color. La rejilla se desplaza.
+                    modifier = Modifier.heightIn(min = tileHeight),
                 )
             }
         }

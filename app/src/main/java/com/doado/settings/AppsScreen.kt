@@ -19,6 +19,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.DoadoCard
@@ -171,6 +172,10 @@ private fun SuggestedToInstall(app: SuggestedApp, adminActive: Boolean, onInstal
 private fun LetterBadge(label: String) {
     Box(
         modifier = Modifier
+            // La inicial es decoración. Sin esto, como la fila entera es un solo
+            // nodo pulsable, TalkBack la arrastra al principio y lee
+            // "W, WhatsApp, Mensajes y videollamadas, interruptor".
+            .clearAndSetSemantics {}
             .size(48.dp)
             .background(
                 MaterialTheme.colorScheme.surfaceContainerHigh,

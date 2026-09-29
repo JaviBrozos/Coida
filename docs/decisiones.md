@@ -194,3 +194,21 @@ requisitos viven **solo** en `docs/ERS.md`.
 escribir un documento de producto aparte que duplicaría la ERS.
 **Consecuencia**: cada dato tiene un único sitio; el resto enlaza. Si el código
 contradice una línea de `docs/`, se corrige la línea en el mismo commit.
+
+### D-21 · Las listas no rebotan al llegar al final (29/09/2026)
+
+**Contexto**: Compose estira el contenido al llegar al final de una lista. En la
+rejilla del inicio ese rebote saltaba **aunque las casillas cupieran enteras**,
+porque `LazyVerticalGrid` se deja arrastrar siempre: la pantalla se meneaba sin
+tener nada que desplazar.
+**Decisión**: apagarlo para toda la app, en `DoadoTheme`, con
+`LocalOverscrollFactory provides null`.
+**Descartado**: dejarlo como está, que contradice de frente el invariante de que
+las casillas no cambian de sitio; y apagarlo pantalla por pantalla, que se olvida
+en la siguiente que se escriba.
+**Consecuencia**: se quita movimiento que nadie ha pedido, lo que agradece quien
+tiene mareo o sensibilidad al movimiento. A cambio se pierde la señal de «has
+llegado al final», que en el inicio no hacía falta pero en la lista larga de
+Aplicaciones sí decía algo. **Pendiente**: acotar el apagado al inicio y resolver
+la causa con `userScrollEnabled = false` cuando la rejilla cabe entera, dejando
+el estirado en las listas largas.

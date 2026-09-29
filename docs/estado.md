@@ -30,9 +30,13 @@ copias de seguridad, migrando el que hubiera en claro), **RNF-SEG-02** (salir de
 Doado cierra los ajustes), **CU-07** (cambiar el PIN pide el anterior) y
 **CU-13** (el botón deja de aparentar que instala sin modo administrador).
 
-Compila y `lint` da 0 errores, pero **no se ha podido probar en el emulador**: en
-la máquina donde se escribió, el emulador no se mantenía en pie. Queda por
-comprobar a mano, y por ese orden:
+**RNF-SEG-01 ya está comprobado en un dispositivo**: con Doado puesto como
+lanzador en el emulador, el fichero `doado_security.xml` guarda el PIN como
+`sal$derivado` en Base64, nunca en claro. Lo demás sigue sin probarse, y ahora
+hay un estorbo: el emulador arrastra un PIN puesto en una sesión anterior que
+nadie recuerda, así que la primera prueba obliga a borrar los datos de la app.
+
+Queda por comprobar a mano, y por ese orden:
 
 1. Crear el PIN, salir y volver a entrar (verifica el derivado de ida y vuelta).
 2. Actualizar desde una versión anterior con PIN en claro y ver que sigue
@@ -41,15 +45,45 @@ comprobar a mano, y por ese orden:
 4. Abrir la tienda desde Aplicaciones y volver: **no** debe pedirlo.
 5. Cambiar el PIN: debe pedir primero el actual.
 
+## Accesibilidad: auditoría del 29/09/2026
+
+Un agente especializado (`.claude/agents/accesibilidad.md`, reutilizable) revisó
+la interfaz entera contra las normas del proyecto y WCAG 2.2 AA. Encontró **11
+incumplimientos, 2 críticos**. El informe completo está en un documento aparte.
+
+**Aplicado y compilando** (9 arreglos, `lint` 0 errores): el gris de apagado
+separado en dos tokens por tema —daba 3,21:1 sobre el blanco del tema claro—,
+suelo de escala de letra para que Doado nunca encoja el texto por debajo de
+18 sp, casilla con alto mínimo en vez de fijo, motivo de deshabilitado en los
+botones del modo administrador, y cuatro arreglos menores de TalkBack y
+lenguaje. `docs/diseno.md` corregido: medía los contrastes contra el fondo
+equivocado.
+
+**Abierto**: C-1 (el inicio sin scroll puede quedarse sin rejilla con letra muy
+grande), G-3 (cinco `Toast` que desaparecen solos), M-2 (borde a 3,18:1), M-3
+(destello oscuro al arrancar en tema claro) y M-4 (medidas a pelo).
+
+**Confirmado en el emulador al 200 % de letra**: los nombres de casilla se
+truncan («Mensaj…», «Contact…»). C-1 **no** se reprodujo a esa escala: hace falta
+además el ajuste propio de Doado en «Muy grande».
+
 ## Lo siguiente, por orden
 
 1. **Probar lo de arriba en un móvil o emulador de verdad.**
-2. **Cerrar los conflictos del asistente** (ERS §7, CON-01 a CON-04): dónde se
+2. **Decidir si RNF-ACC-02 miente o miente el código**: la norma promete casillas
+   de más de 168 dp y a una columna miden 112–150 dp. O se sube el mínimo, o se
+   corrigen los tres documentos que lo afirman. No es implementación.
+3. **Sacar el `PackageManager` del hilo principal** y cachear los iconos. Ya
+   estaba anotado abajo como deuda, pero la auditoría lo sube de prioridad: en un
+   launcher corre en cada pulsación de Inicio, y un ANR es lo único que perjudica
+   a la vez a la persona mayor y a la visibilidad en Google Play.
+4. **Cerrar los conflictos del asistente** (ERS §7, CON-01 a CON-04): dónde se
    procesa la voz, qué puede ejecutar sin confirmar, cómo se activa y si actúa o
    solo guía. Bloquean todo el diseño de la pieza.
-3. **CON-05, el PIN olvidado**, que ahora aprieta más: al guardarse derivado ya
-   no se puede recuperar, solo borrar los datos de la app.
-4. **Botón flotante de «atrás»** (CU-03), con el aviso de CON-06: el servicio de
+5. **CON-05, el PIN olvidado**, que ahora aprieta más: al guardarse derivado ya
+   no se puede recuperar, solo borrar los datos de la app. La parte barata
+   —avisar de ello al crearlo— es una cadena de texto y no espera al conflicto.
+6. **Botón flotante de «atrás»** (CU-03), con el aviso de CON-06: el servicio de
    accesibilidad implica un permiso muy amplio y revisión estricta en Google
    Play.
 

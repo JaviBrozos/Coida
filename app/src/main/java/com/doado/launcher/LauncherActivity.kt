@@ -136,8 +136,16 @@ class LauncherActivity : ComponentActivity() {
             }
 
             // "Tamaño de la letra" se multiplica por la escala que ya tenga Android.
+            //
+            // Con suelo en 1: Android deja bajar su escala hasta 0,85, y sin este
+            // tope toda la tipografía de Doado encogía con ella. "No disponible"
+            // se quedaba en 15,3 sp, por debajo del mínimo de 18 sp del proyecto.
+            // Doado puede agrandar el texto respecto al sistema, nunca encogerlo.
             val density = LocalDensity.current
-            val scaled = Density(density.density, density.fontScale * settings.textSize.scale)
+            val scaled = Density(
+                density.density,
+                (density.fontScale * settings.textSize.scale).coerceAtLeast(1f),
+            )
 
             CompositionLocalProvider(LocalDensity provides scaled) {
                 DoadoTheme(darkTheme = dark) {

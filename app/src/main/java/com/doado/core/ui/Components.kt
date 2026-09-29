@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
@@ -323,7 +324,13 @@ fun PrimaryButton(
     }
 }
 
-/** Botón secundario: solo contorno. */
+/**
+ * Botón secundario: solo contorno.
+ *
+ * @param disabledReason qué decir cuando está apagado. Sin esto, TalkBack lee
+ *   "Abrir la tienda de apps, desactivado" y se acabó: quien no ve el gris no
+ *   tiene forma de saber que falta desbloquear el modo administrador.
+ */
 @Composable
 fun OutlineButton(
     text: String,
@@ -331,13 +338,17 @@ fun OutlineButton(
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int? = null,
     enabled: Boolean = true,
+    disabledReason: String? = null,
 ) {
     val colors = MaterialTheme.colorScheme
     DoadoCard(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = DoadoDimens.ComfortableTouchTarget + 4.dp),
+            .heightIn(min = DoadoDimens.ComfortableTouchTarget + 4.dp)
+            .semantics {
+                if (!enabled && disabledReason != null) contentDescription = disabledReason
+            },
         enabled = enabled,
         color = Color.Transparent,
     ) {

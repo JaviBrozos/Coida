@@ -18,7 +18,7 @@ alrededor. Definidos en `core/ui/Color.kt`.
 | --- | --- | --- | --- |
 | `DoadoNavy` | `#0B1D2E` | Marca. Texto y bordes en el tema claro | 16,8:1 sobre blanco |
 | `DoadoCyan` | `#29B6F0` | Acento: iconos, estado activo, botón principal | 7,3:1 sobre tinta · **2,2:1 sobre blanco** |
-| `DoadoCyanDeep` | `#10618F` | Texto secundario en el tema claro | 4,6:1 sobre blanco |
+| `DoadoCyanDeep` | `#10618F` | Texto secundario en el tema claro | 6,71:1 sobre blanco |
 | `DoadoCyanLight` | `#6CCFFA` | Reservado para oscuro | 9,5:1 sobre negro |
 | `DoadoInk` | `#0A1622` | Fondo del tema oscuro | — |
 | `DoadoSurface` | `#122A3E` | Casilla y fila elevadas | 13:1 con el texto |
@@ -27,11 +27,19 @@ alrededor. Definidos en `core/ui/Color.kt`.
 | `DoadoText` | `#F2F7FB` | Texto principal en oscuro | 16:1 sobre tinta |
 | `DoadoTextMuted` | `#9FC4DC` | Texto secundario en oscuro | 9,9:1 sobre tinta |
 | `DoadoMist` / `DoadoMistDim` | `#E9F3FA` / `#DCEBF5` | Superficies suaves del tema claro | — |
-| `DoadoSteel` | `#7A93A6` | Contenido apagado (app no disponible) | 5,7:1 sobre tinta |
+| `DoadoSteelDeep` | `#54697A` | Contenido apagado **en claro** | 5,71:1 sobre blanco · 5,07:1 sobre Mist |
+| `DoadoSteelLight` | `#A3B8C6` | Contenido apagado **en oscuro** | 7,17:1 sobre la casilla · 8,89:1 sobre tinta |
 
 **La regla que explica la paleta**: el cian de marca no vale para texto ni iconos
 sobre fondo claro. Por eso en el tema claro manda el marino, y el cian solo pinta
 superficies grandes.
+
+**Cómo se leen los contrastes de esta tabla.** Se miden contra el fondo **real**
+sobre el que cae el texto, que casi siempre es la casilla y no el fondo de
+pantalla. La distinción no es académica: el gris de apagado figuró aquí durante
+meses como «5,7:1 sobre tinta», que era cierto y era el número equivocado —ese
+texto cae sobre la casilla, donde daba 4,59:1 en oscuro y 3,21:1 en claro—. Un
+token que sale en los dos temas necesita **una medida por tema**, no una.
 
 ## Roles de Material 3
 
@@ -48,7 +56,7 @@ funciona en los dos temas. Definido en `core/ui/Theme.kt`.
 | `onSurface` | Texto sobre una casilla | Texto | Marino |
 | `onSurfaceVariant` | Texto secundario | TextMuted | CyanDeep |
 | `outline` | Contorno | `DoadoLine` | Marino |
-| `outlineVariant` | Contenido apagado | Steel | Steel |
+| `outlineVariant` | Contenido apagado | `DoadoSteelLight` | `DoadoSteelDeep` |
 
 `surfaceTint` es transparente en los dos: el diseño es plano y **separa por
 borde, no por sombra ni por elevación**.

@@ -1,10 +1,12 @@
 package com.doado.core.ui
 
+import androidx.compose.foundation.LocalOverscrollFactory
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 
 /**
@@ -59,7 +61,8 @@ private val DoadoLightColors = lightColorScheme(
     inversePrimary = DoadoCyanLight,
 
     outline = DoadoNavy,
-    outlineVariant = DoadoSteel,
+    // Gris apagado propio del claro: 5,71:1 sobre blanco. Ver [DoadoSteelDeep].
+    outlineVariant = DoadoSteelDeep,
     scrim = DoadoBlack,
     // Sin tinte por elevación: el diseño es plano y separa por borde, no por sombra.
     surfaceTint = Color.Transparent,
@@ -108,8 +111,9 @@ private val DoadoDarkColors = darkColorScheme(
     inversePrimary = DoadoNavy,
 
     outline = DoadoLine,
-    // Gris acero: ~5.7:1 sobre tinta. Legible, pero claramente apagado.
-    outlineVariant = DoadoSteel,
+    // 7,17:1 sobre la casilla, que es el fondo real del texto apagado. El gris
+    // anterior daba 4,59:1 ahí: pasaba el mínimo, no el objetivo del proyecto.
+    outlineVariant = DoadoSteelLight,
     scrim = DoadoBlack,
     surfaceTint = Color.Transparent,
 )
@@ -123,15 +127,25 @@ private val DoadoDarkColors = darkColorScheme(
  *
  * El claro/oscuro lo decide quien configura el móvil desde Ajustes → Interfaz;
  * el valor por defecto del parámetro solo sirve para las previews.
+ *
+ * Aquí se apaga también el estirado elástico que Compose pone por defecto al
+ * llegar al final de una lista. En una app normal es un guiño simpático; en un
+ * lanzador para una persona mayor estorba por dos razones. La rejilla del inicio
+ * se deja arrastrar aunque las casillas quepan enteras, así que la pantalla se
+ * menea sin tener nada que desplazar y parece que algo se ha movido de sitio,
+ * justo lo que promete que no pasa. Y el rebote es movimiento que nadie ha
+ * pedido: quien tiene mareo o problemas de vista lo agradece quieto.
  */
 @Composable
 fun DoadoTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit,
 ) {
-    MaterialTheme(
-        colorScheme = if (darkTheme) DoadoDarkColors else DoadoLightColors,
-        typography = DoadoTypography,
-        content = content,
-    )
+    CompositionLocalProvider(LocalOverscrollFactory provides null) {
+        MaterialTheme(
+            colorScheme = if (darkTheme) DoadoDarkColors else DoadoLightColors,
+            typography = DoadoTypography,
+            content = content,
+        )
+    }
 }

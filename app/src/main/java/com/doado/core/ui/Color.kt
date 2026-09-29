@@ -38,8 +38,23 @@ val DoadoMistDim = Color(0xFFDCEBF5)
 /** Superficie de tarjeta en oscuro. */
 val DoadoInk = Color(0xFF0A1622)
 
-/** Gris solo para separadores decorativos, nunca para texto. */
-val DoadoSteel = Color(0xFF7A93A6)
+/*
+ * Gris de "apagado": el color de una app que no está instalada, de un contacto
+ * sin WhatsApp y de un botón bloqueado. Es decir, el color de todo lo que
+ * **explica por qué algo no funciona**, así que tiene que leerse.
+ *
+ * Hay dos porque el mismo gris no sirve en los dos temas. El anterior
+ * (#7A93A6, uno solo para ambos) se quedaba en 3,21:1 sobre el blanco del tema
+ * claro: por debajo del mínimo de 4,5:1, y justo en la pantalla que elige quien
+ * peor ve. Medido contra el fondo real sobre el que cae el texto, que es la
+ * casilla, no el fondo de pantalla.
+ */
+
+/** Apagado en claro: 5,71:1 sobre blanco, 5,07:1 sobre [DoadoMist]. */
+val DoadoSteelDeep = Color(0xFF54697A)
+
+/** Apagado en oscuro: 7,17:1 sobre [DoadoSurface], 8,89:1 sobre [DoadoInk]. */
+val DoadoSteelLight = Color(0xFFA3B8C6)
 
 // --- Estado ----------------------------------------------------------------
 

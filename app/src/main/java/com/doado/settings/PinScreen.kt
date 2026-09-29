@@ -162,7 +162,13 @@ private fun PinScreen(
         Row(
             modifier = Modifier
                 .padding(vertical = 12.dp)
-                .semantics(mergeDescendants = true) { contentDescription = progress },
+                // Polite, no Assertive: con TalkBack, sin esto no hay ninguna
+                // confirmación de que la cifra ha entrado hasta volver a enfocar
+                // los puntos. El error de abajo sí interrumpe; esto no debe.
+                .semantics(mergeDescendants = true) {
+                    contentDescription = progress
+                    liveRegion = LiveRegionMode.Polite
+                },
             horizontalArrangement = Arrangement.spacedBy(20.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

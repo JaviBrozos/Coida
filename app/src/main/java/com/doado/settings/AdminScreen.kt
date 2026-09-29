@@ -137,23 +137,37 @@ fun AdminScreen(
             }
         }
 
+        // Apagados mientras no hay modo administrador. Cada uno dice por qué lo
+        // está: el gris, por sí solo, no es información para quien no lo ve.
         OutlineButton(
             text = stringResource(R.string.admin_open_store),
             icon = R.drawable.ic_store,
             onClick = onOpenStore,
             enabled = active,
+            disabledReason = stringResource(
+                R.string.cd_disabled_admin,
+                stringResource(R.string.admin_open_store),
+            ),
         )
         OutlineButton(
             text = stringResource(R.string.admin_open_android_settings),
             icon = R.drawable.ic_gear,
             onClick = onOpenAndroidSettings,
             enabled = active,
+            disabledReason = stringResource(
+                R.string.cd_disabled_admin,
+                stringResource(R.string.admin_open_android_settings),
+            ),
         )
         OutlineButton(
             text = stringResource(R.string.admin_choose_home),
             icon = R.drawable.ic_home,
             onClick = onChooseHome,
             enabled = active,
+            disabledReason = stringResource(
+                R.string.cd_disabled_admin,
+                stringResource(R.string.admin_choose_home),
+            ),
         )
 
         NoteCard(text = stringResource(R.string.admin_note, ADMIN_UNLOCK_MINUTES))
