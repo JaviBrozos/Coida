@@ -78,6 +78,15 @@ grande), G-3 (cinco `Toast` que desaparecen solos), M-2 (borde a 3,18:1), M-3
 truncan («Mensaj…», «Contact…»). C-1 **no** se reprodujo a esa escala: hace falta
 además el ajuste propio de Doado en «Muy grande».
 
+**C-1 reproducido el 29/09/2026** (Gonzalo; Pixel 10 Pro XL, API 37): Android al
+200 % y Doado en «Muy grande». El reloj y la fecha ocupaban más de media pantalla,
+la rejilla quedaba en una franja de un cuarto de alto (se desplaza, pero apenas se
+ve) y los nombres se partían a media palabra («Cáma / ra», «Conta / ctos»). Con
+Android al 200 % y Doado en normal, todo se leía bien.
+
+**Arreglo en la rama `arreglo/letra-grande`, pendiente de probar**: techo de 2,0
+a la escala total y de 1,3 al reloj y la fecha (D-22).
+
 ## Lo siguiente, por orden
 
 1. **Probar en un móvil o emulador los arreglos de la auditoría de accesibilidad.**

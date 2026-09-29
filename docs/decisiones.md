@@ -212,3 +212,17 @@ llegado al final», que en el inicio no hacía falta pero en la lista larga de
 Aplicaciones sí decía algo. **Pendiente**: acotar el apagado al inicio y resolver
 la causa con `userScrollEnabled = false` cuando la rejilla cabe entera, dejando
 el estirado en las listas largas.
+
+### D-22 · La letra tiene techo: 2,0 en total y 1,3 en el reloj (29/09/2026)
+
+**Contexto**: el tamaño de letra de Doado se multiplica por el de Android. Con
+Android al 200 % y Doado en «Muy grande» la escala llegaba a 2,6, y el inicio se
+quedaba sin sitio para la rejilla (C-1 de la auditoría).
+**Decisión**: la escala total no pasa de 2,0, el máximo que Android permite por sí
+solo. El reloj y la fecha tienen un techo propio de 1,3.
+**Descartado**: pasar a una columna cuando la letra es grande, que es un cálculo
+automático de columnas y la norma lo prohíbe; y partir los nombres con guion, que
+se lee peor que un nombre entero.
+**Consecuencia**: con Android al máximo, el ajuste de Doado deja de agrandar más.
+La hora se ve menor de lo que pediría la escala, a cambio de que las casillas
+quepan.
