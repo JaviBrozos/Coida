@@ -90,24 +90,37 @@ Consecuencia a vigilar: con Android ya al máximo, cambiar la letra en Doado no 
 nota, y el familiar puede pensar que el ajuste no funciona. Candidato a un aviso
 en Ajustes → Interfaz.
 
+**Arreglos de la auditoría probados a mano el 29/09/2026** (Gonzalo; Pixel 10
+Pro XL, API 37):
+
+| Comprobación | Resultado |
+| --- | --- |
+| La rejilla del inicio no rebota al arrastrarla | Correcto |
+| Con Android al 85 %, la letra de Doado no encoge (la barra de estado sí) | Correcto |
+| Android al 200 % con Doado en normal: se lee todo, nombres enteros | Correcto |
+| Android al 200 % con Doado en «Muy grande» | Fallaba (C-1); arreglado con D-22 |
+| Botones apagados del modo administrador legibles en tema claro | Correcto |
+| El botón del PIN dice «Empezar de nuevo» y borra todas las cifras | Correcto |
+
+El truncado «Mensaj…» anotado arriba no apareció en este emulador, de pantalla más
+ancha. Queda sin probar con TalkBack el motivo de los botones deshabilitados.
+
 ## Lo siguiente, por orden
 
-1. **Probar en un móvil o emulador los arreglos de la auditoría de accesibilidad.**
-   El bloque de seguridad ya está probado (ver arriba).
-2. **Decidir si RNF-ACC-02 miente o miente el código**: la norma promete casillas
+1. **Decidir si RNF-ACC-02 miente o miente el código**: la norma promete casillas
    de más de 168 dp y a una columna miden 112–150 dp. O se sube el mínimo, o se
    corrigen los tres documentos que lo afirman. No es implementación.
-3. **Sacar el `PackageManager` del hilo principal** y cachear los iconos. Ya
+2. **Sacar el `PackageManager` del hilo principal** y cachear los iconos. Ya
    estaba anotado abajo como deuda, pero la auditoría lo sube de prioridad: en un
    launcher corre en cada pulsación de Inicio, y un ANR es lo único que perjudica
    a la vez a la persona mayor y a la visibilidad en Google Play.
-4. **Cerrar los conflictos del asistente** (ERS §7, CON-01 a CON-04): dónde se
+3. **Cerrar los conflictos del asistente** (ERS §7, CON-01 a CON-04): dónde se
    procesa la voz, qué puede ejecutar sin confirmar, cómo se activa y si actúa o
    solo guía. Bloquean todo el diseño de la pieza.
-5. **CON-05, el PIN olvidado**, que ahora aprieta más: al guardarse derivado ya
+4. **CON-05, el PIN olvidado**, que ahora aprieta más: al guardarse derivado ya
    no se puede recuperar, solo borrar los datos de la app. La parte barata
    —avisar de ello al crearlo— es una cadena de texto y no espera al conflicto.
-6. **Botón flotante de «atrás»** (CU-03), con el aviso de CON-06: el servicio de
+5. **Botón flotante de «atrás»** (CU-03), con el aviso de CON-06: el servicio de
    accesibilidad implica un permiso muy amplio y revisión estricta en Google
    Play.
 
