@@ -50,6 +50,27 @@
     <string name="pin_mismatch">No coinciden. Vuelve a empezar.</string>
     <string name="pin_clear">Empezar de nuevo</string>
     <string name="pin_note">El PIN lo pone quien configura el móvil. Así nadie entra en los ajustes sin querer.</string>
+    <string name="pin_forgot">¿Olvidaste el PIN?</string>
+
+    <!-- PIN → pregunta de recuperación (configuración) -->
+    <string name="recovery_question_title">Pregunta de recuperación</string>
+    <string name="recovery_question_subtitle">Si olvidas el PIN, esta pregunta te permitirá poner uno nuevo sin perder la configuración</string>
+    <string name="recovery_question_hint">Escribe una pregunta que solo tú sepas responder</string>
+    <string name="recovery_question_next">Siguiente</string>
+    <string name="recovery_question_skip">Saltar por ahora</string>
+    <string name="recovery_question_note">La respuesta no distingue mayúsculas ni espacios al principio o al final.</string>
+
+    <!-- PIN → respuesta de recuperación (configuración) -->
+    <string name="recovery_answer_title">Respuesta</string>
+    <string name="recovery_answer_subtitle">Solo tú tienes que saber responderla</string>
+    <string name="recovery_answer_hint">Tu respuesta</string>
+    <string name="recovery_answer_save">Guardar</string>
+
+    <!-- PIN → recuperación de acceso -->
+    <string name="recovery_access_title">¿Olvidaste el PIN?</string>
+    <string name="recovery_access_subtitle">Responde la pregunta para poner un PIN nuevo</string>
+    <string name="recovery_access_confirm">Continuar</string>
+    <string name="recovery_access_wrong">Respuesta incorrecta. Prueba otra vez.</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>

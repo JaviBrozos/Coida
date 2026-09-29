@@ -48,6 +48,31 @@ class PinStore(context: Context) {
         prefs.edit { putString(KEY_PIN, codificar(sal) + SEPARADOR + derivar(pin, sal)) }
     }
 
+    fun hasRecoveryQuestion(): Boolean =
+        prefs.getString(KEY_RECOVERY_QUESTION, null) != null
+
+    fun recoveryQuestion(): String =
+        prefs.getString(KEY_RECOVERY_QUESTION, "") ?: ""
+
+    /**
+     * Guarda la pregunta en claro y la respuesta normalizada (sin mayúsculas ni
+     * espacios extremos) también en claro, dentro de doado_security que ya está
+     * fuera de la copia de seguridad. El objetivo de la pregunta no es seguridad
+     * criptográfica sino un segundo factor de conveniencia para el familiar que
+     * olvida el PIN; la alternativa sin respuesta es borrar los datos de la app.
+     */
+    fun saveRecoveryQuestion(question: String, answer: String) {
+        prefs.edit {
+            putString(KEY_RECOVERY_QUESTION, question.trim())
+            putString(KEY_RECOVERY_ANSWER, answer.trim().lowercase())
+        }
+    }
+
+    fun checkRecoveryAnswer(answer: String): Boolean {
+        val guardada = prefs.getString(KEY_RECOVERY_ANSWER, null) ?: return false
+        return answer.trim().lowercase() == guardada
+    }
+
     /**
      * Las primeras versiones guardaban el PIN en claro dentro de los ajustes, que
      * sí se respaldan. Al arrancar se traslada aquí, derivado, y se borra de allí.
@@ -87,6 +112,9 @@ class PinStore(context: Context) {
         // De dónde se rescata el PIN de las versiones anteriores.
         const val PREFS_ANTIGUAS = "doado_settings"
         const val KEY_ANTIGUA = "settings_pin"
+
+        const val KEY_RECOVERY_QUESTION = "recovery_question"
+        const val KEY_RECOVERY_ANSWER = "recovery_answer"
 
         const val SEPARADOR = "$"
         const val ALGORITMO = "PBKDF2WithHmacSHA1"

@@ -235,6 +235,10 @@ class LauncherActivity : ComponentActivity() {
                     savePin = pinStore::save,
                     onUnlocked = { screen = Screen.SETTINGS },
                     onBack = { screen = Screen.HOME },
+                    hasRecoveryQuestion = pinStore.hasRecoveryQuestion(),
+                    recoveryQuestion = pinStore.recoveryQuestion(),
+                    checkRecoveryAnswer = pinStore::checkRecoveryAnswer,
+                    saveRecoveryQuestion = pinStore::saveRecoveryQuestion,
                 )
 
                 Screen.CHANGE_PIN -> PinGate(
@@ -244,6 +248,10 @@ class LauncherActivity : ComponentActivity() {
                     onUnlocked = { screen = Screen.SETTINGS },
                     onBack = { screen = Screen.SETTINGS },
                     changing = true,
+                    hasRecoveryQuestion = pinStore.hasRecoveryQuestion(),
+                    recoveryQuestion = pinStore.recoveryQuestion(),
+                    checkRecoveryAnswer = pinStore::checkRecoveryAnswer,
+                    saveRecoveryQuestion = pinStore::saveRecoveryQuestion,
                 )
 
                 Screen.SETTINGS -> SettingsScreen(

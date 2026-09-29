@@ -310,6 +310,7 @@ fun PrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     @DrawableRes icon: Int? = null,
+    enabled: Boolean = true,
 ) {
     val colors = MaterialTheme.colorScheme
     DoadoCard(
@@ -317,10 +318,11 @@ fun PrimaryButton(
         modifier = modifier
             .fillMaxWidth()
             .heightIn(min = DoadoDimens.ComfortableTouchTarget + 4.dp),
-        color = colors.primary,
-        highlighted = true,
+        enabled = enabled,
+        color = if (enabled) colors.primary else colors.surfaceContainer,
+        highlighted = enabled,
     ) {
-        ButtonContent(text, icon, colors.onPrimary)
+        ButtonContent(text, icon, if (enabled) colors.onPrimary else colors.outlineVariant)
     }
 }
 
