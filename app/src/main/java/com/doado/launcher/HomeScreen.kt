@@ -23,6 +23,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -33,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
@@ -41,6 +43,7 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -126,8 +129,23 @@ fun HomeScreen(
     }
 }
 
+/**
+ * Con techo de escala propio, más bajo que el del resto de la app: la hora y la
+ * fecha crecían con la letra igual que todo lo demás y a 200 % se comían más de
+ * media pantalla, dejando la rejilla en una franja. Se reconocen aunque no sean
+ * enormes; lo que la persona mayor tiene que poder leer y pulsar son las casillas.
+ */
 @Composable
 private fun HomeHeader(now: Long, showClock: Boolean, darkTheme: Boolean) {
+    val density = LocalDensity.current
+    val capped = Density(density.density, density.fontScale.coerceAtMost(HEADER_MAX_TEXT_SCALE))
+    CompositionLocalProvider(LocalDensity provides capped) {
+        HomeHeaderContent(now = now, showClock = showClock, darkTheme = darkTheme)
+    }
+}
+
+@Composable
+private fun HomeHeaderContent(now: Long, showClock: Boolean, darkTheme: Boolean) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -404,6 +422,7 @@ private fun SettingsButton(onClick: () -> Unit) {
 }
 
 private const val MINUTE_MS = 60_000L
+private const val HEADER_MAX_TEXT_SCALE = 1.3f
 private val ONE_COLUMN_MIN = 112.dp
 private val ONE_COLUMN_MAX = 150.dp
 private val TWO_COLUMN_MAX = 300.dp

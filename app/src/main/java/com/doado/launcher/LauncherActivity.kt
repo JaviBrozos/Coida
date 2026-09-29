@@ -141,10 +141,16 @@ class LauncherActivity : ComponentActivity() {
             // tope toda la tipografía de Doado encogía con ella. "No disponible"
             // se quedaba en 15,3 sp, por debajo del mínimo de 18 sp del proyecto.
             // Doado puede agrandar el texto respecto al sistema, nunca encogerlo.
+            //
+            // Y con techo en 2: Android ya llega por sí solo al 200 %, y encima
+            // "Muy grande" daba 2,6. A esa escala el inicio se quedaba con una
+            // franja de rejilla y los nombres partidos a media palabra
+            // ("Cáma / ra"). Con el techo, el ajuste de Doado sigue agrandando a
+            // quien tiene Android en normal, pero nunca pasa del máximo del sistema.
             val density = LocalDensity.current
             val scaled = Density(
                 density.density,
-                (density.fontScale * settings.textSize.scale).coerceAtLeast(1f),
+                (density.fontScale * settings.textSize.scale).coerceIn(1f, MAX_TEXT_SCALE),
             )
 
             CompositionLocalProvider(LocalDensity provides scaled) {
@@ -507,5 +513,8 @@ class LauncherActivity : ComponentActivity() {
 
     private companion object {
         const val PLAY_STORE_PACKAGE = "com.android.vending"
+
+        /** Escala de letra máxima: la misma que Android permite por sí solo (200 %). */
+        const val MAX_TEXT_SCALE = 2f
     }
 }
