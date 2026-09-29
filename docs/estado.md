@@ -22,7 +22,7 @@
 - **Documentación**: ERS (Gonzalo), README con capturas, presentación en diez
   láminas con su PDF, y esta capa de `CLAUDE.md` + `docs/` + `.claude/rules/`.
 
-## Escrito, pero sin probar en un móvil
+## Seguridad de la puerta de ajustes: probada en emulador
 
 El 29/09/2026 se cerró el bloque de seguridad de la puerta de ajustes:
 **RNF-SEG-01** (PIN derivado con PBKDF2 y sal, en `doado_security`, fuera de las
@@ -30,20 +30,31 @@ copias de seguridad, migrando el que hubiera en claro), **RNF-SEG-02** (salir de
 Doado cierra los ajustes), **CU-07** (cambiar el PIN pide el anterior) y
 **CU-13** (el botón deja de aparentar que instala sin modo administrador).
 
-**RNF-SEG-01 ya está comprobado en un dispositivo**: con Doado puesto como
-lanzador en el emulador, el fichero `doado_security.xml` guarda el PIN como
-`sal$derivado` en Base64, nunca en claro. Lo demás sigue sin probarse, y ahora
-hay un estorbo: el emulador arrastra un PIN puesto en una sesión anterior que
-nadie recuerda, así que la primera prueba obliga a borrar los datos de la app.
+**RNF-SEG-01 comprobado en un dispositivo**: con Doado puesto como lanzador en el
+emulador, el fichero `doado_security.xml` guarda el PIN como `sal$derivado` en
+Base64, nunca en claro.
 
-Queda por comprobar a mano, y por ese orden:
+**Probado a mano el 29/09/2026** (Gonzalo; emulador Pixel 10 Pro XL, API 37,
+partiendo de datos borrados con `adb shell pm clear com.doado.launcher`):
 
-1. Crear el PIN, salir y volver a entrar (verifica el derivado de ida y vuelta).
-2. Actualizar desde una versión anterior con PIN en claro y ver que sigue
-   valiendo el mismo (la migración).
-3. Irse a otra app por recientes y volver: debe pedir el PIN otra vez.
-4. Abrir la tienda desde Aplicaciones y volver: **no** debe pedirlo.
-5. Cambiar el PIN: debe pedir primero el actual.
+| Comprobación | Resultado |
+| --- | --- |
+| Crear el PIN, salir y volver a entrar | Correcto |
+| Irse a otra app por recientes y volver: vuelve al inicio y Ajustes pide el PIN | Correcto |
+| Abrir la tienda desde Aplicaciones y volver con Atrás: sigue en Aplicaciones, sin PIN | Correcto |
+| Cambiar el PIN: pide primero el actual, rechaza uno erróneo y el nuevo sustituye al viejo | Correcto |
+| Instalar sin modo administrador: no abre la tienda, avisa y lleva al modo administrador | Correcto |
+
+Matices vistos al probar, todos esperados:
+
+- Salir de Doado no pide el PIN al volver: devuelve al inicio, y el PIN se pide
+  al pulsar Ajustes.
+- Volver de la tienda con el botón **Inicio** también devuelve al inicio (Inicio
+  lleva siempre ahí); solo **Atrás** conserva los ajustes.
+- El modo administrador sigue activo tras salir y volver: dura sus 15 minutos.
+
+**Sin probar**: la migración desde una versión anterior con el PIN en claro.
+Exige instalar una versión antigua y se deja así salvo que dé problemas.
 
 ## Accesibilidad: auditoría del 29/09/2026
 
@@ -69,7 +80,8 @@ además el ajuste propio de Doado en «Muy grande».
 
 ## Lo siguiente, por orden
 
-1. **Probar lo de arriba en un móvil o emulador de verdad.**
+1. **Probar en un móvil o emulador los arreglos de la auditoría de accesibilidad.**
+   El bloque de seguridad ya está probado (ver arriba).
 2. **Decidir si RNF-ACC-02 miente o miente el código**: la norma promete casillas
    de más de 168 dp y a una columna miden 112–150 dp. O se sube el mínimo, o se
    corrigen los tres documentos que lo afirman. No es implementación.

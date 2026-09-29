@@ -221,11 +221,6 @@ ni traducciones: la app está solo en español.
 
 Lo que hay que arreglar:
 
-- **Nada de esto está probado en un móvil todavía**: el bloque de seguridad de la
-  puerta de ajustes (PIN derivado, cierre al salir, cambio de PIN y botón de
-  instalar) se escribió el 29/09/2026, compila y pasa el lint, pero falta
-  comprobarlo a mano. La lista de comprobaciones está en
-  [`docs/estado.md`](docs/estado.md).
 - **Un PIN olvidado no se puede recuperar**: al guardarse derivado, la única
   salida es borrar los datos de la app. Está por decidir si habrá otra
   (conflicto CON-05 de la ERS).
