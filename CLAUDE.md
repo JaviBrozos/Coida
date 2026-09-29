@@ -2,84 +2,105 @@
 
 **Una app para tus mayores.**
 
-Doado es un *launcher* (pantalla de inicio) de Android pensado para personas
-mayores que se pelean con el móvil: menos cosas en pantalla, más grandes y con
-más contraste que en un lanzador normal.
+Doado es un *launcher* (pantalla de inicio) de Android para personas mayores que
+se pelean con el móvil: menos cosas en pantalla, más grandes y con más contraste
+que en un lanzador normal. El móvil lo usa una persona, pero lo configura otra,
+así que la app tiene dos caras: una pantalla de inicio fija, y unos ajustes
+detrás de un PIN.
 
-El producto completo son tres piezas. Ahora mismo solo está construida la
-primera:
+El producto completo son tres piezas: el **launcher** (implementado), el **botón
+flotante de «atrás»** (pendiente) y el **asistente de voz con IA** (pendiente, y
+la principal propuesta de valor del producto).
 
-| Pieza | Estado |
-| --- | --- |
-| **Launcher** — pantalla de inicio con las apps favoritas | implementado (MVP) |
-| **Botón flotante de "atrás"** — servicio de accesibilidad | pendiente, carpeta vacía |
-| **Asistente de voz** | pendiente, carpeta vacía |
+## Dónde está cada cosa
+
+| Necesitas… | Está en | Ojo |
+| --- | --- | --- |
+| Qué se pide y por qué: actores, casos de uso (CU-01…CU-16), requisitos no funcionales, glosario y conflictos abiertos | [`docs/ERS.md`](docs/ERS.md) | **Fuente única.** No dupliques casos de uso ni requisitos en otro sitio |
+| Cómo está construido: navegación, estado, persistencia, intents, manifiesto | [`docs/arquitectura.md`](docs/arquitectura.md) | |
+| Paleta, tipografía, medidas, iconos y componentes | [`docs/diseno.md`](docs/diseno.md) | Los valores exactos los manda el código |
+| Por qué algo es como es, y qué se descartó | [`docs/decisiones.md`](docs/decisiones.md) | Se añaden entradas, no se reescriben |
+| En qué punto está el trabajo hoy | [`docs/estado.md`](docs/estado.md) | Caduca: mira la fecha antes de fiarte |
+| Presentación del proyecto en diez láminas | [`design/presentacion/`](design/presentacion) | El PDF está montado |
+| Cómo se ve para alguien de fuera | [`README.md`](README.md) | |
+
+Las normas de trabajo están en `.claude/rules/` y se cargan solas. **Las de UI,
+datos y recursos solo aparecen al abrir un fichero de esa zona**, así que si vas
+a *crear* una pantalla, una preferencia o un recurso desde cero, ábrelas tú:
+
+- Tocar UI o Compose → `.claude/rules/ui-compose.md`
+- Tocar `data/`, el manifiesto o Gradle → `.claude/rules/datos-y-android.md`
+- Tocar `res/` → `.claude/rules/recursos.md`
+
+## Quién usa Doado
+
+| Actor | Qué hace | Dónde vive |
+| --- | --- | --- |
+| **ACT-01 Persona mayor** | Llama, escribe y hace fotos desde el inicio, siempre igual. No entra en los ajustes. | Pantalla de inicio |
+| **ACT-02 Familiar o cuidador** | Configura el móvil: apps, contactos de un toque, letra y tema. | Ajustes, tras el PIN |
+| **ACT-03 Asistente de IA** | Interpreta órdenes habladas y actúa o guía. | Pendiente |
+
+El **modo administrador** no es un actor: es un estado temporal de 15 minutos en
+el que el familiar abre las salidas a Android. La ficha completa de cada actor
+está en la ERS, sección 4.1.1.
+
+## Los cinco invariantes
+
+Si se rompe uno de estos, se rompe el producto. El resto de decisiones, con su
+contexto, están en `docs/decisiones.md`.
+
+1. **La accesibilidad manda sobre la estética.** Siempre, y sin excepciones
+   silenciosas: si una propuesta visual choca con una norma, gana la norma.
+2. **Las casillas no cambian de sitio.** Una app que no está se pinta apagada,
+   pero no se quita. La posición es memoria muscular.
+3. **Nada de color dinámico** (Material You): con los colores del fondo de
+   pantalla del usuario no se puede garantizar el contraste.
+4. **El cian de marca nunca para texto ni iconos sobre fondo claro**: se queda en
+   2,2:1. Para eso está el marino.
+5. **Los ajustes van detrás del PIN**, y las salidas a Android detrás del modo
+   administrador. Es lo que evita que el móvil se desconfigure solo.
+
+## Lo que Doado no va a hacer
+
+- No tiene servidor propio, cuentas de usuario ni analítica.
+- No pide permisos nuevos ni dependencias nuevas sin acordarlo antes.
+- No lee toda la agenda: solo el contacto que elige el familiar en el selector.
+- No promete impedir salir a Android: eso exigiría ser propietaria del
+  dispositivo, y está descartado (ver `docs/decisiones.md`).
 
 ## Stack
 
 - **Kotlin** + **Jetpack Compose** (Material 3). No hay XML de layouts: la UI es
   toda Compose. Los XML de `res/` son solo tema de arranque, iconos y textos.
-- Un único módulo Gradle, `:app`.
+- Un único módulo Gradle, `:app`. minSdk 24, compileSdk/targetSdk 37.
 - **AGP 9**: el plugin de Android ya trae Kotlin integrado. Por eso en
   `app/build.gradle.kts` **no** se aplica `org.jetbrains.kotlin.android`: hacerlo
   hace fallar el build con "no longer required for Kotlin support since AGP 9.0".
   Solo se aplica el plugin del compilador de Compose.
-- **Gradle Kotlin DSL** (`build.gradle.kts`) y **Version Catalog**
-  (`gradle/libs.versions.toml`). Las versiones se tocan **solo** en el catálogo,
-  nunca a mano en un `build.gradle.kts`.
-- minSdk 24, compileSdk/targetSdk 37.
+- **Version Catalog** (`gradle/libs.versions.toml`): las versiones se tocan solo
+  ahí. Antes de proponer sintaxis de Gradle, léelo: AGP 9 no se parece a AGP 8.
+- **No hay pruebas automáticas** (`app/src` solo tiene `main`). No inventes
+  comandos de test: se verifica compilando y probando a mano en el emulador.
 
-## Estructura de paquetes
+## Estructura
 
 Se organiza **por feature, no por capa**: cada carpeta es un trozo de producto
-con todo lo suyo dentro, en vez de tener un cajón de "viewmodels" y otro de
+con todo lo suyo dentro, en vez de un cajón de "viewmodels" y otro de
 "repositories".
 
 ```
 app/src/main/java/com/doado/
-├── launcher/       Pantalla de inicio (reloj, contactos, casillas) y la Activity,
-│                   que lleva la navegación y todo lo que abre Intents.
-├── settings/       Ajustes para el familiar: PIN, interfaz, contactos, apps y
-│                   modo administrador.
-├── accessibility/  (vacío) Servicio del botón flotante de "atrás".
+├── launcher/       Inicio y la Activity: navegación, permisos e Intents.
+├── settings/       Ajustes: PIN, interfaz, contactos, apps y modo administrador.
+├── accessibility/  (vacío) Botón flotante de «atrás».
 ├── assistant/      (vacío) Asistente de voz.
-├── core/ui/        Tema: paleta de alto contraste, escala tipográfica ampliada,
-│                   medidas compartidas y piezas comunes (Components.kt).
-│                   Todo lo visual bebe de aquí.
-└── data/           Apps instaladas (PackageManager), casillas, contactos y ajustes
-                    guardados (SharedPreferences).
+├── core/ui/        Tema, medidas y piezas comunes. Todo lo visual bebe de aquí.
+└── data/           Apps instaladas, casillas, contactos y ajustes guardados.
 ```
 
-Detalle a tener presente: el `namespace` es `com.doado` mientras que el
-`applicationId` es `com.doado.launcher`. Es a propósito — así el paquete de
-feature puede llamarse `launcher` sin acabar en `com.doado.launcher.launcher`.
-La clase `R` es, por tanto, `com.doado.R`.
-
-## La norma que no se salta
-
-> **Toda UI nueva prioriza la accesibilidad sobre la estética.**
-
-En concreto, antes de dar por buena una pantalla:
-
-- **Contraste**: mínimo 4.5:1 con el fondo; para texto y bordes se busca 7:1.
-  El cian de la marca (`DoadoCyan`) se queda en ~2.2:1 sobre blanco, así que
-  **no se usa para texto ni iconos sobre fondo claro** — para eso está
-  `DoadoNavy`, o `DoadoCyanDeep` si hace falta un secundario.
-- **Objetivo táctil**: nunca por debajo de `DoadoDimens.MinTouchTarget` (48dp).
-  Lo normal en Doado es bastante más: las casillas del grid pasan de 168dp.
-- **Texto**: siempre desde `MaterialTheme.typography` (definida en
-  `core/ui/Type.kt`, ~1.5x Material), siempre en `sp` para que respete el tamaño
-  de letra que el usuario tenga puesto en los ajustes del sistema. Nada de
-  tamaños a pelo en un composable.
-- **Separación por borde, no por sombra**: una sombra suave desaparece para
-  quien tiene poca sensibilidad al contraste.
-- **Nada de color dinámico** (Material You). Tomar los colores del fondo de
-  pantalla haría imposible garantizar el contraste. Está decidido en
-  `core/ui/Theme.kt` y no debe reintroducirse.
-- **Sin sitios que bailen**: si una app no está disponible, su casilla se pinta
-  apagada pero **no se quita**. La posición de cada icono es memoria muscular.
-- Etiquetas de TalkBack en todo lo pulsable; los iconos que van acompañados de
-  texto son decorativos (`contentDescription = null`) para no oírlo dos veces.
+El `namespace` es `com.doado` y el `applicationId`, `com.doado.launcher`. Es a
+propósito: así el paquete de feature puede llamarse `launcher` sin acabar en
+`com.doado.launcher.launcher`. La clase `R` es `com.doado.R`.
 
 ## Comandos
 
@@ -89,22 +110,43 @@ En concreto, antes de dar por buena una pantalla:
 ./gradlew lint              # análisis estático de Android
 ```
 
-El proyecto necesita saber dónde está el SDK de Android. Android Studio crea
-`local.properties` solo; para compilar desde consola en una máquina nueva hay
-que crearlo (está en `.gitignore` porque es propio de cada equipo):
+Hace falta `local.properties` con la ruta del SDK (está en `.gitignore` porque es
+propio de cada equipo):
 
 ```
 sdk.dir=C\:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk
 ```
 
-## Notas sueltas
+Para verlo **como pantalla de inicio**, instalar no basta:
 
-- La actividad de inicio declara `HOME` + `DEFAULT` (para que el sistema la
-  ofrezca como lanzador) y además `LAUNCHER`, que hace que aparezca también en
-  el cajón de apps. Esto último es una comodidad de desarrollo: cuando Doado sea
-  el lanzador de verdad, se puede quitar.
-- El bloque `<queries>` del manifiesto no es opcional. Desde Android 11 sin él
-  el `PackageManager` no ve el resto de apps y el grid saldría vacío. Si se
-  añade un favorito nuevo, hay que declarar también su intención ahí.
-- Los favoritos se definen por **acción** (`ACTION_DIAL`, `CATEGORY_APP_MESSAGING`…)
-  y no por nombre de paquete, para que funcionen sea cual sea la marca del móvil.
+```bash
+adb shell cmd package set-home-activity com.doado.launcher/.LauncherActivity
+```
+
+## Si se rompe el launcher
+
+Un launcher roto deja el móvil sin pantalla de inicio. Antes de tocar el
+manifiesto, ten esto a mano:
+
+```bash
+adb shell cmd package set-home-activity <otro.paquete/.SuActividad>   # devolver el mando
+adb uninstall com.doado.launcher                                      # último recurso
+```
+
+En el móvil: *Ajustes → Aplicaciones → Aplicaciones predeterminadas → App
+principal*. Desinstalar o borrar datos pierde PIN, contactos y casillas; es
+también la única salida cuando se olvida el PIN (conflicto CON-05 de la ERS).
+
+## Notas que se olvidan siempre
+
+- El bloque `<queries>` del manifiesto no es opcional: desde Android 11, sin él
+  el `PackageManager` no ve el resto de apps y el inicio sale vacío. **Favorito
+  nuevo ⇒ declarar también su intención ahí.**
+- Los favoritos se definen por **acción** (`ACTION_DIAL`,
+  `CATEGORY_APP_MESSAGING`…) y no por paquete, para que funcionen sea cual sea la
+  marca del móvil.
+- La actividad declara `HOME` + `DEFAULT` y además `LAUNCHER`. Esto último es
+  comodidad de desarrollo: cuando Doado sea el lanzador de verdad, se puede
+  quitar.
+- Todo el proyecto está en español: interfaz, comentarios y mensajes de commit.
+  Los identificadores de código, en inglés.

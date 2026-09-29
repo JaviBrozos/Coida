@@ -31,7 +31,11 @@ encarga de dejarlo a punto.
 | --- | --- | --- |
 | **La persona mayor** | Llama, escribe, hace fotos. Todos los días, y siempre igual. | La pantalla de inicio. No llega nunca a los ajustes. |
 | **El familiar o cuidador** | Deja el móvil configurado: qué apps se ven, a quién se llama de un toque, cómo de grande es la letra. | Ajustes, detrás del PIN. |
-| **El administrador** | Deja el terminal listo: instala apps, entra en los ajustes de Android, fija Doado como pantalla de inicio. | Modo administrador, dentro de Ajustes. |
+| **El asistente de voz** (pendiente) | Recibe órdenes habladas y las ejecuta, o guía paso a paso para hacerlas. | Por definir. |
+
+Cuando el familiar necesita tocar Android por debajo —instalar apps, entrar en
+los ajustes del sistema o cambiar la pantalla de inicio— activa el **modo
+administrador**, que no es un perfil aparte sino un estado que dura 15 minutos.
 
 ---
 
@@ -241,9 +245,13 @@ Asumido, y escrito para no volver a discutirlo:
 | Dónde | Qué hay |
 | --- | --- |
 | [`docs/ERS.md`](docs/ERS.md) | La especificación de requisitos: actores, casos de uso con su estado, requisitos no funcionales, alternativas existentes y decisiones pendientes. |
+| [`docs/arquitectura.md`](docs/arquitectura.md) | Cómo está construido por dentro: navegación, estado, qué se guarda y con qué claves, los intents con sus reservas y el manifiesto. |
+| [`docs/diseno.md`](docs/diseno.md) | Paleta con sus contrastes, tipografía, medidas, iconografía y los componentes compartidos. |
+| [`docs/decisiones.md`](docs/decisiones.md) | Por qué cada cosa es como es y qué se descartó por el camino. |
+| [`docs/estado.md`](docs/estado.md) | En qué punto está el trabajo. Es el único documento que caduca. |
 | [`design/presentacion/doado-de-un-vistazo.pdf`](design/presentacion/doado-de-un-vistazo.pdf) | El proyecto en diez láminas: perfiles, mapa de pantallas, un flujo por perfil, arquitectura, sistema visual y estado. Para presentar. |
 | `design/presentacion/ver-presentacion.html` | Las mismas diez láminas en el navegador. |
 | `design/*.dc.html` | El lienzo donde se diseñó la interfaz antes de escribirla. |
-| `CLAUDE.md` | Las normas del proyecto para quien (o lo que) toque el código. |
+| `CLAUDE.md` y `.claude/rules/` | El índice del proyecto y las normas de trabajo para quien (o lo que) toque el código. |
 
 Si el lienzo de diseño y el código no cuadran, **manda el código**.
