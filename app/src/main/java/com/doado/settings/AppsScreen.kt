@@ -25,6 +25,7 @@ import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.IconBadge
 import com.doado.core.ui.NoteCard
+import com.doado.core.ui.OutlineButton
 import com.doado.core.ui.PrimaryButton
 import com.doado.core.ui.ScreenHeader
 import com.doado.core.ui.SectionLabel
@@ -143,13 +144,21 @@ private fun SuggestedToInstall(app: SuggestedApp, adminActive: Boolean, onInstal
                     )
                 }
             }
-            PrimaryButton(
-                text = stringResource(
-                    if (adminActive) R.string.apps_install else R.string.apps_install_needs_admin,
-                ),
-                icon = if (adminActive) R.drawable.ic_store else R.drawable.ic_shield,
-                onClick = onInstall,
-            )
+            // Sin modo administrador no se puede instalar nada, así que el botón
+            // no aparenta que sí: cambia de aspecto y dice a dónde lleva de verdad.
+            if (adminActive) {
+                PrimaryButton(
+                    text = stringResource(R.string.apps_install),
+                    icon = R.drawable.ic_store,
+                    onClick = onInstall,
+                )
+            } else {
+                OutlineButton(
+                    text = stringResource(R.string.apps_install_needs_admin),
+                    icon = R.drawable.ic_shield,
+                    onClick = onInstall,
+                )
+            }
         }
     }
 }

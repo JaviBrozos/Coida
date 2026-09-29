@@ -155,6 +155,34 @@ de la hora del sistema.
 **Consecuencia**: menos peso y cero riesgo de que falle la descarga; a cambio, la
 app se ve con la fuente de cada fabricante. Revisable.
 
+### D-19 · El PIN se deriva y vive fuera de la copia de seguridad (29/09/2026)
+
+**Contexto**: se guardaba en claro en `doado_settings`, y ese fichero sí se
+respalda: el PIN acababa en la nube legible (RNF-SEG-01).
+**Decisión**: fichero propio, `doado_security`, fuera de las reglas de copia, con
+el PIN derivado con PBKDF2 (60 000 iteraciones) y sal aleatoria por móvil. Al
+arrancar se migra el que hubiera en claro.
+**Descartado**: `EncryptedSharedPreferences` de androidx.security-crypto, que
+resolvía lo mismo pero añadía una dependencia a un proyecto que hasta ahora va
+con Compose y poco más.
+**Consecuencia**: el PIN ya no se puede leer del fichero ni viaja en una copia,
+pero tampoco se puede recuperar si se olvida: hay que borrar los datos de la app.
+Eso empuja a cerrar CON-05. Y que quede dicho: con cuatro cifras hay diez mil
+combinaciones, así que esto no frena a quien pueda probarlas todas.
+
+### D-20 · Salir de Doado cierra los ajustes, salvo si la salida la abre Doado (29/09/2026)
+
+**Contexto**: volver desde otra app devolvía a la pantalla de ajustes donde se
+estaba, sin volver a pedir el PIN (RNF-SEG-02).
+**Decisión**: en `onStop()` se vuelve al inicio. Se exceptúa la ida y vuelta que
+arranca el propio Doado —la tienda, el selector de contactos, los ajustes de
+Android—, marcada con una bandera.
+**Descartado**: cerrar siempre, que echaría al familiar en mitad de una
+instalación; y un tiempo de gracia por reloj, que es más difícil de explicar y de
+predecir.
+**Consecuencia**: el hueco real (irse por recientes y volver) queda cerrado sin
+romper los flujos normales.
+
 ### D-18 · La documentación va en tres capas, y la ERS manda en los requisitos (29/09/2026)
 
 **Contexto**: cada sesión nueva de trabajo empezaba de cero repitiendo las mismas

@@ -4,8 +4,11 @@ import android.content.Context
 import androidx.core.content.edit
 
 /**
- * Ajustes de Doado que decide quien configura el móvil: aspecto de la interfaz,
- * el PIN que protege los ajustes y hasta cuándo dura el modo administrador.
+ * Ajustes de Doado que decide quien configura el móvil: aspecto de la interfaz
+ * y hasta cuándo dura el modo administrador.
+ *
+ * El PIN **no** está aquí: vive en [PinStore], en otro fichero, porque ese es el
+ * único que se queda fuera de la copia de seguridad.
  */
 class SettingsStore(context: Context) {
 
@@ -28,15 +31,6 @@ class SettingsStore(context: Context) {
         }
     }
 
-    /** true si todavía no se ha creado un PIN: la primera entrada a ajustes lo pide. */
-    fun hasPin(): Boolean = prefs.getString(KEY_PIN, null) != null
-
-    fun checkPin(pin: String): Boolean = prefs.getString(KEY_PIN, null) == pin
-
-    fun savePin(pin: String) {
-        prefs.edit { putString(KEY_PIN, pin) }
-    }
-
     /**
      * Momento (reloj del sistema, en ms) en que se vuelve a bloquear el modo
      * administrador. Un valor pasado equivale a bloqueado.
@@ -57,7 +51,6 @@ class SettingsStore(context: Context) {
         const val KEY_TEXT_SIZE = "text_size"
         const val KEY_COLUMNS = "columns"
         const val KEY_SHOW_CLOCK = "show_clock"
-        const val KEY_PIN = "settings_pin"
         const val KEY_ADMIN_UNTIL = "admin_unlocked_until"
     }
 }

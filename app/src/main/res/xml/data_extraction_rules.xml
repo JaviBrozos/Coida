@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-extraction-rules>
+    <!--
+        Igual que en backup_rules.xml: lista blanca. El fichero del PIN
+        ("doado_security") se queda fuera de las dos, ni a la nube ni al traspaso
+        directo entre móviles (RNF-SEG-01); se vuelve a crear en el móvil nuevo.
+    -->
     <cloud-backup>
         <include domain="sharedpref" path="doado_favorites.xml" />
         <include domain="sharedpref" path="doado_contacts.xml" />

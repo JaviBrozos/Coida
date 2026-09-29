@@ -44,6 +44,7 @@ import com.doado.data.FavoritesStore
 import com.doado.data.InstalledApp
 import com.doado.data.InstalledAppsRepository
 import com.doado.data.InterfaceSettings
+import com.doado.data.PinStore
 import com.doado.data.SettingsStore
 import com.doado.data.SuggestedApp
 import com.doado.data.SuggestedApps
@@ -78,6 +79,7 @@ class LauncherActivity : ComponentActivity() {
     private lateinit var repository: InstalledAppsRepository
     private lateinit var settingsStore: SettingsStore
     private lateinit var contactsStore: ContactShortcutsStore
+    private lateinit var pinStore: PinStore
 
     private var screen by mutableStateOf(Screen.HOME)
     private var interfaceSettings by mutableStateOf(InterfaceSettings())
@@ -91,6 +93,13 @@ class LauncherActivity : ComponentActivity() {
 
     /** Apps que se mandaron instalar: al volver ya instaladas, se ponen en el inicio. */
     private val pendingInstalls = mutableSetOf<String>()
+
+    /**
+     * true mientras esperamos volver de algo que hemos abierto nosotros (una app,
+     * la tienda, el selector de contactos). Sirve para distinguir esa ida y vuelta
+     * de que el usuario se marche por su cuenta, que cierra los ajustes.
+     */
+    private var salidaPropia = false
 
     private val pickContact =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
@@ -110,6 +119,7 @@ class LauncherActivity : ComponentActivity() {
         repository = InstalledAppsRepository(this)
         settingsStore = SettingsStore(this)
         contactsStore = ContactShortcutsStore(this)
+        pinStore = PinStore(this)
         reload()
 
         setContent {
@@ -157,6 +167,21 @@ class LauncherActivity : ComponentActivity() {
         screen = Screen.HOME
     }
 
+    /**
+     * Los ajustes se cierran al salir de Doado (RNF-SEG-02): si el familiar deja
+     * el móvil a medias y luego se vuelve por recientes, hay que pasar otra vez
+     * por el PIN.
+     *
+     * Se exceptúa la ida y vuelta que arranca el propio Doado —abrir la tienda
+     * para instalar algo, el selector de contactos, los ajustes de Android—,
+     * porque ahí el familiar sigue a lo suyo y echarle sería absurdo.
+     */
+    override fun onStop() {
+        super.onStop()
+        if (!salidaPropia && screen != Screen.HOME) screen = Screen.HOME
+        salidaPropia = false
+    }
+
     @Composable
     private fun CurrentScreen(dark: Boolean) {
         BackHandler(enabled = screen != Screen.HOME) { screen = parentOf(screen) }
@@ -191,17 +216,17 @@ class LauncherActivity : ComponentActivity() {
                 Screen.HOME -> Unit
 
                 Screen.PIN -> PinGate(
-                    hasPin = settingsStore.hasPin(),
-                    checkPin = settingsStore::checkPin,
-                    savePin = settingsStore::savePin,
+                    hasPin = pinStore.hasPin(),
+                    checkPin = pinStore::check,
+                    savePin = pinStore::save,
                     onUnlocked = { screen = Screen.SETTINGS },
                     onBack = { screen = Screen.HOME },
                 )
 
                 Screen.CHANGE_PIN -> PinGate(
-                    hasPin = true,
-                    checkPin = settingsStore::checkPin,
-                    savePin = settingsStore::savePin,
+                    hasPin = pinStore.hasPin(),
+                    checkPin = pinStore::check,
+                    savePin = pinStore::save,
                     onUnlocked = { screen = Screen.SETTINGS },
                     onBack = { screen = Screen.SETTINGS },
                     changing = true,
@@ -340,6 +365,7 @@ class LauncherActivity : ComponentActivity() {
         }
         try {
             startActivity(intent)
+            salidaPropia = true
         } catch (_: ActivityNotFoundException) {
             // La app pudo desinstalarse entre que se pintó la casilla y el toque.
             showCannotOpen(app.label)
@@ -386,6 +412,7 @@ class LauncherActivity : ComponentActivity() {
             pickContact.launch(
                 Intent(Intent.ACTION_PICK, ContactsContract.CommonDataKinds.Phone.CONTENT_URI),
             )
+            salidaPropia = true
         } catch (_: ActivityNotFoundException) {
             Toast.makeText(this, R.string.error_cannot_open_generic, Toast.LENGTH_LONG).show()
         }
@@ -450,6 +477,7 @@ class LauncherActivity : ComponentActivity() {
         for (intent in intents) {
             try {
                 startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                salidaPropia = true
                 return
             } catch (_: ActivityNotFoundException) {
                 // Siguiente.

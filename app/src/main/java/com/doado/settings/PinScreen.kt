@@ -41,10 +41,20 @@ import com.doado.core.ui.SettingsColumn
 
 private const val PIN_LENGTH = 4
 
+/** Los cuatro momentos por los que puede pasar la puerta. */
+private enum class Paso { COMPROBAR, ACTUAL, NUEVO, REPETIR }
+
 /**
- * Puerta de Ajustes. Si todavía no hay PIN, lo crea (dos veces, para evitar
- * erratas); si ya lo hay, lo pide. [changing] fuerza el modo de crear, para
- * "Cambiar el PIN" desde dentro de Ajustes.
+ * Puerta de Ajustes.
+ *
+ * Tres recorridos, según con qué se entre:
+ *  · La primera vez no hay PIN: se crea, escribiéndolo dos veces para cazar
+ *    erratas.
+ *  · Después se pide y ya está.
+ *  · Con [changing] (el "Cambiar el PIN" de dentro de Ajustes) se pide **primero
+ *    el que hay ahora**. Haber pasado la puerta hace un rato no basta: si
+ *    alguien se encuentra el móvil abierto, no debería poder dejar fuera al
+ *    familiar cambiándole el PIN (CU-07).
  */
 @Composable
 fun PinGate(
@@ -55,21 +65,28 @@ fun PinGate(
     onBack: () -> Unit,
     changing: Boolean = false,
 ) {
-    val creating = changing || !hasPin
-    var firstEntry by remember { mutableStateOf<String?>(null) }
+    val primerPaso = when {
+        changing && hasPin -> Paso.ACTUAL
+        hasPin -> Paso.COMPROBAR
+        else -> Paso.NUEVO
+    }
+    var paso by remember { mutableStateOf(primerPaso) }
+    var nuevo by remember { mutableStateOf<String?>(null) }
     var errorRes by remember { mutableStateOf<Int?>(null) }
     // Cambia en cada intento para vaciar los puntos.
     var attempt by remember { mutableIntStateOf(0) }
 
-    val title = when {
-        !creating -> R.string.pin_title
-        firstEntry == null -> R.string.pin_create_title
-        else -> R.string.pin_repeat_title
+    val title = when (paso) {
+        Paso.COMPROBAR -> R.string.pin_title
+        Paso.ACTUAL -> R.string.pin_current_title
+        Paso.NUEVO -> if (changing) R.string.pin_new_title else R.string.pin_create_title
+        Paso.REPETIR -> R.string.pin_repeat_title
     }
-    val subtitle = when {
-        !creating -> R.string.pin_subtitle
-        firstEntry == null -> R.string.pin_create_subtitle
-        else -> R.string.pin_repeat_subtitle
+    val subtitle = when (paso) {
+        Paso.COMPROBAR -> R.string.pin_subtitle
+        Paso.ACTUAL -> R.string.pin_current_subtitle
+        Paso.NUEVO -> if (changing) R.string.pin_new_subtitle else R.string.pin_create_subtitle
+        Paso.REPETIR -> R.string.pin_repeat_subtitle
     }
 
     PinScreen(
@@ -79,19 +96,33 @@ fun PinGate(
         resetKey = attempt,
         onBack = onBack,
         onComplete = { pin ->
-            when {
-                !creating && checkPin(pin) -> onUnlocked()
-                !creating -> errorRes = R.string.pin_wrong
-                firstEntry == null -> firstEntry = pin.also { errorRes = null }
-                firstEntry == pin -> {
-                    savePin(pin)
-                    onUnlocked()
+            when (paso) {
+                Paso.COMPROBAR ->
+                    if (checkPin(pin)) onUnlocked() else errorRes = R.string.pin_wrong
+
+                Paso.ACTUAL ->
+                    if (checkPin(pin)) {
+                        paso = Paso.NUEVO
+                        errorRes = null
+                    } else {
+                        errorRes = R.string.pin_wrong
+                    }
+
+                Paso.NUEVO -> {
+                    nuevo = pin
+                    paso = Paso.REPETIR
+                    errorRes = null
                 }
 
-                else -> {
-                    firstEntry = null
-                    errorRes = R.string.pin_mismatch
-                }
+                Paso.REPETIR ->
+                    if (pin == nuevo) {
+                        savePin(pin)
+                        onUnlocked()
+                    } else {
+                        nuevo = null
+                        paso = Paso.NUEVO
+                        errorRes = R.string.pin_mismatch
+                    }
             }
             attempt++
         },

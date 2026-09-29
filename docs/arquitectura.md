@@ -42,6 +42,8 @@ Esto es lo que distingue un launcher de una app normal, y es donde se rompen:
 | **INICIO** estando ya en Doado | Vuelve al inicio desde cualquier pantalla de ajustes | Lo mismo: llega un `onNewIntent` |
 | **ATRÁS** en el inicio | No hace nada: no se puede «salir» de la pantalla de inicio | El `BackHandler` está desactivado en `HOME` |
 | **Recientes** | Doado no aparece como tarjeta | `excludeFromRecents="true"` |
+| **Irse a otra app** estando en Ajustes | Al volver, los ajustes están cerrados y hay que repetir el PIN | `onStop()` devuelve a `HOME` (RNF-SEG-02) |
+| Volver de algo que abrió Doado | Sigues donde estabas: la tienda, el selector de contactos o los ajustes de Android no te echan | La bandera `salidaPropia` marca esa ida y vuelta |
 | Girar la pantalla | No se recrea la Activity | `configChanges` incluye `orientation` y compañía |
 
 `stateNotNeeded="true"` permite que el sistema mate el proceso sin guardar
@@ -68,8 +70,8 @@ Dos cosas se aplican envolviendo toda la app:
 
 ## Qué se guarda
 
-Tres ficheros de `SharedPreferences`. **Una clave ya publicada no se renombra ni
-cambia de tipo**: se añade otra y se migra leyendo la antigua.
+Cuatro ficheros de `SharedPreferences`. **Una clave ya publicada no se renombra
+ni cambia de tipo**: se añade otra y se migra leyendo la antigua.
 
 ### `doado_settings` — `SettingsStore`
 
@@ -79,7 +81,6 @@ cambia de tipo**: se añade otra y se migra leyendo la antigua.
 | `text_size` | String (`NORMAL` \| `LARGE` \| `EXTRA_LARGE`) | `NORMAL` |
 | `columns` | Int, acotado a 1–2 | `2` |
 | `show_clock` | Boolean | `true` |
-| `settings_pin` | String | sin valor ⇒ no hay PIN todavía |
 | `admin_unlocked_until` | Long (epoch ms) | `0` |
 
 Los enums se leen con un ayudante que devuelve el valor por defecto si el
@@ -103,8 +104,29 @@ id:
 
 Al encender una casilla se añade **al final**: nada de lo que ya estaba se mueve.
 
-Los tres ficheros están declarados en `res/xml/backup_rules.xml` y
-`res/xml/data_extraction_rules.xml`. **Preferencia nueva ⇒ añadirla a los dos.**
+### `doado_security` — `PinStore`
+
+Una clave, `settings_pin`, con el PIN **derivado**, nunca en claro: PBKDF2
+(`PBKDF2WithHmacSHA1`, 60 000 iteraciones, clave de 256 bits) sobre una sal
+aleatoria de 16 bytes distinta en cada móvil, guardado como `sal$hash` en Base64.
+
+Está en un fichero aparte por una razón concreta: **es el único que se queda
+fuera de la copia de seguridad**. Así el móvil nuevo recupera tema, casillas y
+contactos, pero el PIN no viaja y se vuelve a crear en la primera entrada.
+
+Al arrancar, `PinStore` mira si queda un PIN en claro de las versiones anteriores
+(estaba en `doado_settings`), lo guarda derivado aquí y lo borra de allí.
+
+Conviene ser honesto sobre el alcance: cuatro cifras son diez mil
+combinaciones, así que esto no frena a quien pueda probarlas todas. Lo que evita
+es que el PIN se lea abriendo el fichero y que acabe en una copia ajena.
+
+### Copias de seguridad
+
+`res/xml/backup_rules.xml` y `res/xml/data_extraction_rules.xml` declaran
+`doado_favorites`, `doado_contacts` y `doado_settings`, y **excluyen
+explícitamente `doado_security`**. **Preferencia nueva ⇒ añadirla a los dos
+ficheros**, y pensar en qué lado va.
 
 ## `InstalledAppsRepository`
 

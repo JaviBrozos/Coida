@@ -15,6 +15,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Versión | Fecha | Descripción | Autor |
 | --- | --- | --- | --- |
 | 0.1 | 28/09/2026 | Estructura inicial; actores, casos de uso y requisitos no funcionales extraídos del código y del README | Gonzalo Gómez Blanco y Javier Brozos Martínez |
+| 0.2 | 29/09/2026 | RNF-SEG-01 y RNF-SEG-02 implementados; CU-07 y CU-13 pasan de parciales a completos | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -95,18 +96,18 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 | CU-04 | Pedir ayuda al asistente | ACT-01, ACT-03 | Alta | Pendiente | Descripción del proyecto |
 | CU-05 | Realizar una acción por voz | ACT-01, ACT-03 | Alta | Pendiente | README |
 | CU-06 | Acceder a los ajustes con PIN | ACT-02 | Alta | Implementado | Código |
-| CU-07 | Cambiar el PIN | ACT-02 | Media | Parcial | Código |
+| CU-07 | Cambiar el PIN | ACT-02 | Media | Implementado | Código |
 | CU-08 | Configurar la interfaz | ACT-02 | Alta | Implementado | Código |
 | CU-09 | Gestionar los contactos de un toque | ACT-02 | Alta | Implementado | Código |
 | CU-10 | Gestionar las apps del inicio | ACT-02 | Alta | Implementado | Código |
 | CU-11 | Abrir los ajustes de sonido y pantalla | ACT-02 | Baja | Implementado | Código |
 | CU-12 | Activar y desactivar el modo administrador | ACT-02 | Media | Implementado | Código |
-| CU-13 | Instalar una app recomendada | ACT-02 | Media | Parcial | Código |
+| CU-13 | Instalar una app recomendada | ACT-02 | Media | Implementado | Código |
 | CU-14 | Abrir la tienda, los ajustes de Android o cambiar el inicio | ACT-02 | Media | Implementado | Código |
 | CU-15 | Configurar el asistente | ACT-02 | Media | Pendiente | Propuesta |
 | CU-16 | Recuperar un PIN olvidado | ACT-02 | Media | Pendiente | README (límite conocido) |
 
-CU-07 figura como parcial porque no pide el PIN anterior; CU-13, porque el botón Instalar se deja pulsar sin modo administrador.
+Ambos figuraban como parciales en la versión 0.1 y se completaron el 29/09/2026: CU-07 pide ahora el PIN anterior antes de cambiarlo, y en CU-13 el botón deja de aparentar que instala cuando no hay modo administrador (pasa a ofrecer activarlo).
 
 #### Descripciones detalladas
 
@@ -157,7 +158,7 @@ Comentario: el número se copia al añadir el contacto; si cambia en la agenda, 
 - 3: PIN incorrecto: el sistema lo indica y vuelve a pedirlo. Falta definir si hay límite de intentos.
 - 1..3: El usuario puede volver al inicio sin entrar.
 
-Comentario: el PIN se guarda hoy en texto plano y entra en la copia de seguridad en la nube (ver RNF-SEG-01). Volver desde otra app reabre los ajustes sin pedir el PIN de nuevo.
+Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en un fichero propio que no entra en la copia de seguridad (RNF-SEG-01), y salir de Doado cierra los ajustes (RNF-SEG-02). Como contrapartida, un PIN olvidado ya no se puede leer de ningún sitio: la única salida es borrar los datos de la app, que es justo lo que discute CON-05.
 
 ##### CU-12. Activar y desactivar el modo administrador
 
@@ -223,8 +224,8 @@ En DOADO los no funcionales son el núcleo del producto, no un añadido: la acce
 | RNF-ACC-07 | Accesibilidad | Compatible con lector de pantalla | Todo lo pulsable tiene etiqueta de TalkBack; los iconos con texto al lado son decorativos | CLAUDE.md |
 | RNF-USA-01 | Usabilidad | Tareas básicas sin aprendizaje | Cualquier tarea básica (abrir una app, llamar a un contacto) se hace con un solo toque desde el inicio | Código |
 | RNF-USA-02 | Usabilidad | La persona mayor no puede desconfigurar el móvil sin querer | Los ajustes y las salidas a Android solo son accesibles tras el PIN o el modo administrador | README |
-| RNF-SEG-01 | Seguridad | El PIN se guarda protegido | PIN cifrado o con hash y excluido de la copia de seguridad en la nube. Hoy no se cumple | README (límite conocido) |
-| RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Volver desde otra app exige de nuevo el PIN. Hoy no se cumple | README (límite conocido) |
+| RNF-SEG-01 | Seguridad | El PIN se guarda protegido | PIN derivado con PBKDF2 y sal aleatoria, en un fichero de preferencias propio que queda fuera de las reglas de copia de seguridad. Cumplido desde el 29/09/2026 | README (límite conocido) |
+| RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Salir de Doado cierra los ajustes: al volver hay que repetir el PIN. Se exceptúa la ida y vuelta que inicia el propio Doado (tienda, selector de contactos, ajustes de Android). Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | Solo se lee el contacto elegido en el selector, sin permiso sobre toda la agenda | Código |
 | RNF-PRI-02 | Privacidad | Tratamiento de datos del asistente conforme al RGPD | Pendiente: definir qué audio y datos salen del móvil, con qué base legal y durante cuánto tiempo | Propuesta |
 | RNF-DIS-01 | Disponibilidad | Las funciones básicas funcionan sin conexión | Abrir apps y llamar no dependen de internet. Pendiente: qué hace el asistente sin conexión | Propuesta |

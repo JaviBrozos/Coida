@@ -22,25 +22,33 @@
 - **Documentación**: ERS (Gonzalo), README con capturas, presentación en diez
   láminas con su PDF, y esta capa de `CLAUDE.md` + `docs/` + `.claude/rules/`.
 
-## A medias
+## Escrito, pero sin probar en un móvil
 
-- **CU-07 Cambiar el PIN**: no pide el PIN anterior.
-- **CU-13 Instalar una app recomendada**: el botón «Instalar» se deja pulsar sin
-  modo administrador; avisa y redirige, pero aparenta funcionar.
-- **RNF-SEG-02**: volver desde otra app reabre la pantalla de ajustes donde se
-  estaba, sin pedir el PIN otra vez.
+El 29/09/2026 se cerró el bloque de seguridad de la puerta de ajustes:
+**RNF-SEG-01** (PIN derivado con PBKDF2 y sal, en `doado_security`, fuera de las
+copias de seguridad, migrando el que hubiera en claro), **RNF-SEG-02** (salir de
+Doado cierra los ajustes), **CU-07** (cambiar el PIN pide el anterior) y
+**CU-13** (el botón deja de aparentar que instala sin modo administrador).
 
-## Lo siguiente, por orden de urgencia
+Compila y `lint` da 0 errores, pero **no se ha podido probar en el emulador**: en
+la máquina donde se escribió, el emulador no se mantenía en pie. Queda por
+comprobar a mano, y por ese orden:
 
-1. **RNF-SEG-01 — el PIN**. Hoy se guarda en texto plano en `doado_settings`, y
-   ese fichero entra en la copia de seguridad en la nube. Hay que guardarlo con
-   hash y sal, y sacarlo de `backup_rules.xml` y `data_extraction_rules.xml`.
-   Es lo único de la lista que es un fallo de seguridad, no una funcionalidad
-   que falte.
+1. Crear el PIN, salir y volver a entrar (verifica el derivado de ida y vuelta).
+2. Actualizar desde una versión anterior con PIN en claro y ver que sigue
+   valiendo el mismo (la migración).
+3. Irse a otra app por recientes y volver: debe pedir el PIN otra vez.
+4. Abrir la tienda desde Aplicaciones y volver: **no** debe pedirlo.
+5. Cambiar el PIN: debe pedir primero el actual.
+
+## Lo siguiente, por orden
+
+1. **Probar lo de arriba en un móvil o emulador de verdad.**
 2. **Cerrar los conflictos del asistente** (ERS §7, CON-01 a CON-04): dónde se
    procesa la voz, qué puede ejecutar sin confirmar, cómo se activa y si actúa o
    solo guía. Bloquean todo el diseño de la pieza.
-3. **Las dos cosas a medias** de arriba (CU-07 y CU-13).
+3. **CON-05, el PIN olvidado**, que ahora aprieta más: al guardarse derivado ya
+   no se puede recuperar, solo borrar los datos de la app.
 4. **Botón flotante de «atrás»** (CU-03), con el aviso de CON-06: el servicio de
    accesibilidad implica un permiso muy amplio y revisión estricta en Google
    Play.

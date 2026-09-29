@@ -221,13 +221,14 @@ ni traducciones: la app está solo en español.
 
 Lo que hay que arreglar:
 
-- **El PIN se guarda en texto plano** y ese fichero entra en la copia de
-  seguridad en la nube. Toca cifrarlo y sacarlo del backup.
-- Cambiar el PIN no pide el anterior.
-- Volver desde otra app reabre la pantalla de ajustes donde se estaba, sin
-  pedir el PIN de nuevo.
-- El botón «Instalar» se deja pulsar sin modo administrador: avisa y redirige,
-  pero aparenta funcionar.
+- **Nada de esto está probado en un móvil todavía**: el bloque de seguridad de la
+  puerta de ajustes (PIN derivado, cierre al salir, cambio de PIN y botón de
+  instalar) se escribió el 29/09/2026, compila y pasa el lint, pero falta
+  comprobarlo a mano. La lista de comprobaciones está en
+  [`docs/estado.md`](docs/estado.md).
+- **Un PIN olvidado no se puede recuperar**: al guardarse derivado, la única
+  salida es borrar los datos de la app. Está por decidir si habrá otra
+  (conflicto CON-05 de la ERS).
 
 Asumido, y escrito para no volver a discutirlo:
 

@@ -38,6 +38,10 @@
     <string name="pin_subtitle">Introduce el PIN de 4 cifras</string>
     <string name="pin_create_title">Crea un PIN</string>
     <string name="pin_create_subtitle">4 cifras que solo sepa quien configura el móvil</string>
+    <string name="pin_current_title">PIN actual</string>
+    <string name="pin_current_subtitle">Escribe el que tienes puesto ahora</string>
+    <string name="pin_new_title">PIN nuevo</string>
+    <string name="pin_new_subtitle">4 cifras que sustituyen a las de antes</string>
     <string name="pin_repeat_title">Repite el PIN</string>
     <string name="pin_repeat_subtitle">Para comprobar que está bien escrito</string>
     <string name="pin_wrong">PIN incorrecto. Prueba otra vez.</string>
@@ -98,7 +102,7 @@
     <string name="apps_section_suggested">Recomendadas</string>
     <string name="apps_section_others">Otras apps de este móvil</string>
     <string name="apps_install">Instalar</string>
-    <string name="apps_install_needs_admin">Instalar (pide modo administrador)</string>
+    <string name="apps_install_needs_admin">Activar el modo administrador</string>
     <string name="apps_note">Para instalar hace falta el modo administrador. Cuando una app termina de instalarse, aparece en esta lista y se puede poner en el inicio.</string>
     <string name="suggested_whatsapp_description">Mensajes y videollamadas</string>
     <string name="suggested_sofascore_description">Resultados y partidos en directo</string>

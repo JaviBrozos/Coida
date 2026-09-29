@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <full-backup-content>
-    <!-- Lo configurado sí se restaura en un móvil nuevo: casillas, contactos y ajustes. -->
+    <!--
+        Lista blanca: solo se respalda lo que aparece aquí. Casillas, contactos y
+        ajustes sí se restauran en un móvil nuevo.
+
+        "doado_security" (el PIN) NO está en la lista a propósito, y por eso no
+        sale del móvil (RNF-SEG-01). No se puede poner un <exclude> para dejarlo
+        más claro: con una lista de <include>, excluir algo que no está incluido
+        es un error de lint. En un móvil nuevo no habrá PIN, y la primera entrada
+        en Ajustes lo crea.
+    -->
     <include domain="sharedpref" path="doado_favorites.xml" />
     <include domain="sharedpref" path="doado_contacts.xml" />
     <include domain="sharedpref" path="doado_settings.xml" />
