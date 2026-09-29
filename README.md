@@ -240,6 +240,7 @@ Asumido, y escrito para no volver a discutirlo:
 
 | Dónde | Qué hay |
 | --- | --- |
+| [`docs/ERS.md`](docs/ERS.md) | La especificación de requisitos: actores, casos de uso con su estado, requisitos no funcionales, alternativas existentes y decisiones pendientes. |
 | [`design/presentacion/doado-de-un-vistazo.pdf`](design/presentacion/doado-de-un-vistazo.pdf) | El proyecto en diez láminas: perfiles, mapa de pantallas, un flujo por perfil, arquitectura, sistema visual y estado. Para presentar. |
 | `design/presentacion/ver-presentacion.html` | Las mismas diez láminas en el navegador. |
 | `design/*.dc.html` | El lienzo donde se diseñó la interfaz antes de escribirla. |
