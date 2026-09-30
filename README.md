@@ -125,7 +125,6 @@ app/src/main/java/com/doado/
 ├── launcher/       Pantalla de inicio y la Activity, que lleva la navegación
 │                   y todo lo que abre Intents.
 ├── settings/       Ajustes: PIN, interfaz, contactos, apps y modo administrador.
-├── accessibility/  (vacío) Servicio del botón flotante de «atrás».
 ├── assistant/      (vacío) Asistente de voz.
 ├── core/ui/        Tema, medidas y las piezas comunes de interfaz.
 └── data/           Apps instaladas, casillas, contactos y ajustes guardados.
@@ -206,12 +205,11 @@ casillas. Es también la salida cuando **se olvida el PIN**.
 
 ## Estado del proyecto
 
-El producto completo son tres piezas:
+El producto completo son dos piezas:
 
 | Pieza | Estado |
 | --- | --- |
 | **Launcher** — inicio, ajustes, contactos, apps y modo administrador | implementado |
-| **Botón flotante de «atrás»** — servicio de accesibilidad | pendiente, carpeta vacía |
 | **Asistente de voz** | pendiente, carpeta vacía |
 
 Probado a mano en emulador (Android 16, Pixel). **No hay pruebas automáticas**

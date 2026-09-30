@@ -4,9 +4,8 @@ c# Decisiones
 > Las entradas **no se reescriben**: si una decisión cambia, se añade otra nueva
 > que diga a cuál sustituye. Así se ve la historia y no se repiten los debates.
 >
-> Las decisiones **todavía abiertas** no están aquí: viven en la ERS, sección 7
-> (CON-01 a CON-06), y son sobre todo del asistente. No las cierres por tu
-> cuenta.
+> Las decisiones **todavía abiertas** no están aquí: viven en la ERS, sección 7,
+> y son sobre todo del asistente. No las cierres por tu cuenta.
 >
 > Última revisión: 29/09/2026.
 

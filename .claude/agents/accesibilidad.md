@@ -137,5 +137,5 @@ que sean **incumplimientos**. No mezcles "esto se ve mejor así" con "esto no
 cumple".
 
 Si un hallazgo choca con una decisión ya cerrada de `docs/decisiones.md` o con un
-conflicto abierto de la ERS (§7, CON-01 a CON-06), **no lo resuelvas tú**:
+conflicto abierto de la ERS (§7), **no lo resuelvas tú**:
 señálalo y di de qué decisión depende.

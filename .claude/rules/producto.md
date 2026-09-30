@@ -44,10 +44,9 @@ dilo y espera respuesta; no la cambies dentro de otra tarea.
 
 ## Conflictos abiertos: no los cierres tú
 
-La ERS, sección 7, tiene seis decisiones sin tomar (CON-01 a CON-06): dónde se
-procesa la voz, qué puede ejecutar el asistente sin confirmación, cómo se activa,
-si actúa o solo guía, cómo se recupera un PIN olvidado y si el botón de «atrás»
-merece un servicio de accesibilidad.
+La ERS, sección 7, recoge las decisiones sin tomar: dónde se procesa la voz, qué
+puede ejecutar el asistente sin confirmación, cómo se activa, si actúa o solo
+guía, y cómo se recupera un PIN olvidado.
 
 Si una tarea depende de una de ellas, **para y pregunta**. Son decisiones de
 producto de los dos creadores, no detalles de implementación.

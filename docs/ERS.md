@@ -16,12 +16,13 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | --- | --- | --- | --- |
 | 0.1 | 28/09/2026 | Estructura inicial; actores, casos de uso y requisitos no funcionales extraídos del código y del README | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | 0.2 | 29/09/2026 | RNF-SEG-01 y RNF-SEG-02 implementados; CU-07 y CU-13 pasan de parciales a completos | Javier Brozos Martínez |
+| 0.3 | 30/09/2026 | El producto pasa a dos piezas: se retiran del alcance un caso de uso, un conflicto y dos términos del glosario. Los identificadores no se renumeran | Javier Brozos Martínez |
 
 ## 1. Introducción
 
 DOADO es un launcher (pantalla de inicio) de Android para personas mayores que tienen dificultades con el móvil. Reduce lo que hay en pantalla, lo agranda y sube el contraste, y separa dos caras: una pantalla de inicio fija para la persona mayor y unos ajustes protegidos por PIN para el familiar que la configura.
 
-El producto completo tiene tres piezas: el launcher (implementado), un botón flotante de «atrás» sobre cualquier app (pendiente) y un asistente de voz con IA que guía al usuario y actúa en el móvil (pendiente, y la principal propuesta de valor).
+El producto completo tiene dos piezas: el launcher (implementado) y un asistente de voz con IA que guía al usuario y actúa en el móvil (pendiente, y la principal propuesta de valor).
 
 Este documento tiene dos objetivos:
 
@@ -86,13 +87,12 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 
 ### 4.1.2 Casos de uso del sistema
 
-16 casos de uso: 10 ya funcionan en el launcher, 2 están a medias y 4 son pendientes, casi todos del asistente. La fuente «Código» indica que el caso se ha extraído del repositorio.
+15 casos de uso: 11 ya funcionan en el launcher y 4 son pendientes, casi todos del asistente. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: el hueco entre CU-02 y CU-04 es un caso retirado del alcance.
 
 | ID | Caso de uso | Actor | Importancia | Estado | Fuente |
 | --- | --- | --- | --- | --- | --- |
 | CU-01 | Abrir una app desde el inicio | ACT-01 | Alta | Implementado | Código |
 | CU-02 | Contactar con una persona de un toque | ACT-01 | Alta | Implementado | Código |
-| CU-03 | Volver atrás desde cualquier app | ACT-01 | Alta | Pendiente | README |
 | CU-04 | Pedir ayuda al asistente | ACT-01, ACT-03 | Alta | Pendiente | Descripción del proyecto |
 | CU-05 | Realizar una acción por voz | ACT-01, ACT-03 | Alta | Pendiente | README |
 | CU-06 | Acceder a los ajustes con PIN | ACT-02 | Alta | Implementado | Código |
@@ -240,7 +240,6 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | --- | --- | --- | --- |
 | CU-01. Abrir una app desde el inicio | X | X |  |
 | CU-02. Contactar con una persona de un toque | X | X |  |
-| CU-03. Volver atrás desde cualquier app |  | X |  |
 | CU-04. Pedir ayuda al asistente |  |  | X |
 | CU-05. Realizar una acción por voz |  | X |  |
 | CU-06. Acceder a los ajustes con PIN | X | X |  |
@@ -265,15 +264,13 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | Modo administrador | Periodo de 15 minutos en el que DOADO habilita la tienda, los ajustes de Android y el cambio de pantalla de inicio. |
 | PIN de ajustes | Código de 4 cifras que protege los ajustes del familiar. |
 | Asistente | Componente de IA que recibe órdenes habladas y actúa o guía dentro del móvil. |
-| Botón flotante de «atrás» | Botón dibujado por un servicio de accesibilidad sobre cualquier app para volver atrás. |
-| Servicio de accesibilidad | Componente de Android con permisos para dibujar sobre otras apps y actuar en ellas. |
 | dp / sp | Unidades de Android independientes de la densidad de pantalla; sp además escala con el tamaño de letra del sistema. |
 | TalkBack | Lector de pantalla de Android. |
 | RGPD | Reglamento General de Protección de Datos de la UE. |
 
 ## 7. Conflictos pendientes de resolución
 
-Seis decisiones abiertas; las cuatro primeras bloquean el diseño del asistente.
+Cinco decisiones abiertas; las cuatro primeras bloquean el diseño del asistente. El hueco en la numeración es un conflicto retirado junto con su caso de uso.
 
 | ID | Conflicto | Opciones | Afecta a |
 | --- | --- | --- | --- |
@@ -282,7 +279,6 @@ Seis decisiones abiertas; las cuatro primeras bloquean el diseño del asistente.
 | CON-03 | Cómo se activa el asistente | Botón fijo en el inicio · Palabra clave · Ambos | CU-04, CU-05 |
 | CON-04 | Alcance del asistente: actúa o solo guía | Ejecuta acciones · Explica paso a paso cómo hacerlas · Ambas según el caso | CU-04, CU-05 |
 | CON-05 | Cómo recuperar un PIN olvidado sin abrir un agujero de seguridad | Borrar datos de la app (actual) · Pregunta de recuperación · Código enviado al familiar | CU-06, CU-16 |
-| CON-06 | Botón «atrás» con servicio de accesibilidad | Implica un permiso muy amplio y revisión estricta en Google Play; valorar alternativas | CU-03 |
 
 ## Apéndices
 
@@ -292,4 +288,4 @@ Cada reunión entre los creadores se registra con el formato de acta (código AC
 
 ### Anexo B. Prototipos de pantallas
 
-Las pantallas del launcher ya están diseñadas en la carpeta [design](../design) del repositorio y capturadas en [docs/capturas](capturas). Pendiente: prototipos del asistente y del botón «atrás».
+Las pantallas del launcher ya están diseñadas en la carpeta [design](../design) del repositorio y capturadas en [docs/capturas](capturas). Pendiente: prototipos del asistente.

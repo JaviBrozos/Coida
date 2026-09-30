@@ -55,7 +55,9 @@ falso.
 
 - ¿Decisión que descarta una alternativa razonable? Entrada nueva en
   `docs/decisiones.md`, con fecha. Las viejas no se reescriben.
-- ¿Terminas una sesión de trabajo? Actualiza `docs/estado.md` y su fecha.
+- **En cada cambio**, fila nueva en el registro de `docs/estado.md` con fecha y
+  autor, sin pasar de unas 50 líneas (detalle en `CLAUDE.md`, «Obligatorio en
+  cada cambio»).
 - Casos de uso y requisitos **solo** en `docs/ERS.md`. No los dupliques.
 
 ## Git

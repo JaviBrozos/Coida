@@ -181,6 +181,6 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
 
 ## Lo que todavía no existe
 
-`accessibility/` y `assistant/` solo contienen un README. El asistente es la
-pieza que más decisiones abiertas tiene: están en la ERS, sección 7 (CON-01 a
-CON-06). **No las cierres por tu cuenta.**
+`assistant/` solo contiene un README. El asistente es la pieza que más
+decisiones abiertas tiene: están en la ERS, sección 7. **No las cierres por tu
+cuenta.**
