@@ -117,6 +117,12 @@ contactos, pero el PIN no viaja y se vuelve a crear en la primera entrada.
 Al arrancar, `PinStore` mira si queda un PIN en claro de las versiones anteriores
 (estaba en `doado_settings`), lo guarda derivado aquí y lo borra de allí.
 
+La pregunta de recuperación (CU-16, D-23) vive en el mismo fichero: la pregunta
+en `recovery_question` y la respuesta en `recovery_answer`, **en claro**, pasada a
+minúsculas y sin espacios extremos para que no falle por cómo se escriba.
+Responderla bien permite poner un PIN nuevo; no devuelve el antiguo. No hay
+límite de intentos ni para el PIN ni para la respuesta.
+
 Conviene ser honesto sobre el alcance: cuatro cifras son diez mil
 combinaciones, así que esto no frena a quien pueda probarlas todas. Lo que evita
 es que el PIN se lea abriendo el fichero y que acabe en una copia ajena.

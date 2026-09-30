@@ -17,6 +17,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.1 | 28/09/2026 | Estructura inicial; actores, casos de uso y requisitos no funcionales extraídos del código y del README | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | 0.2 | 29/09/2026 | RNF-SEG-01 y RNF-SEG-02 implementados; CU-07 y CU-13 pasan de parciales a completos | Javier Brozos Martínez |
 | 0.3 | 30/09/2026 | El producto pasa a dos piezas: se retiran del alcance un caso de uso, un conflicto y dos términos del glosario. Los identificadores no se renumeran | Javier Brozos Martínez |
+| 0.4 | 30/09/2026 | CU-16 implementado y CON-05 cerrado con la pregunta de recuperación del PIN (implementada por Gonzalo el 29/09, decisión D-23) | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -87,7 +88,7 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 
 ### 4.1.2 Casos de uso del sistema
 
-15 casos de uso: 11 ya funcionan en el launcher y 4 son pendientes, casi todos del asistente. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: el hueco entre CU-02 y CU-04 es un caso retirado del alcance.
+15 casos de uso: 12 ya funcionan en el launcher y los 3 pendientes son del asistente. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: el hueco entre CU-02 y CU-04 es un caso retirado del alcance.
 
 | ID | Caso de uso | Actor | Importancia | Estado | Fuente |
 | --- | --- | --- | --- | --- | --- |
@@ -105,7 +106,7 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 | CU-13 | Instalar una app recomendada | ACT-02 | Media | Implementado | Código |
 | CU-14 | Abrir la tienda, los ajustes de Android o cambiar el inicio | ACT-02 | Media | Implementado | Código |
 | CU-15 | Configurar el asistente | ACT-02 | Media | Pendiente | Propuesta |
-| CU-16 | Recuperar un PIN olvidado | ACT-02 | Media | Pendiente | README (límite conocido) |
+| CU-16 | Recuperar un PIN olvidado | ACT-02 | Media | Implementado | Código |
 
 Ambos figuraban como parciales en la versión 0.1 y se completaron el 29/09/2026: CU-07 pide ahora el PIN anterior antes de cambiarlo, y en CU-13 el botón deja de aparentar que instala cuando no hay modo administrador (pasa a ofrecer activarlo).
 
@@ -158,7 +159,7 @@ Comentario: el número se copia al añadir el contacto; si cambia en la agenda, 
 - 3: PIN incorrecto: el sistema lo indica y vuelve a pedirlo. Falta definir si hay límite de intentos.
 - 1..3: El usuario puede volver al inicio sin entrar.
 
-Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en un fichero propio que no entra en la copia de seguridad (RNF-SEG-01), y salir de Doado cierra los ajustes (RNF-SEG-02). Como contrapartida, un PIN olvidado ya no se puede leer de ningún sitio: la única salida es borrar los datos de la app, que es justo lo que discute CON-05.
+Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en un fichero propio que no entra en la copia de seguridad (RNF-SEG-01), y salir de Doado cierra los ajustes (RNF-SEG-02). Como el PIN ya no se puede leer de ningún sitio, un PIN olvidado se recupera con la pregunta que el familiar fija al crearlo o cambiarlo (CU-16); sin pregunta configurada, la única salida es borrar los datos de la app. Hoy no hay límite de intentos, ni para el PIN ni para la respuesta.
 
 ##### CU-12. Activar y desactivar el modo administrador
 
@@ -252,7 +253,7 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | CU-13. Instalar una app recomendada | X | X |  |
 | CU-14. Abrir la tienda, los ajustes de Android o cambiar el inicio | X | X |  |
 | CU-15. Configurar el asistente |  |  | X |
-| CU-16. Recuperar un PIN olvidado |  | X |  |
+| CU-16. Recuperar un PIN olvidado | X | X |  |
 
 ## 6. Glosario de términos
 
@@ -270,7 +271,7 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 
 ## 7. Conflictos pendientes de resolución
 
-Cinco decisiones abiertas; las cuatro primeras bloquean el diseño del asistente. El hueco en la numeración es un conflicto retirado junto con su caso de uso.
+Cuatro decisiones abiertas, todas del asistente, y las cuatro bloquean su diseño. Los conflictos cerrados no se listan: CON-05 (recuperar un PIN olvidado) se resolvió el 29/09/2026 con la pregunta de recuperación, razonada en `docs/decisiones.md` (D-23).
 
 | ID | Conflicto | Opciones | Afecta a |
 | --- | --- | --- | --- |
@@ -278,7 +279,6 @@ Cinco decisiones abiertas; las cuatro primeras bloquean el diseño del asistente
 | CON-02 | Qué acciones puede ejecutar el asistente sin confirmación | Ninguna · Solo las reversibles (abrir una app) · Todas las configuradas por el familiar | CU-05, CU-15 |
 | CON-03 | Cómo se activa el asistente | Botón fijo en el inicio · Palabra clave · Ambos | CU-04, CU-05 |
 | CON-04 | Alcance del asistente: actúa o solo guía | Ejecuta acciones · Explica paso a paso cómo hacerlas · Ambas según el caso | CU-04, CU-05 |
-| CON-05 | Cómo recuperar un PIN olvidado sin abrir un agujero de seguridad | Borrar datos de la app (actual) · Pregunta de recuperación · Código enviado al familiar | CU-06, CU-16 |
 
 ## Apéndices
 

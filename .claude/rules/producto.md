@@ -44,9 +44,9 @@ dilo y espera respuesta; no la cambies dentro de otra tarea.
 
 ## Conflictos abiertos: no los cierres tú
 
-La ERS, sección 7, recoge las decisiones sin tomar: dónde se procesa la voz, qué
-puede ejecutar el asistente sin confirmación, cómo se activa, si actúa o solo
-guía, y cómo se recupera un PIN olvidado.
+La ERS, sección 7, recoge las decisiones sin tomar, todas del asistente: dónde se
+procesa la voz, qué puede ejecutar sin confirmación, cómo se activa y si actúa o
+solo guía.
 
 Si una tarea depende de una de ellas, **para y pregunta**. Son decisiones de
 producto de los dos creadores, no detalles de implementación.

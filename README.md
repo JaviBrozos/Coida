@@ -62,7 +62,7 @@ Detrás de un **PIN de cuatro cifras**, que se crea la primera vez que se entra.
 | **Aplicaciones** | Encender y apagar las casillas, instalar las recomendadas (WhatsApp, Sofascore) y subir al inicio cualquier otra app del móvil. |
 | **Sonido y pantalla** | Atajo a los ajustes de Android de volumen, brillo y vibración. |
 | **Modo administrador** | Ver más abajo. |
-| **PIN de ajustes** | Cambiar las cuatro cifras. |
+| **PIN de ajustes** | Cambiar las cuatro cifras, pidiendo antes las actuales, y fijar una pregunta de recuperación por si se olvidan. |
 
 ### Modo administrador
 
@@ -143,14 +143,15 @@ pantalla de inicio.
 
 ### Qué se guarda
 
-Tres ficheros de preferencias, los tres incluidos en las reglas de copia de
-seguridad:
+Cuatro ficheros de preferencias. Los tres primeros van en la copia de seguridad;
+el del PIN, a propósito, no:
 
 | Fichero | Contenido |
 | --- | --- |
 | `doado_favorites` | Qué casillas salen en el inicio y en qué orden. |
 | `doado_contacts` | Los accesos directos de personas. |
-| `doado_settings` | Tema, letra, columnas, reloj, el PIN y el fin del modo administrador. |
+| `doado_settings` | Tema, letra, columnas, reloj y el fin del modo administrador. |
+| `doado_security` | El PIN, derivado con PBKDF2 y sal (nunca en claro), y la pregunta de recuperación. |
 
 ### Visibilidad de paquetes
 
@@ -199,7 +200,8 @@ adb uninstall com.doado.launcher                                      # último 
 ```
 
 Desinstalar o borrar los datos de la app pierde el PIN, los contactos y las
-casillas. Es también la salida cuando **se olvida el PIN**.
+casillas. Si **se olvida el PIN** y no se fijó pregunta de recuperación, es la
+única salida.
 
 ---
 
@@ -219,9 +221,10 @@ ni traducciones: la app está solo en español.
 
 Lo que hay que arreglar:
 
-- **Un PIN olvidado no se puede recuperar**: al guardarse derivado, la única
-  salida es borrar los datos de la app. Está por decidir si habrá otra
-  (conflicto CON-05 de la ERS).
+- **Sin límite de intentos**: ni el PIN ni la respuesta de recuperación se
+  bloquean tras varios fallos. Con cuatro cifras, se pueden probar todas.
+- **La respuesta de recuperación se guarda en claro** (normalizada), aunque fuera
+  de la copia de seguridad. Es más débil que el propio PIN, que va derivado.
 
 Asumido, y escrito para no volver a discutirlo:
 

@@ -23,16 +23,14 @@
 
 ## Siguiente
 
-1. Validar entre los dos el cierre de CON-05 y llevarlo a la ERS: CU-16 sigue
-   «Pendiente» y CON-05 abierto.
-2. Revisar la recuperación del PIN: la respuesta se guarda en claro y hay que
-   comprobar si hay límite de intentos.
-3. RNF-ACC-02 promete casillas de más de 168 dp; a una columna miden 112–150 dp.
+1. Recuperación del PIN: sin límite de intentos (ni PIN ni respuesta) y la
+   respuesta va en claro. Decidir si se acepta o se refuerza.
+2. RNF-ACC-02 promete casillas de más de 168 dp; a una columna miden 112–150 dp.
    Decidir si se sube el mínimo o se corrige la norma.
-4. Sacar el `PackageManager` del hilo principal y cachear los iconos.
-5. Auditoría abierta: G-3 (Toast), M-2 (borde 3,18:1), M-3 (destello al
+3. Sacar el `PackageManager` del hilo principal y cachear los iconos.
+4. Auditoría abierta: G-3 (Toast), M-2 (borde 3,18:1), M-3 (destello al
    arrancar en claro), M-4 (medidas a pelo).
-6. Cerrar CON-01 a CON-04 para empezar el asistente.
+5. Cerrar CON-01 a CON-04 para empezar el asistente.
 
 Deuda menor: sin pruebas automáticas, solo español, apps recomendadas duplicadas
 entre `SuggestedApps.kt` y `<queries>`.
@@ -41,6 +39,7 @@ entre `SuggestedApps.kt` y `<queries>`.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 30/09 | Javier | ERS 0.4: CU-16 implementado y CON-05 cerrado (D-23). README y arquitectura al día con el fichero del PIN y la recuperación |
 | 30/09 | Javier | Producto reducido a dos piezas, launcher y asistente (ERS 0.3). Este fichero pasa a registro corto |
 | 29/09 | Gonzalo | Pregunta de recuperación de PIN (D-23), probada en emulador |
 | 29/09 | Gonzalo | Techo de letra (D-22): C-1 arreglado y probado |
