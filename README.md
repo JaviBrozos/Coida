@@ -221,8 +221,6 @@ ni traducciones: la app está solo en español.
 
 Lo que hay que arreglar:
 
-- **Sin límite de intentos**: ni el PIN ni la respuesta de recuperación se
-  bloquean tras varios fallos. Con cuatro cifras, se pueden probar todas.
 - **La respuesta de recuperación se guarda en claro** (normalizada), aunque fuera
   de la copia de seguridad. Es más débil que el propio PIN, que va derivado.
 

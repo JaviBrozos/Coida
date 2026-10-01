@@ -48,9 +48,21 @@
     <string name="pin_repeat_subtitle">Para comprobar que está bien escrito</string>
     <string name="pin_wrong">PIN incorrecto. Prueba otra vez.</string>
     <string name="pin_mismatch">No coinciden. Vuelve a empezar.</string>
-    <string name="pin_clear">Empezar de nuevo</string>
+    <string name="pin_delete">Borrar</string>
     <string name="pin_note">El PIN lo pone quien configura el móvil. Así nadie entra en los ajustes sin querer.</string>
     <string name="pin_forgot">¿Olvidaste el PIN?</string>
+
+    <!--
+        Límite de intentos (RNF-SEG-03). La nota va dirigida a la persona mayor,
+        que puede haber llegado aquí trasteando: por eso de usted, a diferencia del
+        resto de la pantalla, que lee el familiar. El aviso de bloqueo es
+        impersonal porque lo puede leer cualquiera de los dos.
+    -->
+    <string name="pin_exit_note_title">¿No quiere entrar en los ajustes?</string>
+    <string name="pin_exit_note_body">Pulse el botón de abajo para volver al inicio y seguir usando el móvil como siempre.</string>
+    <string name="pin_exit_note_button">Volver al inicio</string>
+    <string name="pin_locked_title">Demasiados intentos</string>
+    <string name="pin_locked_countdown">Se podrá probar de nuevo dentro de</string>
 
     <!-- PIN → pregunta de recuperación (configuración) -->
     <string name="recovery_question_title">Pregunta de recuperación</string>

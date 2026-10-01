@@ -239,6 +239,8 @@ class LauncherActivity : ComponentActivity() {
                     recoveryQuestion = pinStore.recoveryQuestion(),
                     checkRecoveryAnswer = pinStore::checkRecoveryAnswer,
                     saveRecoveryQuestion = pinStore::saveRecoveryQuestion,
+                    lockState = pinStore::lockState,
+                    onExitToHome = { screen = Screen.HOME },
                 )
 
                 Screen.CHANGE_PIN -> PinGate(
@@ -252,6 +254,8 @@ class LauncherActivity : ComponentActivity() {
                     recoveryQuestion = pinStore.recoveryQuestion(),
                     checkRecoveryAnswer = pinStore::checkRecoveryAnswer,
                     saveRecoveryQuestion = pinStore::saveRecoveryQuestion,
+                    lockState = pinStore::lockState,
+                    onExitToHome = { screen = Screen.HOME },
                 )
 
                 Screen.SETTINGS -> SettingsScreen(

@@ -5,8 +5,8 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.1 (borrador) |
-| Fecha | 28/09/2026 |
+| Versión | 0.5 (borrador) |
+| Fecha | 30/09/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
 
@@ -18,6 +18,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.2 | 29/09/2026 | RNF-SEG-01 y RNF-SEG-02 implementados; CU-07 y CU-13 pasan de parciales a completos | Javier Brozos Martínez |
 | 0.3 | 30/09/2026 | El producto pasa a dos piezas: se retiran del alcance un caso de uso, un conflicto y dos términos del glosario. Los identificadores no se renumeran | Javier Brozos Martínez |
 | 0.4 | 30/09/2026 | CU-16 implementado y CON-05 cerrado con la pregunta de recuperación del PIN (implementada por Gonzalo el 29/09, decisión D-23) | Javier Brozos Martínez |
+| 0.5 | 30/09/2026 | RNF-SEG-03 nuevo e implementado: límite de intentos con bloqueo progresivo en la puerta de ajustes (D-24). Se corrige la excepción de CU-06 | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -156,10 +157,10 @@ Comentario: el número se copia al añadir el contacto; si cambia en la agenda, 
 
 **Excepciones**
 
-- 3: PIN incorrecto: el sistema lo indica y vuelve a pedirlo. Falta definir si hay límite de intentos.
+- 3: PIN incorrecto: el sistema lo indica y vuelve a pedirlo. Desde el cuarto fallo seguido en la misma visita muestra una nota grande con un botón para volver al inicio; desde el quinto, bloquea la puerta un tiempo creciente (RNF-SEG-03).
 - 1..3: El usuario puede volver al inicio sin entrar.
 
-Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en un fichero propio que no entra en la copia de seguridad (RNF-SEG-01), y salir de Doado cierra los ajustes (RNF-SEG-02). Como el PIN ya no se puede leer de ningún sitio, un PIN olvidado se recupera con la pregunta que el familiar fija al crearlo o cambiarlo (CU-16); sin pregunta configurada, la única salida es borrar los datos de la app. Hoy no hay límite de intentos, ni para el PIN ni para la respuesta.
+Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en un fichero propio que no entra en la copia de seguridad (RNF-SEG-01), y salir de Doado cierra los ajustes (RNF-SEG-02). Como el PIN ya no se puede leer de ningún sitio, un PIN olvidado se recupera con la pregunta que el familiar fija al crearlo o cambiarlo (CU-16); sin pregunta configurada, la única salida es borrar los datos de la app. Desde el 30/09/2026 el PIN y la respuesta comparten un límite de intentos con bloqueo progresivo (RNF-SEG-03) que solo afecta a esta puerta: el inicio sigue funcionando.
 
 ##### CU-12. Activar y desactivar el modo administrador
 
@@ -227,6 +228,7 @@ En DOADO los no funcionales son el núcleo del producto, no un añadido: la acce
 | RNF-USA-02 | Usabilidad | La persona mayor no puede desconfigurar el móvil sin querer | Los ajustes y las salidas a Android solo son accesibles tras el PIN o el modo administrador | README |
 | RNF-SEG-01 | Seguridad | El PIN se guarda protegido | PIN derivado con PBKDF2 y sal aleatoria, en un fichero de preferencias propio que queda fuera de las reglas de copia de seguridad. Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Salir de Doado cierra los ajustes: al volver hay que repetir el PIN. Se exceptúa la ida y vuelta que inicia el propio Doado (tienda, selector de contactos, ajustes de Android). Cumplido desde el 29/09/2026 | README (límite conocido) |
+| RNF-SEG-03 | Seguridad | No se puede probar el PIN a ciegas | Un solo contador de fallos para el PIN y la respuesta de recuperación. Los fallos 1 a 4 no bloquean y, desde el cuarto de la misma visita, se ofrece volver al inicio con un botón grande; el 5.º bloquea 30 s, el 6.º 1 min, el 7.º 5 min, el 8.º 15 min y del 9.º en adelante 1 h. El bloqueo sobrevive a cerrar la app, a cambiar la hora y a reiniciar, y no afecta al inicio. Cumplido desde el 30/09/2026 | Propuesta (D-24) |
 | RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | Solo se lee el contacto elegido en el selector, sin permiso sobre toda la agenda | Código |
 | RNF-PRI-02 | Privacidad | Tratamiento de datos del asistente conforme al RGPD | Pendiente: definir qué audio y datos salen del móvil, con qué base legal y durante cuánto tiempo | Propuesta |
 | RNF-DIS-01 | Disponibilidad | Las funciones básicas funcionan sin conexión | Abrir apps y llamar no dependen de internet. Pendiente: qué hace el asistente sin conexión | Propuesta |

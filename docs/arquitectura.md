@@ -120,19 +120,35 @@ Al arrancar, `PinStore` mira si queda un PIN en claro de las versiones anteriore
 La pregunta de recuperación (CU-16, D-23) vive en el mismo fichero: la pregunta
 en `recovery_question` y la respuesta en `recovery_answer`, **en claro**, pasada a
 minúsculas y sin espacios extremos para que no falle por cómo se escriba.
-Responderla bien permite poner un PIN nuevo; no devuelve el antiguo. No hay
-límite de intentos ni para el PIN ni para la respuesta.
+Responderla bien permite poner un PIN nuevo; no devuelve el antiguo.
 
-Conviene ser honesto sobre el alcance: cuatro cifras son diez mil
-combinaciones, así que esto no frena a quien pueda probarlas todas. Lo que evita
-es que el PIN se lea abriendo el fichero y que acabe en una copia ajena.
+El límite de intentos (RNF-SEG-03, D-24) usa cuatro claves más, todas aquí:
+
+| Clave | Tipo | Qué guarda |
+| --- | --- | --- |
+| `failed_attempts` | Int | Fallos seguidos, sumando PIN y respuesta. Un acierto o un PIN nuevo lo ponen a 0 |
+| `lock_duration` | Long | Cuánto dura el bloqueo en curso, en ms; 0 si no hay |
+| `lock_until_elapsed` | Long | Cuándo acaba, en el reloj `SystemClock.elapsedRealtime()` |
+| `lock_boot_count` | Int | `Settings.Global.BOOT_COUNT` al fijarlo |
+
+El reloj monotónico no cambia al tocar la hora, pero vuelve a cero al reiniciar:
+si el número de arranque no coincide, o si falta más de lo que dura el bloqueo,
+el bloqueo vuelve a empezar entero. Se escribe con `commit` para que forzar el
+cierre justo después de fallar no se salte el fallo.
+
+Conviene ser honesto sobre el alcance: el hash solo evita que el PIN se lea
+abriendo el fichero y que acabe en una copia ajena; lo que frena probar las diez
+mil combinaciones desde la pantalla es el límite de intentos. Quien pueda leer el
+fichero (una build de depuración con `run-as`, o un móvil con root) puede probarlas
+todas fuera del móvil en poco tiempo.
 
 ### Copias de seguridad
 
 `res/xml/backup_rules.xml` y `res/xml/data_extraction_rules.xml` declaran
-`doado_favorites`, `doado_contacts` y `doado_settings`, y **excluyen
-explícitamente `doado_security`**. **Preferencia nueva ⇒ añadirla a los dos
-ficheros**, y pensar en qué lado va.
+`doado_favorites`, `doado_contacts` y `doado_settings` con una lista de
+`<include>`. `doado_security` queda fuera **por no estar en la lista**: un
+`<exclude>` explícito no vale, porque lint lo rechaza al no estar incluido.
+**Preferencia nueva ⇒ añadirla a los dos ficheros**, y pensar en qué lado va.
 
 ## `InstalledAppsRepository`
 

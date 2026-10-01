@@ -245,3 +245,27 @@ nuevo** sin perder contactos, casillas ni ajustes. La respuesta se normaliza
 **Consecuencia**: la pregunta de recuperación no exige la solución técnica más
 robusta porque no protege datos sensibles: solo es una vía extra para que el
 familiar recupere el control del móvil sin perder la configuración.
+
+### D-24 · Límite de intentos: bloqueo progresivo solo en la puerta de ajustes (30/09/2026)
+
+**Contexto**: ni el PIN ni la respuesta de recuperación tenían límite, así que se
+podían probar las diez mil combinaciones a mano. Además, la persona mayor puede
+llegar a la pantalla del PIN trasteando y equivocarse sin saber salir.
+**Decisión**: escala parecida a la de un móvil: los fallos 1 a 4 no bloquean; el
+5.º bloquea 30 s, el 6.º 1 min, el 7.º 5 min, el 8.º 15 min y del 9.º en adelante
+1 h cada vez. Un solo contador para el PIN, el PIN actual al cambiarlo y la
+respuesta, para que no se esquive alternando. Desde el 4.º fallo de la misma
+visita sale arriba una nota de usted, dirigida a la persona mayor, con un botón
+grande para volver al inicio; la nota cuenta solo esa visita para no aparecer de
+primeras días después y empujar el teclado hacia abajo. El tiempo se mide con el reloj monotónico y el número de arranque, de
+modo que ni cambiar la hora ni reiniciar lo acortan.
+**Descartado**:
+- *Bloquear el launcher entero*: la persona mayor se quedaría sin teléfono por
+  culpa de unos toques al azar.
+- *Borrar los datos tras N fallos*: el familiar perdería contactos y casillas por
+  un nieto trasteando.
+- *Medir con la hora del sistema*: se cambia desde los ajustes de Android.
+- *Un contador por cada vía*: duplica los intentos disponibles.
+**Consecuencia**: el familiar que se equivoca muchas veces espera hasta una hora
+entre intentos. El contador no caduca con el tiempo: solo se pone a cero con un
+acierto o al poner un PIN nuevo.
