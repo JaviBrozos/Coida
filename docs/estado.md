@@ -10,7 +10,7 @@
 
 - Launcher completo: inicio y seis pantallas de ajustes tras el PIN.
 - Puerta de ajustes segura (RNF-SEG-01/02, CU-07, CU-13) y recuperación del PIN
-  con pregunta (D-23): probadas en emulador.
+  con pregunta (D-23), con la respuesta derivada (D-24): probadas en emulador.
 - Auditoría de accesibilidad aplicada y probada; C-1 arreglado con techo de
   letra (D-22).
 - Asistente de voz: sin empezar, bloqueado por CON-01 a CON-04.
@@ -38,7 +38,7 @@ entre `SuggestedApps.kt` y `<queries>`.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
-| 05/10 | Gonzalo | Campo de texto propio (`DoadoTextField`): el de Material no se veía y nadie sabía dónde escribir la pregunta. Pendiente de probar |
+| 05/10 | Gonzalo | Campo de texto propio (`DoadoTextField`): el de Material no se veía y nadie sabía dónde escribir la pregunta. Probado en emulador |
 | 05/10 | Gonzalo | Respuesta de recuperación derivada como el PIN, con migración (D-24). Probada en emulador, también la creación de la pregunta a mano |
 | 30/09 | Javier | ERS 0.4: CU-16 implementado y CON-05 cerrado (D-23). README y arquitectura al día con el fichero del PIN y la recuperación |
 | 30/09 | Javier | Producto reducido a dos piezas, launcher y asistente (ERS 0.3). Este fichero pasa a registro corto |
