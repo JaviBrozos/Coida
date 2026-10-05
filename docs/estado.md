@@ -4,7 +4,7 @@
 > (obligación de `CLAUDE.md`). Máximo unas 50 líneas: lo antiguo se borra, el
 > historial completo está en git. El estado de cada caso de uso vive en la ERS.
 
-**Última actualización: 30/09/2026 · Javier Brozos**
+**Última actualización: 05/10/2026 · Gonzalo Gómez**
 
 ## Dónde estamos
 
@@ -23,8 +23,8 @@
 
 ## Siguiente
 
-1. Recuperación del PIN: sin límite de intentos (ni PIN ni respuesta) y la
-   respuesta va en claro. Decidir si se acepta o se refuerza.
+1. Recuperación del PIN: sin límite de intentos (ni PIN ni respuesta). Decidir
+   si se acepta o se añade. La respuesta ya va derivada (D-24).
 2. RNF-ACC-02 promete casillas de más de 168 dp; a una columna miden 112–150 dp.
    Decidir si se sube el mínimo o se corrige la norma.
 3. Sacar el `PackageManager` del hilo principal y cachear los iconos.
@@ -39,6 +39,7 @@ entre `SuggestedApps.kt` y `<queries>`.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 05/10 | Gonzalo | Respuesta de recuperación derivada como el PIN, con migración (D-24). Pendiente de probar en emulador |
 | 30/09 | Javier | ERS 0.4: CU-16 implementado y CON-05 cerrado (D-23). README y arquitectura al día con el fichero del PIN y la recuperación |
 | 30/09 | Javier | Producto reducido a dos piezas, launcher y asistente (ERS 0.3). Este fichero pasa a registro corto |
 | 29/09 | Gonzalo | Pregunta de recuperación de PIN (D-23), probada en emulador |
@@ -46,4 +47,3 @@ entre `SuggestedApps.kt` y `<queries>`.
 | 29/09 | Gonzalo | Bloque de seguridad de la puerta de ajustes probado en emulador |
 | 29/09 | Javier | Arreglos de la auditoría de accesibilidad |
 | 29/09 | Javier | PIN derivado y cierre de ajustes al salir (D-19, D-20) |
-| 29/09 | Javier | Documentación en tres capas (D-18) |

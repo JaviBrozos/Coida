@@ -151,7 +151,7 @@ el del PIN, a propósito, no:
 | `doado_favorites` | Qué casillas salen en el inicio y en qué orden. |
 | `doado_contacts` | Los accesos directos de personas. |
 | `doado_settings` | Tema, letra, columnas, reloj y el fin del modo administrador. |
-| `doado_security` | El PIN, derivado con PBKDF2 y sal (nunca en claro), y la pregunta de recuperación. |
+| `doado_security` | El PIN y la respuesta de recuperación, derivados con PBKDF2 y sal (nunca en claro), y la pregunta. |
 
 ### Visibilidad de paquetes
 
@@ -223,8 +223,6 @@ Lo que hay que arreglar:
 
 - **Sin límite de intentos**: ni el PIN ni la respuesta de recuperación se
   bloquean tras varios fallos. Con cuatro cifras, se pueden probar todas.
-- **La respuesta de recuperación se guarda en claro** (normalizada), aunque fuera
-  de la copia de seguridad. Es más débil que el propio PIN, que va derivado.
 
 Asumido, y escrito para no volver a discutirlo:
 

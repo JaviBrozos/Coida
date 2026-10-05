@@ -1,4 +1,4 @@
-c# Decisiones
+# Decisiones
 
 > **Fuente única de**: por qué Doado es como es y qué se descartó por el camino.
 > Las entradas **no se reescriben**: si una decisión cambia, se añade otra nueva
@@ -245,3 +245,16 @@ nuevo** sin perder contactos, casillas ni ajustes. La respuesta se normaliza
 **Consecuencia**: la pregunta de recuperación no exige la solución técnica más
 robusta porque no protege datos sensibles: solo es una vía extra para que el
 familiar recupere el control del móvil sin perder la configuración.
+
+### D-24 · La respuesta de recuperación se guarda derivada, como el PIN (05/10/2026)
+
+**Contexto**: D-23 dejó la respuesta en claro, razonando que no era peor que el
+PIN antiguo. Pero el PIN antiguo en claro es justo lo que D-19 corrigió, y la
+respuesta abre la misma puerta que el PIN.
+**Decisión**: la respuesta se deriva con PBKDF2 y sal, con la misma función que
+el PIN. Comprobarla solo exige derivar lo escrito y comparar, así que no hace
+falta que sea legible. La que hubiera en claro se migra al arrancar.
+**Descartado**: dejarla en claro por ser «solo conveniencia». Sustituye esa parte
+de D-23; el resto de D-23 sigue en pie.
+**Consecuencia**: nadie puede leer la respuesta del fichero. Sigue sin haber
+límite de intentos, ni para el PIN ni para la respuesta.
