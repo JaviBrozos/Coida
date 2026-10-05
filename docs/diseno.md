@@ -136,6 +136,7 @@ color de acento mientras se pulsa, y el área pulsable es la pieza entera.
 | `SectionLabel` | Rótulo de un grupo de filas |
 | `IconBadge` | Cuadrito con icono de acento |
 | `NoteCard` | Nota explicativa, no pulsable |
+| `DoadoTextField` | Campo para escribir, con contorno de 2 dp que pasa a acento al escribir y a error si falla |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
 | `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |
 

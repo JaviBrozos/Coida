@@ -9,7 +9,8 @@ paths:
 
 Mira si ya existe en `core/ui/Components.kt`: `DoadoCard`, `SettingsRow`,
 `SwitchRow`, `ChoiceGroup`, `PrimaryButton`, `OutlineButton`, `ScreenHeader`,
-`SectionLabel`, `IconBadge`, `NoteCard`, `SettingsColumn`, `DoadoSwitchVisual`.
+`SectionLabel`, `IconBadge`, `NoteCard`, `DoadoTextField`, `SettingsColumn`,
+`DoadoSwitchVisual`.
 Casi toda pantalla de ajustes sale de ahí. La tabla de para qué sirve cada uno
 está en `docs/diseno.md`.
 

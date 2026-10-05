@@ -18,7 +18,6 @@
 ## Sin probar
 
 - Migración del PIN antiguo en claro (exige instalar una versión vieja).
-- Pantalla de configurar la pregunta de recuperación: solo se probó el guardado.
 - Motivo de los botones deshabilitados, con TalkBack.
 
 ## Siguiente
@@ -39,11 +38,11 @@ entre `SuggestedApps.kt` y `<queries>`.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
-| 05/10 | Gonzalo | Respuesta de recuperación derivada como el PIN, con migración (D-24). Pendiente de probar en emulador |
+| 05/10 | Gonzalo | Campo de texto propio (`DoadoTextField`): el de Material no se veía y nadie sabía dónde escribir la pregunta. Pendiente de probar |
+| 05/10 | Gonzalo | Respuesta de recuperación derivada como el PIN, con migración (D-24). Probada en emulador, también la creación de la pregunta a mano |
 | 30/09 | Javier | ERS 0.4: CU-16 implementado y CON-05 cerrado (D-23). README y arquitectura al día con el fichero del PIN y la recuperación |
 | 30/09 | Javier | Producto reducido a dos piezas, launcher y asistente (ERS 0.3). Este fichero pasa a registro corto |
 | 29/09 | Gonzalo | Pregunta de recuperación de PIN (D-23), probada en emulador |
 | 29/09 | Gonzalo | Techo de letra (D-22): C-1 arreglado y probado |
 | 29/09 | Gonzalo | Bloque de seguridad de la puerta de ajustes probado en emulador |
 | 29/09 | Javier | Arreglos de la auditoría de accesibilidad |
-| 29/09 | Javier | PIN derivado y cierre de ajustes al salir (D-19, D-20) |
