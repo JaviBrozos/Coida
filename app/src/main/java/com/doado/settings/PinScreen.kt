@@ -6,19 +6,15 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -35,11 +31,11 @@ import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoDimens
+import com.doado.core.ui.DoadoTextField
 import com.doado.core.ui.NoteCard
 import com.doado.core.ui.OutlineButton
 import com.doado.core.ui.PrimaryButton
@@ -349,22 +345,13 @@ private fun RecoveryQuestionScreen(
             onBack = onBack,
         )
 
-        OutlinedTextField(
+        DoadoTextField(
             value = text,
             onValueChange = { text = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.recovery_question_hint),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            },
-            textStyle = MaterialTheme.typography.bodyMedium,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { if (text.isNotBlank()) onNext(text) }),
+            placeholder = stringResource(R.string.recovery_question_hint),
+            singleLine = false,
             minLines = 2,
-            shape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
+            onDone = { if (text.isNotBlank()) onNext(text) },
         )
 
         NoteCard(
@@ -407,22 +394,11 @@ private fun RecoveryAnswerScreen(
 
         NoteCard(text = question, icon = R.drawable.ic_lock)
 
-        OutlinedTextField(
+        DoadoTextField(
             value = text,
             onValueChange = { text = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.recovery_answer_hint),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            },
-            textStyle = MaterialTheme.typography.bodyMedium,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { if (text.isNotBlank()) onSave(text) }),
-            singleLine = true,
-            shape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
+            placeholder = stringResource(R.string.recovery_answer_hint),
+            onDone = { if (text.isNotBlank()) onSave(text) },
         )
 
         PrimaryButton(
@@ -456,23 +432,12 @@ private fun RecoveryAccessScreen(
 
         NoteCard(text = question, icon = R.drawable.ic_lock)
 
-        OutlinedTextField(
+        DoadoTextField(
             value = text,
             onValueChange = { text = it },
-            modifier = Modifier.fillMaxWidth(),
-            placeholder = {
-                Text(
-                    text = stringResource(R.string.recovery_answer_hint),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            },
-            textStyle = MaterialTheme.typography.bodyMedium,
+            placeholder = stringResource(R.string.recovery_answer_hint),
             isError = error != null,
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions(onDone = { if (text.isNotBlank()) onAnswer(text) }),
-            singleLine = true,
-            shape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
+            onDone = { if (text.isNotBlank()) onAnswer(text) },
         )
 
         if (error != null) {

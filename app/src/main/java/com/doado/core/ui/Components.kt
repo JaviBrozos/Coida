@@ -5,6 +5,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,8 +23,12 @@ import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +42,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -356,6 +362,70 @@ fun OutlineButton(
     ) {
         ButtonContent(text, icon, if (enabled) colors.onSurface else colors.outlineVariant)
     }
+}
+
+/**
+ * Campo para escribir texto, con el mismo contorno de 2 dp que el resto de piezas.
+ *
+ * El contorno propio de Material mide 1 dp y sobre el fondo oscuro apenas se
+ * veía: el texto de ejemplo parecía una frase más de la pantalla y no se sabía
+ * que ahí se escribe. Por eso se apaga y se dibuja el de Doado encima, que pasa
+ * al color de acento mientras se escribe y al de error si la respuesta falla.
+ *
+ * @param onDone qué hacer al pulsar «Hecho» en el teclado.
+ */
+@Composable
+fun DoadoTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    placeholder: String,
+    modifier: Modifier = Modifier,
+    isError: Boolean = false,
+    singleLine: Boolean = true,
+    minLines: Int = 1,
+    onDone: () -> Unit = {},
+) {
+    val colors = MaterialTheme.colorScheme
+    val shape = RoundedCornerShape(DoadoDimens.CardCornerRadius)
+    val interaction = remember { MutableInteractionSource() }
+    val focused by interaction.collectIsFocusedAsState()
+
+    val borderColor = when {
+        isError -> colors.error
+        focused -> colors.primary
+        else -> colors.outline
+    }
+
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .border(DoadoDimens.BorderWidth, borderColor, shape),
+        placeholder = {
+            Text(
+                text = placeholder,
+                style = MaterialTheme.typography.bodyMedium,
+                color = colors.onSurfaceVariant,
+            )
+        },
+        textStyle = MaterialTheme.typography.bodyMedium,
+        isError = isError,
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = { onDone() }),
+        singleLine = singleLine,
+        minLines = if (singleLine) 1 else minLines,
+        shape = shape,
+        interactionSource = interaction,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent,
+            focusedContainerColor = colors.surfaceContainer,
+            unfocusedContainerColor = colors.surfaceContainer,
+            errorContainerColor = colors.surfaceContainer,
+        ),
+    )
 }
 
 /** Nota explicativa: icono de información y una o dos frases. No es pulsable. */
