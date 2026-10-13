@@ -34,8 +34,8 @@
 
 1. Probar con voz real, también con TalkBack. Cambiar la clave de Groq, que quedó
    expuesta en una sesión de trabajo.
-2. CON-06: proteger la clave antes de publicar. Para Play, declarar en
-   «Seguridad de los datos» que el audio se comparte con un tercero.
+2. CON-06: decidir con Gonzalo sobre `docs/propuestas/con-06-clave-asistente.md`
+   (intermediario con suscripción). Sin resolverlo no se publica.
 3. Auditoría de accesibilidad del 13/10, por decidir: etiqueta «Hablar» bajo el
    círculo (afecta a D-28), icono de Ajustes a 6,71:1 en claro, nombres de
    contacto truncados al 200 % y rejilla en mirilla con 4 contactos y aviso.
@@ -50,6 +50,7 @@ isotipo sin usar (D-28), capturas viejas, contrastes desfasados en `Color.kt`.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 13/10 | Javier | Propuesta de CON-06 para hablar con Gonzalo: intermediario con suscripción, costes y obligaciones (`docs/propuestas/`) |
 | 13/10 | Javier | Asistente en modo conversación (D-31): micrófono que se reabre al acabar de hablar, «sí/no/siguiente/gracias» reconocidos en el móvil, memoria de seis turnos, tope de dos malentendidos, prompt que tutea |
 | 13/10 | Javier | Auditoría de accesibilidad del asistente aplicada: TalkBack no se graba, «Repetir» con TalkBack, una sola región viva, señalado con relleno, pantalla encendida |
 | 13/10 | Javier | Asistente de voz: Groq (Whisper + gpt-oss), grabación tolerante a pausas, confirmación siempre, modo guiar, ajustes CU-15, Ajustes a la esquina. ERS 0.6, D-25 a D-30, norma `asistente.md` |

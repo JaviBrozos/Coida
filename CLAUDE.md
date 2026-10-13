@@ -37,6 +37,7 @@ Ningún cambio está terminado sin esto, lo haga una persona o Claude:
 | Paleta, tipografía, medidas, iconos y componentes | [`docs/diseno.md`](docs/diseno.md) |
 | Por qué algo es como es y qué se descartó | [`docs/decisiones.md`](docs/decisiones.md) |
 | Qué hay hecho, qué falta y quién hizo qué | [`docs/estado.md`](docs/estado.md) |
+| Propuestas en discusión, antes de decidirlas (hoy, CON-06) | [`docs/propuestas/`](docs/propuestas) |
 | Presentación en diez láminas, con PDF | [`design/presentacion/`](design/presentacion) |
 | Vista para alguien de fuera | [`README.md`](README.md) |
 

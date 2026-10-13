@@ -345,7 +345,7 @@ Una decisión abierta, del asistente. No bloquea las pruebas, pero sí publicar.
 
 | ID | Conflicto | Opciones | Afecta a |
 | --- | --- | --- | --- |
-| CON-06 | Cómo se protege la clave del servicio de IA sin servidor propio | Clave dentro de la app (hoy; se puede extraer del APK) · Un intermediario mínimo (rompe «sin servidor propio») · Que cada familiar ponga su propia clave | CU-04, CU-05, RNF-PRI-02 |
+| CON-06 | Cómo se protege la clave del servicio de IA sin servidor propio | Clave dentro de la app (hoy; se puede extraer del APK) · Un intermediario mínimo (rompe «sin servidor propio») · Que cada familiar ponga su propia clave. Propuesta con costes en [`propuestas/con-06-clave-asistente.md`](propuestas/con-06-clave-asistente.md) | CU-04, CU-05, RNF-PRI-02 |
 
 ## Apéndices
 
