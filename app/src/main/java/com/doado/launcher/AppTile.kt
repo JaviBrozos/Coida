@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,6 +28,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.DoadoCard
+import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
 import com.doado.data.AppIcon
 import com.doado.data.FavoriteApp
@@ -44,6 +46,8 @@ import com.doado.data.FavoriteApp
  *  · El icono es decorativo (contentDescription = null): quien use TalkBack ya oye
  *    el texto de la casilla, y anunciarlo dos veces solo estorba.
  *  · Si la app no está, la casilla se queda en su sitio, apagada y avisando.
+ *  · [highlighted] la señala el asistente al guiar: rellena de acento y con borde
+ *    grueso, sin moverla ni agrandarla, y TalkBack lo dice.
  */
 @Composable
 fun AppTile(
@@ -51,20 +55,32 @@ fun AppTile(
     horizontal: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    highlighted: Boolean = false,
 ) {
-    val contentColor =
-        if (app.isAvailable) MaterialTheme.colorScheme.onSurface
-        else MaterialTheme.colorScheme.outlineVariant
-    val iconTint =
-        if (app.isAvailable) MaterialTheme.colorScheme.primary
-        else MaterialTheme.colorScheme.outlineVariant
+    val colors = MaterialTheme.colorScheme
+    // Señalada: rellena de acento. Así se distingue también en gris y en el tema
+    // claro, donde el contorno normal ya es del mismo marino que el acento.
+    val contentColor = when {
+        !app.isAvailable -> colors.outlineVariant
+        highlighted -> colors.onPrimary
+        else -> colors.onSurface
+    }
+    val iconTint = when {
+        !app.isAvailable -> colors.outlineVariant
+        highlighted -> colors.onPrimary
+        else -> colors.primary
+    }
 
     val openLabel = stringResource(R.string.cd_open_app, app.label)
     val unavailableLabel = stringResource(R.string.cd_app_unavailable, app.label)
+    val highlightedLabel = stringResource(R.string.cd_highlighted)
 
     DoadoCard(
         onClick = onClick,
         enabled = app.isAvailable,
+        highlighted = highlighted,
+        color = if (highlighted) colors.primary else colors.surfaceContainer,
+        borderWidth = if (highlighted) DoadoDimens.HighlightBorderWidth else DoadoDimens.BorderWidth,
         modifier = modifier
             .fillMaxWidth()
             .semantics {
@@ -73,10 +89,9 @@ fun AppTile(
                 } else {
                     contentDescription = unavailableLabel
                 }
+                if (highlighted) stateDescription = highlightedLabel
             },
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(
-            com.doado.core.ui.DoadoDimens.TileCornerRadius,
-        ),
+        shape = androidx.compose.foundation.shape.RoundedCornerShape(DoadoDimens.TileCornerRadius),
     ) {
         if (horizontal) {
             Row(

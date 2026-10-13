@@ -70,6 +70,24 @@ enum class TextSize(val scale: Float) {
 
 enum class ThemeMode { DARK, LIGHT }
 
+/** Qué hace el asistente cuando la persona mayor le pide algo (D-27). */
+enum class AssistantMode {
+    /** Lo hace él, siempre tras preguntar y recibir un «Sí» (D-26). */
+    ACT,
+
+    /** Explica los pasos y marca en el inicio el botón que hay que pulsar. */
+    GUIDE,
+}
+
+/**
+ * Ajustes del asistente de voz (CU-15). De fábrica viene apagado: hace falta que
+ * el familiar lo encienda, lea a dónde va la voz y dé permiso al micrófono.
+ */
+data class AssistantSettings(
+    val enabled: Boolean = false,
+    val mode: AssistantMode = AssistantMode.GUIDE,
+)
+
 /** Lo que se puede personalizar de la interfaz. */
 data class InterfaceSettings(
     val theme: ThemeMode = ThemeMode.DARK,

@@ -10,7 +10,6 @@
     <string name="app_contacts">Contactos</string>
 
     <!-- Pantalla de inicio -->
-    <string name="home_settings">Ajustes</string>
     <string name="home_admin_banner">Modo administrador activo hasta las %1$s</string>
     <string name="contact_action_call">Llamada</string>
     <string name="contact_action_whatsapp">WhatsApp</string>
@@ -28,6 +27,9 @@
     <string name="cd_admin_banner">Abrir los ajustes de Doado</string>
     <string name="cd_disabled_admin">%1$s: hace falta desbloquear antes el modo administrador</string>
     <string name="cd_pin_delete">Borrar la última cifra</string>
+    <string name="cd_assistant_button">Hablar con el asistente</string>
+    <string name="cd_highlighted">El asistente te lo señala</string>
+    <string name="cd_assistant_try_disabled">Probar el asistente: antes hay que encender el botón del asistente</string>
 
     <!-- Errores -->
     <string name="error_cannot_open">No se ha podido abrir %1$s</string>
@@ -105,6 +107,82 @@
     <string name="settings_admin_subtitle_active">Desbloqueado ahora mismo</string>
     <string name="settings_pin">PIN de ajustes</string>
     <string name="settings_pin_subtitle">Cambiar las 4 cifras</string>
+    <string name="settings_assistant">Asistente de voz</string>
+    <string name="settings_assistant_subtitle_off">Pedir cosas al móvil hablando</string>
+    <string name="settings_assistant_subtitle_act">Encendido: lo hace tras preguntar</string>
+    <string name="settings_assistant_subtitle_guide">Encendido: explica cómo hacerlo</string>
+
+    <!--
+        Ajustes → Asistente de voz (CU-15). Lo lee el familiar. Se habla de «un
+        servicio externo», sin nombrar al proveedor, para que cambiarlo no obligue a
+        reescribir los textos (D-25).
+    -->
+    <string name="assistant_settings_subtitle">Un botón redondo en el inicio para pedir cosas hablando</string>
+    <string name="assistant_settings_privacy">Para entender lo que se le dice, la voz se envía por internet a un servicio externo de inteligencia artificial. Solo le llegan la voz y los nombres de contactos y casillas, nunca los números de teléfono. En el móvil no se guarda nada.</string>
+    <string name="assistant_settings_switch">Botón del asistente en el inicio</string>
+    <string name="assistant_settings_switch_subtitle">Al encenderlo se pide permiso para usar el micrófono</string>
+    <string name="assistant_settings_mic_denied">Sin permiso del micrófono el asistente no puede oír. Vuelve a encender el interruptor para pedirlo, o dalo en los ajustes de Android.</string>
+    <string name="assistant_settings_mode">Cuando le pida algo</string>
+    <string name="assistant_mode_act">Lo hace</string>
+    <string name="assistant_mode_guide">Explica cómo</string>
+    <string name="assistant_settings_act_note">Antes de llamar o abrir algo, siempre pregunta y espera a que se pulse «Sí».</string>
+    <string name="assistant_settings_guide_note">Explica los pasos de uno en uno y, al acabar, marca en el inicio el botón que hay que pulsar.</string>
+    <string name="assistant_settings_try">Probar el asistente</string>
+    <string name="assistant_settings_try_disabled">Para probarlo, enciende antes el botón del asistente.</string>
+    <string name="assistant_settings_not_configured">Esta copia de Doado no tiene configurado el servicio de voz, así que el asistente no se puede encender. Hace falta poner la clave al compilar la app.</string>
+
+    <!--
+        Pantalla del asistente. La lee y la oye la persona mayor: frases cortas,
+        tuteando, y cada error dice qué hacer ahora.
+    -->
+    <string name="assistant_listening_title">Te escucho</string>
+    <string name="assistant_listening_body">Habla con calma. Cuando acabes, pulsa «Ya he terminado».</string>
+    <string name="assistant_done_speaking">Ya he terminado</string>
+    <string name="assistant_follow_up_listening">Te escucho: contéstame hablando o pulsa un botón.</string>
+    <string name="assistant_speak_again">Hablar otra vez</string>
+    <string name="assistant_cancel">Cancelar</string>
+    <string name="assistant_thinking">Un momento…</string>
+    <string name="assistant_heard">Has dicho: «%1$s»</string>
+    <string name="assistant_confirm_call">¿Llamo a %1$s?</string>
+    <string name="assistant_confirm_whatsapp">¿Abro el WhatsApp de %1$s?</string>
+    <string name="assistant_confirm_open">¿Abro %1$s?</string>
+    <string name="assistant_yes_call">Sí, llama</string>
+    <string name="assistant_yes_open">Sí, ábrelo</string>
+    <string name="assistant_no">No</string>
+    <string name="assistant_declined">Vale, no hago nada.</string>
+    <string name="assistant_step_counter">Paso %1$d de %2$d</string>
+    <string name="assistant_step_spoken">Paso %1$d de %2$d. %3$s</string>
+    <string name="assistant_next">Siguiente</string>
+    <string name="assistant_understood">Entendido</string>
+    <string name="assistant_repeat">Repetir</string>
+    <string name="assistant_finish">Terminar</string>
+    <string name="assistant_highlight_hint">Al pulsar «Entendido» te lo marco en el inicio con color y un borde grueso.</string>
+    <string name="assistant_clarify_contact">¿A quién te refieres?</string>
+    <string name="assistant_clarify_app">¿Qué casilla quieres?</string>
+    <string name="assistant_clarify_none">No es ninguno</string>
+    <string name="assistant_refuse_default">Eso no lo puedo hacer. Puedo llamar, abrir WhatsApp o abrir tus casillas.</string>
+    <string name="assistant_missing_app">%1$s no está en este móvil. Pide a tu familiar que la instale.</string>
+    <string name="assistant_try_again">Probar otra vez</string>
+    <string name="assistant_failure_not_heard">No te he oído bien. Pulsa «Probar otra vez» y habla cerca del móvil.</string>
+    <string name="assistant_failure_not_understood">No te he entendido. Dímelo con otras palabras.</string>
+    <string name="assistant_failure_no_internet">Sin internet no puedo ayudarte. Tus botones siguen funcionando como siempre.</string>
+    <string name="assistant_failure_busy">Ahora mismo estoy muy ocupado. Prueba dentro de un rato.</string>
+    <string name="assistant_failure_unavailable">Ahora no puedo ayudarte. Pide a tu familiar que lo mire.</string>
+    <string name="assistant_failure_microphone">No puedo usar el micrófono. Pide a tu familiar que lo mire.</string>
+
+    <!-- Pasos fijos al guiar hacia algo de Doado (GuideSteps). -->
+    <string name="guide_side_left">izquierda</string>
+    <string name="guide_side_right">derecha</string>
+    <string name="guide_contact_where">Mira arriba: tienes un botón con el nombre de %1$s, a la %2$s.</string>
+    <string name="guide_contact_press_call">Púlsalo y el móvil le llamará.</string>
+    <string name="guide_contact_press_whatsapp">Púlsalo y se abrirá su conversación de WhatsApp.</string>
+    <string name="guide_tile_where_two">Busca la casilla «%1$s». Está en la fila %2$d, a la %3$s.</string>
+    <string name="guide_tile_where_one">Busca la casilla «%1$s». Es la número %2$d, empezando por arriba.</string>
+    <string name="guide_tile_press">Púlsala y se abrirá.</string>
+    <string name="guide_call_search">Busca a %1$s en la lista y pulsa su nombre para llamar.</string>
+    <string name="guide_whatsapp_search">Busca la conversación de %1$s y púlsala.</string>
+    <string name="guide_ask_family_call">Ahora mismo no tienes un botón para llamar a %1$s. Pide a tu familiar que lo ponga en el inicio.</string>
+    <string name="guide_ask_family_whatsapp">Ahora mismo no tienes un botón para escribir a %1$s. Pide a tu familiar que lo ponga en el inicio.</string>
 
     <!-- Ajustes → Interfaz -->
     <string name="interface_subtitle">Los cambios se ven al momento</string>

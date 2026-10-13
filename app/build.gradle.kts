@@ -1,4 +1,21 @@
+import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+/*
+ * Configuración del asistente de voz (D-25). Vive en local.properties, que está
+ * en .gitignore, para que la clave no llegue nunca al repositorio. Cambiar de
+ * proveedor o de modelo es cambiar estos valores: el cliente habla el formato de
+ * OpenAI. Sin clave, el asistente no aparece.
+ */
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
+fun aiSetting(name: String, default: String = ""): String {
+    val value = localProperties.getProperty("doado.ai.$name", default).trim()
+    return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
+}
 
 plugins {
     alias(libs.plugins.android.application)
@@ -20,6 +37,13 @@ android {
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 1
         versionName = "0.1.0"
+
+        buildConfigField("String", "AI_BASE_URL", aiSetting("baseUrl", "https://api.groq.com/openai/v1"))
+        buildConfigField("String", "AI_STT_MODEL", aiSetting("sttModel", "whisper-large-v3"))
+        buildConfigField("String", "AI_LLM_MODEL", aiSetting("llmModel", "openai/gpt-oss-120b"))
+        // Solo para modelos que razonan (gpt-oss): "low" contesta antes. Vacío = no se envía.
+        buildConfigField("String", "AI_REASONING_EFFORT", aiSetting("reasoningEffort", "low"))
+        buildConfigField("String", "AI_API_KEY", aiSetting("apiKey"))
     }
 
     buildTypes {
@@ -40,6 +64,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

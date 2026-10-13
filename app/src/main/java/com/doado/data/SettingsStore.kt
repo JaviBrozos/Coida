@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.core.content.edit
 
 /**
- * Ajustes de Doado que decide quien configura el móvil: aspecto de la interfaz
- * y hasta cuándo dura el modo administrador.
+ * Ajustes de Doado que decide quien configura el móvil: aspecto de la interfaz,
+ * el asistente de voz y hasta cuándo dura el modo administrador.
  *
  * El PIN **no** está aquí: vive en [PinStore], en otro fichero, porque ese es el
  * único que se queda fuera de la copia de seguridad.
@@ -31,6 +31,18 @@ class SettingsStore(context: Context) {
         }
     }
 
+    fun assistantSettings(): AssistantSettings = AssistantSettings(
+        enabled = prefs.getBoolean(KEY_ASSISTANT_ENABLED, false),
+        mode = enumOrDefault(prefs.getString(KEY_ASSISTANT_MODE, null), AssistantMode.GUIDE),
+    )
+
+    fun saveAssistantSettings(settings: AssistantSettings) {
+        prefs.edit {
+            putBoolean(KEY_ASSISTANT_ENABLED, settings.enabled)
+            putString(KEY_ASSISTANT_MODE, settings.mode.name)
+        }
+    }
+
     /**
      * Momento (reloj del sistema, en ms) en que se vuelve a bloquear el modo
      * administrador. Un valor pasado equivale a bloqueado.
@@ -52,5 +64,7 @@ class SettingsStore(context: Context) {
         const val KEY_COLUMNS = "columns"
         const val KEY_SHOW_CLOCK = "show_clock"
         const val KEY_ADMIN_UNTIL = "admin_unlocked_until"
+        const val KEY_ASSISTANT_ENABLED = "assistant_enabled"
+        const val KEY_ASSISTANT_MODE = "assistant_mode"
     }
 }

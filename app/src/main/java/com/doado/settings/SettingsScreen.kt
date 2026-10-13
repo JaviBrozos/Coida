@@ -12,6 +12,8 @@ import com.doado.core.ui.SectionLabel
 import com.doado.core.ui.SettingsColumn
 import com.doado.core.ui.SettingsRow
 import com.doado.core.ui.ScreenHeader
+import com.doado.data.AssistantMode
+import com.doado.data.AssistantSettings
 
 /**
  * Índice de Ajustes. Está escrito para el familiar o cuidador, no para quien usa
@@ -21,10 +23,12 @@ import com.doado.core.ui.ScreenHeader
 fun SettingsScreen(
     contactsOnHome: Int,
     adminActive: Boolean,
+    assistant: AssistantSettings,
     onBack: () -> Unit,
     onInterface: () -> Unit,
     onContacts: () -> Unit,
     onApps: () -> Unit,
+    onAssistant: () -> Unit,
     onSoundAndDisplay: () -> Unit,
     onAdmin: () -> Unit,
     onChangePin: () -> Unit,
@@ -59,6 +63,18 @@ fun SettingsScreen(
             title = stringResource(R.string.settings_apps),
             subtitle = stringResource(R.string.settings_apps_subtitle),
             onClick = onApps,
+        )
+        SettingsRow(
+            icon = R.drawable.ic_assistant,
+            title = stringResource(R.string.settings_assistant),
+            subtitle = stringResource(
+                when {
+                    !assistant.enabled -> R.string.settings_assistant_subtitle_off
+                    assistant.mode == AssistantMode.ACT -> R.string.settings_assistant_subtitle_act
+                    else -> R.string.settings_assistant_subtitle_guide
+                },
+            ),
+            onClick = onAssistant,
         )
         SettingsRow(
             icon = R.drawable.ic_volume,

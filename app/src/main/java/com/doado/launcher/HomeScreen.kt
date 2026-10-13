@@ -1,7 +1,6 @@
 package com.doado.launcher
 
 import android.text.format.DateFormat
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -18,6 +18,7 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,6 +42,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -49,6 +51,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import com.doado.R
+import com.doado.assistant.ui.AssistantButton
 import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
@@ -75,8 +78,15 @@ data class HomeContact(
  * arriba. Así se puede previsualizar y probar sin PackageManager, y toda la
  * fontanería de Android se queda en [LauncherActivity].
  *
- * De arriba abajo: reloj (o el nombre, si se ha quitado el reloj), contactos
- * fijados, las casillas de apps y, abajo del todo y en tono apagado, Ajustes.
+ * De arriba abajo: reloj (o el nombre, si se ha quitado el reloj) con el botón de
+ * Ajustes en la esquina, contactos fijados, las casillas de apps y, si el familiar
+ * lo ha encendido, el círculo del asistente flotando abajo en el centro (D-28).
+ *
+ * El círculo no se desplaza con la rejilla, y la columna le reserva su franja al
+ * final: así nunca tapa una casilla, ni en reposo ni al desplazar.
+ *
+ * @param highlightedId casilla o contacto que el asistente acaba de señalar al
+ *   guiar: se pinta con borde grueso, sin moverlo.
  */
 @Composable
 fun HomeScreen(
@@ -84,11 +94,13 @@ fun HomeScreen(
     contacts: List<HomeContact>,
     columns: Int,
     showClock: Boolean,
-    darkTheme: Boolean,
     adminUnlockedUntil: Long,
+    showAssistant: Boolean,
+    highlightedId: String?,
     onAppClick: (FavoriteApp) -> Unit,
     onContactClick: (ContactShortcut) -> Unit,
     onSettingsClick: () -> Unit,
+    onAssistantClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Scaffold(
@@ -97,34 +109,51 @@ fun HomeScreen(
     ) { innerPadding ->
         val now = rememberCurrentMinute()
         val context = LocalContext.current
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(DoadoDimens.ScreenPadding),
-            verticalArrangement = Arrangement.spacedBy(DoadoDimens.GridSpacing),
         ) {
-            HomeHeader(now = now, showClock = showClock, darkTheme = darkTheme)
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.spacedBy(DoadoDimens.GridSpacing),
+            ) {
+                HomeHeader(now = now, showClock = showClock, onSettingsClick = onSettingsClick)
 
-            if (adminUnlockedUntil > now) {
-                val until = remember(adminUnlockedUntil) {
-                    DateFormat.getTimeFormat(context).format(Date(adminUnlockedUntil))
+                if (adminUnlockedUntil > now) {
+                    val until = remember(adminUnlockedUntil) {
+                        DateFormat.getTimeFormat(context).format(Date(adminUnlockedUntil))
+                    }
+                    AdminBanner(untilLabel = until, onClick = onSettingsClick)
                 }
-                AdminBanner(untilLabel = until, onClick = onSettingsClick)
+
+                if (contacts.isNotEmpty()) {
+                    ContactsBlock(
+                        contacts = contacts,
+                        highlightedId = highlightedId,
+                        onContactClick = onContactClick,
+                    )
+                }
+
+                AppsGrid(
+                    apps = apps,
+                    columns = columns,
+                    highlightedId = highlightedId,
+                    onAppClick = onAppClick,
+                    modifier = Modifier.weight(1f),
+                )
+
+                // La franja del círculo: la rejilla acaba encima y nada queda debajo.
+                if (showAssistant) Spacer(Modifier.height(DoadoDimens.AssistantButtonSize))
             }
 
-            if (contacts.isNotEmpty()) {
-                ContactsBlock(contacts = contacts, onContactClick = onContactClick)
+            if (showAssistant) {
+                AssistantButton(
+                    onClick = onAssistantClick,
+                    modifier = Modifier.align(Alignment.BottomCenter),
+                )
             }
-
-            AppsGrid(
-                apps = apps,
-                columns = columns,
-                onAppClick = onAppClick,
-                modifier = Modifier.weight(1f),
-            )
-
-            SettingsButton(onClick = onSettingsClick)
         }
     }
 }
@@ -136,16 +165,16 @@ fun HomeScreen(
  * enormes; lo que la persona mayor tiene que poder leer y pulsar son las casillas.
  */
 @Composable
-private fun HomeHeader(now: Long, showClock: Boolean, darkTheme: Boolean) {
+private fun HomeHeader(now: Long, showClock: Boolean, onSettingsClick: () -> Unit) {
     val density = LocalDensity.current
     val capped = Density(density.density, density.fontScale.coerceAtMost(HEADER_MAX_TEXT_SCALE))
     CompositionLocalProvider(LocalDensity provides capped) {
-        HomeHeaderContent(now = now, showClock = showClock, darkTheme = darkTheme)
+        HomeHeaderContent(now = now, showClock = showClock, onSettingsClick = onSettingsClick)
     }
 }
 
 @Composable
-private fun HomeHeaderContent(now: Long, showClock: Boolean, darkTheme: Boolean) {
+private fun HomeHeaderContent(now: Long, showClock: Boolean, onSettingsClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -184,14 +213,34 @@ private fun HomeHeaderContent(now: Long, showClock: Boolean, darkTheme: Boolean)
                 )
             }
         }
-        // El isotipo es marca, no información: decorativo para TalkBack.
-        Image(
-            painter = painterResource(
-                if (darkTheme) R.drawable.ic_doado_mark else R.drawable.ic_doado_mark_light,
-            ),
-            contentDescription = null,
-            modifier = Modifier.size(52.dp),
-        )
+        SettingsCornerButton(onClick = onSettingsClick)
+    }
+}
+
+/**
+ * Entrada a Ajustes: pequeña, en tono apagado y lejos del pulgar, porque es del
+ * familiar y no de la persona mayor (D-28). Ocupa el sitio que tenía el isotipo.
+ * Solo icono: la etiqueta la lleva para TalkBack.
+ */
+@Composable
+private fun SettingsCornerButton(onClick: () -> Unit) {
+    val label = stringResource(R.string.cd_open_settings)
+    DoadoCard(
+        onClick = onClick,
+        color = Color.Transparent,
+        shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius),
+        modifier = Modifier
+            .size(DoadoDimens.CornerButtonSize)
+            .semantics { contentDescription = label },
+    ) {
+        Box(contentAlignment = Alignment.Center) {
+            Icon(
+                painter = painterResource(R.drawable.ic_settings),
+                contentDescription = null,
+                modifier = Modifier.size(30.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }
 
@@ -250,6 +299,7 @@ private fun AdminBanner(untilLabel: String, onClick: () -> Unit) {
 @Composable
 private fun ContactsBlock(
     contacts: List<HomeContact>,
+    highlightedId: String?,
     onContactClick: (ContactShortcut) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -258,6 +308,7 @@ private fun ContactsBlock(
                 pair.forEach { contact ->
                     ContactTile(
                         contact = contact,
+                        highlighted = contact.shortcut.id == highlightedId,
                         onClick = { onContactClick(contact.shortcut) },
                         modifier = Modifier.weight(1f),
                     )
@@ -272,6 +323,7 @@ private fun ContactsBlock(
 @Composable
 private fun ContactTile(
     contact: HomeContact,
+    highlighted: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -285,11 +337,25 @@ private fun ContactTile(
     )
     val clickLabel = stringResource(R.string.cd_contact_action, actionText, shortcut.name)
     val unavailableLabel = stringResource(R.string.cd_contact_unavailable, shortcut.name)
-    val contentColor = if (contact.isAvailable) colors.onSurface else colors.outlineVariant
+    val highlightedLabel = stringResource(R.string.cd_highlighted)
+    // Señalado por el asistente: relleno de acento, como las casillas (AppTile).
+    val contentColor = when {
+        !contact.isAvailable -> colors.outlineVariant
+        highlighted -> colors.onPrimary
+        else -> colors.onSurface
+    }
+    val secondaryColor = when {
+        !contact.isAvailable -> colors.outlineVariant
+        highlighted -> colors.onPrimary
+        else -> colors.onSurfaceVariant
+    }
 
     DoadoCard(
         onClick = onClick,
         enabled = contact.isAvailable,
+        highlighted = highlighted,
+        color = if (highlighted) colors.primary else colors.surfaceContainer,
+        borderWidth = if (highlighted) DoadoDimens.HighlightBorderWidth else DoadoDimens.BorderWidth,
         modifier = modifier
             .heightIn(min = 104.dp)
             .semantics {
@@ -298,6 +364,7 @@ private fun ContactTile(
                 } else {
                     contentDescription = unavailableLabel
                 }
+                if (highlighted) stateDescription = highlightedLabel
             },
     ) {
         Row(
@@ -332,7 +399,7 @@ private fun ContactTile(
                 Text(
                     text = if (contact.isAvailable) actionText else stringResource(R.string.app_unavailable),
                     style = MaterialTheme.typography.labelSmall,
-                    color = if (contact.isAvailable) colors.onSurfaceVariant else colors.outlineVariant,
+                    color = secondaryColor,
                 )
             }
         }
@@ -348,6 +415,7 @@ private fun ContactTile(
 private fun AppsGrid(
     apps: List<FavoriteApp>,
     columns: Int,
+    highlightedId: String?,
     onAppClick: (FavoriteApp) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -370,6 +438,7 @@ private fun AppsGrid(
                 AppTile(
                     app = app,
                     horizontal = columns == 1,
+                    highlighted = app.id == highlightedId,
                     onClick = { onAppClick(app) },
                     // Mínimo, no alto fijo: con la letra muy grande el aviso
                     // "No disponible" se recortaba y la app apagada se quedaba
@@ -377,46 +446,6 @@ private fun AppsGrid(
                     modifier = Modifier.heightIn(min = tileHeight),
                 )
             }
-        }
-    }
-}
-
-/** Entrada a Ajustes: siempre visible, pero en segundo plano y con candado. */
-@Composable
-private fun SettingsButton(onClick: () -> Unit) {
-    val label = stringResource(R.string.home_settings)
-    val clickLabel = stringResource(R.string.cd_open_settings)
-    DoadoCard(
-        onClick = onClick,
-        color = Color.Transparent,
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = DoadoDimens.ComfortableTouchTarget)
-            .semantics { onClick(label = clickLabel) { onClick(); true } },
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.ic_settings),
-                contentDescription = null,
-                modifier = Modifier.size(28.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-            Text(
-                text = label,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f),
-            )
-            Icon(
-                painter = painterResource(R.drawable.ic_lock),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
         }
     }
 }
@@ -444,11 +473,13 @@ private fun HomeScreenPreview() {
             ),
             columns = 2,
             showClock = true,
-            darkTheme = true,
             adminUnlockedUntil = 0L,
+            showAssistant = true,
+            highlightedId = "camera",
             onAppClick = {},
             onContactClick = {},
             onSettingsClick = {},
+            onAssistantClick = {},
         )
     }
 }

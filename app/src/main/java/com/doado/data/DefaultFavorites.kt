@@ -21,6 +21,9 @@ internal data class FavoriteTemplate(
     val intent: Intent,
 )
 
+/** Id de la casilla «Llamar»: el asistente la señala al guiar una llamada. */
+const val PHONE_FAVORITE_ID = "phone"
+
 /**
  * Los favoritos de fábrica del MVP.
  *
@@ -29,7 +32,7 @@ internal data class FavoriteTemplate(
  */
 internal val DefaultFavorites: List<FavoriteTemplate> = listOf(
     FavoriteTemplate(
-        id = "phone",
+        id = PHONE_FAVORITE_ID,
         labelRes = R.string.app_phone,
         iconRes = R.drawable.ic_call,
         intent = Intent(Intent.ACTION_DIAL),

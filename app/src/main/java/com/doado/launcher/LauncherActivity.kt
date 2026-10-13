@@ -10,6 +10,7 @@ import android.provider.ContactsContract
 import android.provider.Settings
 import android.telephony.PhoneNumberUtils
 import android.telephony.TelephonyManager
+import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
@@ -33,8 +35,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Density
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.doado.R
+import com.doado.assistant.ActionCatalog
+import com.doado.assistant.AssistantAction
+import com.doado.assistant.AssistantController
+import com.doado.assistant.cloud.AssistantConfig
+import com.doado.assistant.cloud.OpenAiCompatibleClient
+import com.doado.assistant.ui.AssistantScreen
 import com.doado.core.ui.DoadoTheme
+import com.doado.data.AssistantSettings
 import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
 import com.doado.data.ContactShortcutsStore
@@ -53,6 +63,7 @@ import com.doado.data.WHATSAPP_PACKAGE
 import com.doado.settings.ADMIN_UNLOCK_MINUTES
 import com.doado.settings.AdminScreen
 import com.doado.settings.AppsScreen
+import com.doado.settings.AssistantSettingsScreen
 import com.doado.settings.BasicAppRow
 import com.doado.settings.ContactsScreen
 import com.doado.settings.InterfaceScreen
@@ -64,7 +75,9 @@ import java.util.Locale
 import java.util.UUID
 
 /** Pantallas de Doado. Son pocas y planas: no hace falta una librería de navegación. */
-private enum class Screen { HOME, PIN, SETTINGS, INTERFACE, CONTACTS, APPS, ADMIN, CHANGE_PIN }
+private enum class Screen {
+    HOME, PIN, SETTINGS, INTERFACE, CONTACTS, APPS, ADMIN, CHANGE_PIN, ASSISTANT, ASSISTANT_SETTINGS,
+}
 
 /**
  * Pantalla de inicio de Doado y todo lo que cuelga de ella.
@@ -91,6 +104,17 @@ class LauncherActivity : ComponentActivity() {
     private var installedApps by mutableStateOf(emptyList<InstalledApp>())
     private var defaultPackages by mutableStateOf(emptySet<String>())
 
+    private val assistantConfig = AssistantConfig.fromBuildConfig()
+    private lateinit var assistant: AssistantController
+    private var assistantSettings by mutableStateOf(AssistantSettings())
+    private var assistantMicDenied by mutableStateOf(false)
+
+    /** Casilla o contacto que el asistente ha señalado al guiar. Se quita al tocar algo. */
+    private var highlightedId by mutableStateOf<String?>(null)
+
+    /** A dónde vuelve el asistente al cerrarse: al inicio, o a sus ajustes si se estaba probando. */
+    private var assistantReturn = Screen.HOME
+
     /** Apps que se mandaron instalar: al volver ya instaladas, se ponen en el inicio. */
     private val pendingInstalls = mutableSetOf<String>()
 
@@ -110,6 +134,13 @@ class LauncherActivity : ComponentActivity() {
     private val requestCallPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
+    // Se pide al encender el asistente, con el familiar delante (CU-15).
+    private val requestMicPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            assistantMicDenied = !granted
+            if (granted) saveAssistantSettings(assistantSettings.copy(enabled = true))
+        }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // A partir de Android 15 el dibujado a pantalla completa es obligatorio;
@@ -120,6 +151,15 @@ class LauncherActivity : ComponentActivity() {
         settingsStore = SettingsStore(this)
         contactsStore = ContactShortcutsStore(this)
         pinStore = PinStore(this)
+        val assistantClient = OpenAiCompatibleClient(assistantConfig)
+        assistant = AssistantController(
+            context = this,
+            scope = lifecycleScope,
+            speechToText = assistantClient,
+            interpreter = assistantClient,
+            onExecute = ::executeAssistantAction,
+            onFinish = ::onAssistantFinished,
+        )
         reload()
 
         setContent {
@@ -159,7 +199,7 @@ class LauncherActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background,
                     ) {
-                        CurrentScreen(dark)
+                        CurrentScreen()
                     }
                 }
             }
@@ -178,6 +218,9 @@ class LauncherActivity : ComponentActivity() {
     /** Pulsar Inicio desde cualquier sitio (también desde Ajustes) vuelve al inicio. */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        assistant.cancel()
+        // Pulsar Inicio es «empezar de cero»: también quita la casilla señalada.
+        highlightedId = null
         screen = Screen.HOME
     }
 
@@ -192,13 +235,32 @@ class LauncherActivity : ComponentActivity() {
      */
     override fun onStop() {
         super.onStop()
+        // Nadie vuelve a una pregunta a medias. La casilla señalada, en cambio, se
+        // queda: si la pantalla se apaga mientras lo piensa, no debe desaparecer
+        // sola. Se quita al tocar algo o al pulsar Inicio.
+        assistant.cancel()
         if (!salidaPropia && screen != Screen.HOME) screen = Screen.HOME
         salidaPropia = false
     }
 
+    override fun onDestroy() {
+        assistant.release()
+        super.onDestroy()
+    }
+
     @Composable
-    private fun CurrentScreen(dark: Boolean) {
-        BackHandler(enabled = screen != Screen.HOME) { screen = parentOf(screen) }
+    private fun CurrentScreen() {
+        BackHandler(enabled = screen != Screen.HOME) {
+            if (screen == Screen.ASSISTANT) closeAssistant() else screen = parentOf(screen)
+        }
+
+        // Con el asistente abierto la pantalla no se apaga: apagarla cancelaría la
+        // pregunta, y quien lee despacio no puede tener un reloj en contra.
+        val assistantOpen = screen == Screen.ASSISTANT
+        DisposableEffect(assistantOpen) {
+            if (assistantOpen) window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            onDispose { window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+        }
 
         if (screen == Screen.HOME) {
             HomeScreen(
@@ -212,11 +274,22 @@ class LauncherActivity : ComponentActivity() {
                 },
                 columns = interfaceSettings.columns,
                 showClock = interfaceSettings.showClock,
-                darkTheme = dark,
                 adminUnlockedUntil = adminUnlockedUntil,
-                onAppClick = ::openApp,
-                onContactClick = ::openContact,
-                onSettingsClick = { screen = Screen.PIN },
+                showAssistant = assistantSettings.enabled && assistantConfig.isConfigured,
+                highlightedId = highlightedId,
+                onAppClick = {
+                    highlightedId = null
+                    openApp(it)
+                },
+                onContactClick = {
+                    highlightedId = null
+                    openContact(it)
+                },
+                onSettingsClick = {
+                    highlightedId = null
+                    screen = Screen.PIN
+                },
+                onAssistantClick = { openAssistant(from = Screen.HOME) },
             )
             return
         }
@@ -261,10 +334,15 @@ class LauncherActivity : ComponentActivity() {
                 Screen.SETTINGS -> SettingsScreen(
                     contactsOnHome = contacts.count { it.onHome },
                     adminActive = isAdminActive(),
+                    assistant = assistantSettings,
                     onBack = { screen = Screen.HOME },
                     onInterface = { screen = Screen.INTERFACE },
                     onContacts = { screen = Screen.CONTACTS },
                     onApps = { openAppsScreen() },
+                    onAssistant = {
+                        assistantMicDenied = false
+                        screen = Screen.ASSISTANT_SETTINGS
+                    },
                     onSoundAndDisplay = { startFirst(Intent(Settings.ACTION_SOUND_SETTINGS)) },
                     onAdmin = { screen = Screen.ADMIN },
                     onChangePin = { screen = Screen.CHANGE_PIN },
@@ -329,17 +407,45 @@ class LauncherActivity : ComponentActivity() {
                     },
                     onBack = { screen = Screen.SETTINGS },
                 )
+
+                Screen.ASSISTANT -> AssistantScreen(
+                    state = assistant.state,
+                    level = assistant.level,
+                    followUpListening = assistant.followUpListening,
+                    onSpeakAgain = assistant::speakAgain,
+                    onDoneSpeaking = assistant::finishSpeaking,
+                    onConfirm = assistant::confirm,
+                    onDecline = assistant::decline,
+                    onChoose = assistant::choose,
+                    onNext = assistant::nextStep,
+                    onRepeat = assistant::repeat,
+                    onRetry = assistant::retry,
+                    onFinish = assistant::finish,
+                    onClose = ::closeAssistant,
+                )
+
+                Screen.ASSISTANT_SETTINGS -> AssistantSettingsScreen(
+                    settings = assistantSettings,
+                    configured = assistantConfig.isConfigured,
+                    micDenied = assistantMicDenied,
+                    onEnabledChange = ::setAssistantEnabled,
+                    onModeChange = { saveAssistantSettings(assistantSettings.copy(mode = it)) },
+                    onTry = { openAssistant(from = Screen.ASSISTANT_SETTINGS) },
+                    onBack = { screen = Screen.SETTINGS },
+                )
             }
         }
     }
 
     private fun parentOf(current: Screen): Screen = when (current) {
         Screen.HOME, Screen.PIN, Screen.SETTINGS -> Screen.HOME
+        Screen.ASSISTANT -> assistantReturn
         else -> Screen.SETTINGS
     }
 
     private fun reload() {
         interfaceSettings = settingsStore.interfaceSettings()
+        assistantSettings = settingsStore.assistantSettings()
         adminUnlockedUntil = settingsStore.adminUnlockedUntil()
         contacts = contactsStore.all()
         installedSuggested = SuggestedApps
@@ -400,22 +506,95 @@ class LauncherActivity : ComponentActivity() {
 
     private fun openContact(contact: ContactShortcut) {
         val intent = when (contact.action) {
-            ContactAction.CALL -> {
-                val canCall = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) ==
-                    PackageManager.PERMISSION_GRANTED
-                Intent(
-                    if (canCall) Intent.ACTION_CALL else Intent.ACTION_DIAL,
-                    Uri.fromParts("tel", contact.number, null),
-                )
+            ContactAction.CALL -> callIntent(contact.number)
+            ContactAction.WHATSAPP -> whatsAppIntent(contact.number)
+        }
+        startFirst(intent, label = contact.name)
+    }
+
+    /** Llamada directa si hay permiso; si no, el marcador con el número escrito. */
+    private fun callIntent(number: String): Intent {
+        val canCall = ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) ==
+            PackageManager.PERMISSION_GRANTED
+        return Intent(
+            if (canCall) Intent.ACTION_CALL else Intent.ACTION_DIAL,
+            Uri.fromParts("tel", number, null),
+        )
+    }
+
+    // wa.me necesita el número internacional sin "+" ni espacios.
+    private fun whatsAppIntent(number: String): Intent = Intent(
+        Intent.ACTION_VIEW,
+        Uri.parse("https://wa.me/" + internationalDigits(number)),
+    ).setPackage(WHATSAPP_PACKAGE)
+
+    // --- Asistente de voz -------------------------------------------------------
+
+    private fun openAssistant(from: Screen) {
+        highlightedId = null
+        assistantReturn = from
+        screen = Screen.ASSISTANT
+        assistant.start(
+            mode = assistantSettings.mode,
+            catalog = ActionCatalog(
+                contacts = contacts,
+                homeApps = homeApps,
+                columns = interfaceSettings.columns,
+                whatsappInstalled = WHATSAPP_PACKAGE in installedSuggested,
+            ),
+        )
+    }
+
+    private fun closeAssistant() {
+        assistant.cancel()
+        screen = assistantReturn
+    }
+
+    /** Al cerrar guiando hacia algo, se vuelve al inicio con ese botón marcado. */
+    private fun onAssistantFinished(highlight: String?) {
+        if (highlight != null) {
+            highlightedId = highlight
+            screen = Screen.HOME
+        } else {
+            screen = assistantReturn
+        }
+    }
+
+    /**
+     * La persona mayor ha dicho «Sí» (D-26). Se vuelve antes al inicio para que, al
+     * colgar o cerrar la app, sea lo que se encuentre. El contacto y su número son
+     * los guardados en Doado, nunca algo que haya dicho el modelo.
+     */
+    private fun executeAssistantAction(action: AssistantAction) {
+        screen = Screen.HOME
+        when (action) {
+            is AssistantAction.CallContact ->
+                startFirst(callIntent(action.contact.number), label = action.contact.name)
+
+            is AssistantAction.WhatsAppContact ->
+                startFirst(whatsAppIntent(action.contact.number), label = action.contact.name)
+
+            is AssistantAction.OpenApp -> openApp(action.app)
+        }
+    }
+
+    private fun setAssistantEnabled(enabled: Boolean) {
+        when {
+            !enabled -> saveAssistantSettings(assistantSettings.copy(enabled = false))
+
+            ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_GRANTED -> {
+                assistantMicDenied = false
+                saveAssistantSettings(assistantSettings.copy(enabled = true))
             }
 
-            // wa.me necesita el número internacional sin "+" ni espacios.
-            ContactAction.WHATSAPP -> Intent(
-                Intent.ACTION_VIEW,
-                Uri.parse("https://wa.me/" + internationalDigits(contact.number)),
-            ).setPackage(WHATSAPP_PACKAGE)
+            else -> requestMicPermission.launch(Manifest.permission.RECORD_AUDIO)
         }
-        startFirst(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK), label = contact.name)
+    }
+
+    private fun saveAssistantSettings(settings: AssistantSettings) {
+        assistantSettings = settings
+        settingsStore.saveAssistantSettings(settings)
     }
 
     /**

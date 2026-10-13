@@ -32,6 +32,21 @@ object DoadoDimens {
      */
     val BorderWidth = 2.dp
 
+    /**
+     * Borde de la casilla o el contacto que señala el asistente al guiar. El doble
+     * del normal para que se note también en gris, sin mover ni agrandar nada.
+     */
+    val HighlightBorderWidth = 4.dp
+
+    /** Círculo del asistente en el inicio: el pulsable más grande después de las casillas. */
+    val AssistantButtonSize = 96.dp
+
+    /**
+     * Botón de Ajustes en la esquina del inicio. Pequeño a propósito, porque es del
+     * familiar, pero muy por encima del mínimo de 48dp.
+     */
+    val CornerButtonSize = 64.dp
+
     /** Alto de una fila de ajustes y de los botones grandes. */
     val RowHeight = 88.dp
 

@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
  *
  * @param highlighted contorno de acento aunque no se esté pulsando: para marcar
  *   lo importante (el modo administrador activo, por ejemplo).
+ * @param borderWidth grosor del contorno. Solo cambia para señalar algo
+ *   ([DoadoDimens.HighlightBorderWidth], cuando guía el asistente).
  */
 @Composable
 fun DoadoCard(
@@ -63,6 +65,7 @@ fun DoadoCard(
     highlighted: Boolean = false,
     shape: RoundedCornerShape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
+    borderWidth: Dp = DoadoDimens.BorderWidth,
     content: @Composable () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -74,7 +77,7 @@ fun DoadoCard(
         pressed || highlighted -> colors.primary
         else -> colors.outline
     }
-    val border = BorderStroke(DoadoDimens.BorderWidth, borderColor)
+    val border = BorderStroke(borderWidth, borderColor)
     val background = if (pressed) colors.surfaceContainerHigh else color
 
     if (onClick == null) {
