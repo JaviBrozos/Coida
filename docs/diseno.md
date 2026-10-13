@@ -4,7 +4,7 @@
 > compartidos. Enlaza desde otros documentos; no copies las cifras. Quien manda
 > de verdad es `core/ui/`: si esto no cuadra con el código, **gana el código**.
 >
-> Última revisión: 29/09/2026.
+> Última revisión: 13/10/2026.
 
 El principio está en la ERS como requisitos medibles (RNF-ACC-01 a RNF-ACC-07).
 Aquí está el cómo.
@@ -98,6 +98,9 @@ los borres sin mirar.
 | `CardCornerRadius` | 20 dp | Radio de fila, tarjeta y botón |
 | `ControlCornerRadius` | 14 dp | Radio de control pequeño |
 | `BorderWidth` | 2 dp | Grosor de contorno |
+| `HighlightBorderWidth` | 4 dp | Contorno de la casilla o el contacto que señala el asistente al guiar (que además va relleno de acento) |
+| `AssistantButtonSize` | 96 dp | Círculo del asistente en el inicio, y la franja que le reserva la columna |
+| `CornerButtonSize` | 64 dp | Botón de Ajustes en la esquina del inicio |
 | `RowHeight` | 88 dp | Alto de fila de ajustes |
 | `ScreenPadding` | 20 dp | Margen de pantalla |
 | `GridSpacing` | 16 dp | Separación de la rejilla |
@@ -116,7 +119,25 @@ usan —`AppTile` pone 60/80 dp a pelo— y hay medidas de layout sueltas en
 - El **isotipo** tiene dos versiones porque el cian no llega a 3:1 sobre blanco:
   `ic_doado_mark` (D cian, visto marino) para fondo oscuro y
   `ic_doado_mark_light` (D marina, visto blanco) para fondo claro. Es marca, no
-  información: siempre `contentDescription = null`.
+  información: siempre `contentDescription = null`. Desde D-28 ya no sale en el
+  inicio, donde está ahora el botón de Ajustes; los ficheros se conservan.
+- **`ic_assistant` es provisional** (un micrófono). Se llama así, y no `ic_mic`,
+  para que poner el definitivo sea sustituir el fichero sin tocar código.
+
+## El inicio
+
+- **Ajustes** es un botón de 64 dp arriba a la derecha, solo con icono, contorno
+  y tono apagado (`onSurfaceVariant`). Es del familiar: lejos del pulgar.
+- **El asistente** es un círculo de 96 dp abajo en el centro, relleno `primary`
+  con el icono en `onPrimary` (7,86:1 en oscuro, 17,08:1 en claro). Al pulsarlo
+  pasa a `surfaceContainerHigh` con el icono en `onSurface` (11,35:1 y 15,18:1).
+  No se desplaza con la rejilla, y la columna le reserva su franja: **nunca tapa
+  una casilla**.
+- **Señalar sin mover**: al guiar, la casilla o el contacto se **rellena de
+  `primary`** con el contenido en `onPrimary` y el contorno a
+  `HighlightBorderWidth`, y TalkBack lo anuncia («El asistente te lo señala»). Solo
+  el borde no bastaba: en claro el contorno normal ya es del mismo marino que el
+  acento, y en gris no se distinguía.
 
 ## Componentes compartidos
 
@@ -126,7 +147,7 @@ color de acento mientras se pulsa, y el área pulsable es la pieza entera.
 
 | Componente | Cuándo |
 | --- | --- |
-| `DoadoCard` | Base de todo: casilla, fila, botón, tarjeta. `onClick = null` si no es pulsable |
+| `DoadoCard` | Base de todo: casilla, fila, botón, tarjeta. `onClick = null` si no es pulsable. `borderWidth` solo cambia para señalar algo |
 | `SettingsRow` | Fila que lleva a otra pantalla (icono, título, subtítulo, chevron) |
 | `SwitchRow` | Fila con interruptor. **Toda la fila** es el control, no la bolita |
 | `ChoiceGroup` | Opciones excluyentes en fila (tamaño de letra, tema…) |
@@ -138,6 +159,7 @@ color de acento mientras se pulsa, y el área pulsable es la pieza entera.
 | `NoteCard` | Nota explicativa, no pulsable |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
 | `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |
+| `AssistantButton` | El círculo del asistente. Vive en `assistant/ui/`, no en `core/ui/`: solo se usa en el inicio |
 
 ## El lienzo de `design/`
 

@@ -5,18 +5,18 @@
 > constantes, tamaños) los manda el código: si esto no cuadra con él, **gana el
 > código** y hay que corregir esta página.
 >
-> Última revisión: 29/09/2026.
+> Última revisión: 13/10/2026.
 
 ## Las cuatro capas
 
 ```
-Pantallas (Compose)      launcher/ y settings/. Solo pintan: reciben lo que hay
-        ↓                que enseñar y avisan de los toques hacia arriba.
+Pantallas (Compose)      launcher/, settings/ y assistant/ui/. Solo pintan:
+        ↓                reciben lo que hay que enseñar y avisan de los toques.
 LauncherActivity         Estado, navegación, permisos y todo lo que sale fuera.
-        ↓
-data/                    Repositorio del PackageManager y tres almacenes.
-        ↓
-Android                  Apps instaladas, preferencias en disco e Intents.
+        ↓          ↘
+data/          assistant/  Repositorio del PackageManager y cuatro almacenes ·
+        ↓          ↓       el asistente (micrófono, red y voz).
+Android                  Apps instaladas, preferencias, Intents, audio y red.
 ```
 
 Las pantallas no tocan Android: no conocen `Context`, `PackageManager` ni
@@ -24,13 +24,16 @@ Las pantallas no tocan Android: no conocen `Context`, `PackageManager` ni
 
 ## Navegación
 
-No hay librería de navegación: son ocho pantallas y planas.
+No hay librería de navegación: son diez pantallas y planas.
 
 - Un `enum Screen { HOME, PIN, SETTINGS, INTERFACE, CONTACTS, APPS, ADMIN,
-  CHANGE_PIN }` y un `when` en `CurrentScreen()`, dentro de `LauncherActivity`.
+  CHANGE_PIN, ASSISTANT, ASSISTANT_SETTINGS }` y un `when` en `CurrentScreen()`,
+  dentro de `LauncherActivity`.
 - `parentOf()` define la vuelta: `HOME`, `PIN` y `SETTINGS` vuelven a `HOME`;
-  todo lo demás vuelve a `SETTINGS`.
-- `BackHandler` está activo en todas menos en `HOME`.
+  `ASSISTANT` vuelve a donde se abrió (el inicio, o sus ajustes con «Probar el
+  asistente»); todo lo demás vuelve a `SETTINGS`.
+- `BackHandler` está activo en todas menos en `HOME`. En `ASSISTANT`, además,
+  cancela la escucha.
 
 ### Comportamiento de INICIO, ATRÁS y recientes
 
@@ -43,6 +46,9 @@ Esto es lo que distingue un launcher de una app normal, y es donde se rompen:
 | **ATRÁS** en el inicio | No hace nada: no se puede «salir» de la pantalla de inicio | El `BackHandler` está desactivado en `HOME` |
 | **Recientes** | Doado no aparece como tarjeta | `excludeFromRecents="true"` |
 | **Irse a otra app** estando en Ajustes | Al volver, los ajustes están cerrados y hay que repetir el PIN | `onStop()` devuelve a `HOME` (RNF-SEG-02) |
+| **Irse a otra app** con el asistente abierto | Deja de escuchar y descarta la petición. La casilla señalada se queda: apagar la pantalla no debe borrarla | `onStop()` llama a `assistant.cancel()` |
+| Asistente abierto y nadie toca | La pantalla no se apaga, para que el tiempo de apagado no cancele una pregunta | `FLAG_KEEP_SCREEN_ON` mientras `screen == ASSISTANT` |
+| **INICIO** con una casilla señalada | Se quita la marca | `onNewIntent()` pone `highlightedId = null` |
 | Volver de algo que abrió Doado | Sigues donde estabas: la tienda, el selector de contactos o los ajustes de Android no te echan | La bandera `salidaPropia` marca esa ida y vuelta |
 | Girar la pantalla | No se recrea la Activity | `configChanges` incluye `orientation` y compañía |
 
@@ -53,7 +59,8 @@ estado: al volver, Doado arranca limpio en el inicio, que es lo correcto aquí.
 
 En la propia `LauncherActivity`, con `mutableStateOf`. No hay ViewModel porque no
 hay nada asíncrono que sobreviva a la Activity, y `configChanges` evita las
-recreaciones.
+recreaciones. Lo único asíncrono, el asistente, vive en `AssistantController`, una
+clase normal con el `lifecycleScope` de la Activity (D-29).
 
 `reload()` vuelve a leer preferencias, casillas, contactos y apps instaladas. Se
 llama en `onCreate` y en **cada `onResume`**: así, si mientras tanto se instaló o
@@ -82,6 +89,8 @@ ni cambia de tipo**: se añade otra y se migra leyendo la antigua.
 | `columns` | Int, acotado a 1–2 | `2` |
 | `show_clock` | Boolean | `true` |
 | `admin_unlocked_until` | Long (epoch ms) | `0` |
+| `assistant_enabled` | Boolean | `false` |
+| `assistant_mode` | String (`ACT` \| `GUIDE`) | `GUIDE` |
 
 Los enums se leen con un ayudante que devuelve el valor por defecto si el
 guardado no existe: ante datos corruptos, la app arranca, no peta.
@@ -183,6 +192,7 @@ llano. **Ningún intent hacia fuera se lanza a pelo.**
 | Elegir pantalla de inicio | `Settings.ACTION_HOME_SETTINGS` | `Settings.ACTION_SETTINGS` |
 | Sonido y pantalla | `Settings.ACTION_SOUND_SETTINGS` | — |
 | Elegir contacto | `ACTION_PICK` sobre `Phone.CONTENT_URI` | Aviso |
+| Acción confirmada del asistente | La misma que el toque equivalente: llamar, WhatsApp o abrir casilla. Puede llamar a un contacto cuyo acceso directo abre WhatsApp, y al revés | La misma |
 
 El número se pasa a formato internacional con `PhoneNumberUtils.formatNumberToE164`
 usando el país de la SIM, luego el de la red y luego el del idioma. Si no hay
@@ -190,9 +200,19 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
 
 ## Permisos y manifiesto
 
-- **`CALL_PHONE`** es el único permiso peligroso, y se pide **al añadir un
-  contacto**, con el familiar delante, no en el inicio con la persona mayor. Si
-  se deniega, las llamadas caen al marcador y no se vuelve a pedir.
+- **`CALL_PHONE`** es peligroso y se pide **al añadir un contacto**, con el
+  familiar delante, no en el inicio con la persona mayor. Si se deniega, las
+  llamadas caen al marcador y no se vuelve a pedir.
+- **`RECORD_AUDIO`** también es peligroso y se pide **al encender el asistente**
+  en sus ajustes. Si se deniega, el interruptor se queda apagado con una nota. Si
+  alguien lo quita después, el asistente lo dice en lenguaje llano en vez de
+  pedirlo delante de la persona mayor.
+- **`INTERNET`**, solo para el asistente, y solo HTTPS
+  (`usesCleartextTraffic="false"`).
+- `<uses-feature android:name="android.hardware.microphone" android:required="false" />`,
+  igual que la telefonía.
+- El `<intent>` de `TTS_SERVICE` en `<queries>`: sin él, desde Android 11,
+  `TextToSpeech` no encuentra el motor de voz.
 - `<uses-feature android:name="android.hardware.telephony" android:required="false" />`
   para no dejar fuera tablets en Google Play.
 - **No hay `READ_CONTACTS`**: el selector de contactos concede permiso solo sobre
@@ -201,8 +221,47 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
 - La actividad: `singleTask`, `excludeFromRecents`, `stateNotNeeded`, y el
   intent-filter con `HOME` + `DEFAULT` + `LAUNCHER`.
 
-## Lo que todavía no existe
+## Asistente de voz
 
-`assistant/` solo contiene un README. El asistente es la pieza que más
-decisiones abiertas tiene: están en la ERS, sección 7. **No las cierres por tu
-cuenta.**
+Casos de uso CU-04, CU-05 y CU-15; decisiones D-25 a D-31; normas en
+`.claude/rules/asistente.md`.
+
+```
+toque en el círculo → LauncherActivity.openAssistant() → AssistantController.start()
+  VoiceRecorder      graba hasta 2,5 s de silencio, 30 s o «Ya he terminado»
+  SpeechToText       Whisper, con los nombres como pista
+  IntentInterpreter  modelo de lenguaje, respuesta en JSON (Prompts)
+  ActionCatalog      valida contra la lista blanca; lo dudoso es «no entendido»
+  → Confirm (modo «Lo hace») o Guide (modo «Explica cómo», pasos de GuideSteps)
+  → Speaker termina de hablar → pitido → vuelve a escuchar con la pantalla igual
+       VoiceReplies   «sí», «no», «siguiente», «repite», «gracias»: sin IA
+       el resto       al modelo, con los últimos 6 turnos de la conversación
+  → «Sí» (pulsado o dicho): onExecute → LauncherActivity lanza el Intent
+  → «Entendido»: onFinish → inicio con la casilla marcada (highlightedId)
+```
+
+| Pieza | Qué hace |
+| --- | --- |
+| `AssistantController` | Máquina de estados (`AssistantState`) y la conversación: reabre el micrófono al acabar de hablar (`followUpListening`) y guarda en memoria los últimos turnos. Corre en el `lifecycleScope`; `onStop` lo cancela y olvida la conversación |
+| `VoiceReplies` | Reconoce respuestas cortas sin IA. Solo cuentan si todas sus palabras son de esa respuesta o de relleno (D-31) |
+| `audio/VoiceRecorder` | `AudioRecord` a 16 kHz, fuente `VOICE_RECOGNITION`, supresor de ruido y ganancia si el móvil los tiene. Decide qué es voz comparando con el ruido de fondo. El WAV vive en memoria |
+| `audio/Speaker` | `TextToSpeech` en español a 0,85. Calla con TalkBack encendido, salvo en «Repetir». Avisa al acabar de hablar (`UtteranceProgressListener`), que es cuando se reabre el micrófono. Con TalkBack, el controlador espera lo que tarda en leer la pantalla (de 2,5 a 10 s) antes del pitido |
+| `cloud/OpenAiCompatibleClient` | `/audio/transcriptions` y `/chat/completions` con `HttpURLConnection`. Conexión 10 s, lectura 20 s. Traduce cada fallo a un `AssistantFailure` |
+| `ActionCatalog` | Da a cada contacto y casilla un id corto (`c1`, `a1`). Al modelo solo le llegan ids y nombres |
+| `GuideSteps` | Pasos fijos para guiar hacia algo de Doado, con su posición en pantalla |
+| `VoiceTuning`, `Prompts` | Tiempos de voz y prompt, cada uno en un único sitio |
+
+### Configuración del proveedor
+
+En `local.properties`, que no entra en git, y de ahí a `BuildConfig`:
+
+| Clave | Por defecto |
+| --- | --- |
+| `doado.ai.baseUrl` | `https://api.groq.com/openai/v1` |
+| `doado.ai.sttModel` | `whisper-large-v3` |
+| `doado.ai.llmModel` | `openai/gpt-oss-120b` |
+| `doado.ai.reasoningEffort` | `low` (vacío = no se envía) |
+| `doado.ai.apiKey` | vacía: sin ella el asistente no se puede encender |
+
+La clave viaja dentro del APK y se puede extraer. Vale para probar; antes de
+publicar hay que resolver CON-06.

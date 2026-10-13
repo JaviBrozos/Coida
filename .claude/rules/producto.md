@@ -2,7 +2,8 @@
 
 Doado es la pantalla de inicio de Android para una persona mayor, con unos
 ajustes detrás de un PIN para el familiar que se la configura. El asistente de
-voz con IA está pendiente y es la principal propuesta de valor del producto.
+voz con IA es la principal propuesta de valor del producto; está programado y en
+pruebas, con sus normas en `.claude/rules/asistente.md`.
 
 ## Vocabulario
 
@@ -23,7 +24,9 @@ está en la ERS, sección 6.
   un error técnico ni un diálogo que pueda romper algo.
 - **ACT-02, el familiar**: entra con PIN y configura. Es quien lee los textos
   largos, no ella.
-- **ACT-03, el asistente**: pendiente de definir.
+- **ACT-03, el asistente**: oye a la persona mayor y, según elija el familiar,
+  hace lo que pide tras confirmarlo o le explica cómo hacerlo. Solo con los
+  contactos guardados y las casillas del inicio.
 
 Fichas completas en la ERS, sección 4.1.1.
 
@@ -41,12 +44,18 @@ dilo y espera respuesta; no la cambies dentro de otra tarea.
   aparte.
 - Preferencias en `SharedPreferences`; sin base de datos.
 - Sin librería de navegación.
+- El asistente se procesa en la nube, con un cliente en formato OpenAI que
+  permite cambiar de proveedor desde `local.properties` (D-25).
+- El asistente **nunca** actúa sin un «Sí», pulsado o dicho; el dicho lo reconoce el móvil, no la IA (D-26, D-31).
+- Actuar o guiar lo elige el familiar; de fábrica, guía (D-27).
+- Se activa con el círculo fijo del inicio, no con palabra clave; Ajustes es el
+  botón pequeño de la esquina (D-28).
 
 ## Conflictos abiertos: no los cierres tú
 
-La ERS, sección 7, recoge las decisiones sin tomar, todas del asistente: dónde se
-procesa la voz, qué puede ejecutar sin confirmación, cómo se activa y si actúa o
-solo guía.
+La ERS, sección 7, recoge las decisiones sin tomar. Hoy queda una, del
+asistente: CON-06, cómo proteger la clave del servicio de IA sin servidor propio.
+No bloquea las pruebas, pero sí publicar.
 
 Si una tarea depende de una de ellas, **para y pregunta**. Son decisiones de
 producto de los dos creadores, no detalles de implementación.
@@ -54,7 +63,9 @@ producto de los dos creadores, no detalles de implementación.
 ## Lo que Doado no hace
 
 Sin servidor propio, sin cuentas, sin analítica, sin leer toda la agenda. No
-añadas permisos ni dependencias nuevas sin pedirlo antes de forma explícita.
+añadas permisos ni dependencias nuevas sin pedirlo antes de forma explícita. El
+asistente habla con un servicio externo, pero solo le manda la voz de la orden y
+nombres, nunca números de teléfono.
 
 ## Antes de proponer una función nueva
 

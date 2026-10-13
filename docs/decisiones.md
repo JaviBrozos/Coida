@@ -1,4 +1,4 @@
-c# Decisiones
+# Decisiones
 
 > **Fuente única de**: por qué Doado es como es y qué se descartó por el camino.
 > Las entradas **no se reescriben**: si una decisión cambia, se añade otra nueva
@@ -7,7 +7,7 @@ c# Decisiones
 > Las decisiones **todavía abiertas** no están aquí: viven en la ERS, sección 7,
 > y son sobre todo del asistente. No las cierres por tu cuenta.
 >
-> Última revisión: 29/09/2026.
+> Última revisión: 13/10/2026.
 
 ---
 
@@ -269,3 +269,103 @@ modo que ni cambiar la hora ni reiniciar lo acortan.
 **Consecuencia**: el familiar que se equivoca muchas veces espera hasta una hora
 entre intentos. El contador no caduca con el tiempo: solo se pone a cero con un
 acierto o al poner un PIN nuevo.
+
+### D-25 · CON-01 cerrado: la voz se procesa en la nube, con Groq para las pruebas (13/10/2026)
+
+**Contexto**: el asistente tiene que entender a una persona mayor que habla
+despacio, duda y llama a la gente por apodos. Para probar hace falta un servicio
+gratuito que se pueda cambiar después sin reescribir nada.
+**Decisión**: grabamos el audio nosotros y lo mandamos a Whisper large-v3; la
+transcripción la interpreta un modelo de lenguaje (gpt-oss), los dos en Groq. La
+respuesta la lee el motor de voz del propio móvil. El cliente habla el formato de
+OpenAI, que entienden casi todos los proveedores: cambiar de servicio es cambiar
+la URL, los modelos y la clave en `local.properties`.
+**Descartado**:
+- *Gemini gratis*: su plan gratuito no se puede usar en apps con usuarios de la
+  UE, y Google entrena con lo que se le envía.
+- *El reconocedor de Android* (`SpeechRecognizer`): no sube audio, pero decide
+  solo cuándo has terminado, y esos cortes afectan de 2 a 5 veces más a las
+  personas mayores, que hacen pausas largas (benchmark «ASR Age Gap»).
+- *Todo en el dispositivo*: hoy no entiende lenguaje libre con la calidad que hace
+  falta en un móvil corriente.
+**Consecuencia**: el asistente necesita internet y los permisos `INTERNET` y
+`RECORD_AUDIO`. Groq no entrena con los datos ni los guarda por defecto. La clave
+va dentro del APK, y eso queda abierto como CON-06.
+
+### D-26 · CON-02 cerrado: ninguna acción sin confirmación (13/10/2026)
+
+**Decisión**: antes de llamar, abrir un WhatsApp o abrir una app, el asistente
+pregunta en voz alta y por escrito («¿Llamo a María?») y espera a que se pulse
+«Sí». La pregunta la redacta el código, no el modelo.
+**Descartado**: confirmar solo las llamadas y los mensajes, y dejarlo a elección
+del familiar.
+**Consecuencia**: un toque más en cada orden, a cambio de que una transcripción
+mala nunca acabe en una llamada equivocada.
+
+### D-27 · CON-04 cerrado: actúa o guía, y lo elige el familiar (13/10/2026)
+
+**Decisión**: dos modos en Ajustes → Asistente de voz, «Lo hace» y «Explica
+cómo». De fábrica, «Explica cómo». Al guiar hacia algo de Doado, los pasos son
+fijos (no los inventa el modelo) y al terminar se marca la casilla o el contacto
+que hay que pulsar, relleno de acento y con borde grueso, sin mover nada. La marca
+se quita con un toque o con INICIO, nunca sola.
+**Descartado**: que el asistente decida en cada caso si actúa o explica.
+**Consecuencia**: quien quiere que su madre aprenda elige guiar; quien quiere que
+se las arregle, elige actuar. Las dudas sobre el móvil en general siempre se
+explican.
+
+### D-28 · CON-03 cerrado: un círculo fijo en el inicio, y Ajustes a la esquina (13/10/2026)
+
+**Decisión**: el asistente se abre con un círculo de 96 dp, abajo en el centro,
+que no se desplaza con la rejilla. La rejilla le reserva su franja, así que nunca
+tapa una casilla. Ajustes deja de ser una barra a lo ancho y pasa a un botón de
+64 dp arriba a la derecha, donde estaba el isotipo, que sale del inicio.
+**Descartado**: palabra clave o escucha permanente (micrófono siempre abierto,
+batería y falsas activaciones), y el círculo en la esquina inferior.
+**Consecuencia**: Ajustes queda lejos del pulgar de la persona mayor, que es quien
+no tiene que entrar. Con el asistente apagado no hay círculo ni franja, y la
+rejilla gana el alto que ocupaba la barra.
+
+### D-29 · El asistente vive en un controlador, sin ViewModel (13/10/2026)
+
+**Contexto**: D-09 avisaba de que el estado en la Activity se quedaría corto con
+el asistente, que es asíncrono.
+**Decisión**: `AssistantController`, una clase normal con el `lifecycleScope` de la
+Activity y su estado en `mutableStateOf`.
+**Descartado**: ViewModel, que añade dependencia y sirve para sobrevivir a
+recreaciones que aquí no hay (`configChanges`).
+**Consecuencia**: salir de Doado cancela la escucha y la petición en curso, que es
+lo que se quiere: nadie vuelve a una pregunta a medias.
+
+### D-30 · Sin dependencias nuevas para el asistente (13/10/2026)
+
+**Decisión**: `HttpURLConnection` para la red, `org.json` para el JSON,
+`AudioRecord` para grabar y `TextToSpeech` para hablar. Todo viene con Android.
+**Descartado**: OkHttp y kotlinx.serialization.
+**Consecuencia**: más líneas en el cliente HTTP (el envío del audio se monta a
+mano), pero el proyecto sigue con Compose y poco más.
+
+### D-31 · El asistente conversa, y un «sí» dicho también vale (13/10/2026)
+
+**Contexto**: pulsar el círculo para cada respuesta obligaba a la persona mayor
+a pasar de hablar a tocar y otra vez a hablar. Se pidió que el micrófono se
+volviera a abrir solo, como en una conversación.
+**Decisión**: cuando el móvil acaba de hablar, el micrófono se reabre solo, con
+un pitido corto y la pregunta todavía en pantalla. **Cambia D-26**: para actuar
+vale un «Sí» pulsado o dicho en voz alta. «Sí», «no», «siguiente», «repite» y
+«gracias» se reconocen en el propio móvil con listas cortas de palabras, y una
+respuesta solo cuenta si todas sus palabras son de esa respuesta o de relleno:
+«sí, llama a Luis» no confirma la llamada a María, va al modelo y vuelve a
+preguntar. El modelo recibe las últimas frases de la conversación (hasta seis
+turnos), que viven en memoria y se olvidan al cerrar. Si no oye nada en 10 s,
+apaga el micrófono y se queda en la misma pantalla con «Hablar otra vez». Tras
+dos «no te he entendido» seguidos tampoco lo reabre: con la tele de fondo, el
+ruido se transcribiría sin fin.
+**Descartado**: dejar el «Sí» solo pulsado, que es más seguro pero rompe la
+conversación; que la IA decida si algo es un sí, que es justo lo que no puede
+equivocarse; y cerrar el asistente tras un silencio, que haría desaparecer la
+pregunta sola.
+**Consecuencia**: una transcripción mala de un «sí» claro podría llamar a quien
+se preguntaba. La pregunta la redacta el código y nombra a la persona, y el sí
+tiene que ser corto y limpio, así que el riesgo es el de pulsar «Sí» sin leer.
+Con TalkBack, la espera antes de grabar crece con lo que acaba de leer.

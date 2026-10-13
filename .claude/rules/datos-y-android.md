@@ -34,8 +34,14 @@ paths:
   ni `excludeFromRecents` sin avisar**: un error ahí deja el móvil sin pantalla
   de inicio. El comportamiento esperado de INICIO, ATRÁS y recientes está en
   `docs/arquitectura.md`.
-- **No añadas permisos por iniciativa propia.** Hoy el único peligroso es
-  `CALL_PHONE`, y se pide al añadir un contacto, con el familiar delante.
+- **No añadas permisos por iniciativa propia.** Hoy hay tres: `CALL_PHONE` y
+  `RECORD_AUDIO`, que son peligrosos y se piden con el familiar delante (al añadir
+  un contacto y al encender el asistente), e `INTERNET`, solo para el asistente.
+  La persona mayor nunca ve un diálogo de permisos.
+- **Solo HTTPS** (`usesCleartextTraffic="false"`).
+- **`TextToSpeech` necesita su `<intent>` de `TTS_SERVICE` en `<queries>`**:
+  desde Android 11, sin él no encuentra el motor de voz y el asistente se queda
+  mudo sin dar error.
 
 ## Intents
 
@@ -51,6 +57,13 @@ paths:
 `PackageManager` hace IPC: **no lo llames desde una recomposición**. Hoy se
 resuelve en `onCreate` y en cada `onResume`, y ya es trabajo de más (está
 anotado como deuda en `docs/estado.md`). No añadas más consultas por ahí.
+
+## Secretos
+
+- **Las claves van en `local.properties`** (que está en `.gitignore`) y llegan al
+  código por `BuildConfig`. Nunca en un `.kt`, en `strings.xml` ni en un log.
+- Hoy la clave del asistente viaja dentro del APK y se puede extraer: vale para
+  probar, no para publicar (CON-06 en la ERS).
 
 ## Gradle
 

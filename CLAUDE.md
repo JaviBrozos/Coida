@@ -8,7 +8,7 @@ El móvil lo usa una persona y lo configura otra, así que la app tiene dos cara
 una pantalla de inicio fija y unos ajustes detrás de un PIN.
 
 El producto son dos piezas: el **launcher** (implementado) y el **asistente de
-voz con IA** (pendiente, y la principal propuesta de valor).
+voz con IA** (programado y en pruebas, y la principal propuesta de valor).
 
 ## Obligatorio en cada cambio
 
@@ -50,6 +50,7 @@ algo desde cero, ábrelas tú:
 - UI o Compose → `.claude/rules/ui-compose.md`
 - `data/`, manifiesto o Gradle → `.claude/rules/datos-y-android.md`
 - `res/` → `.claude/rules/recursos.md`
+- `assistant/` → `.claude/rules/asistente.md`
 
 Para auditar accesibilidad hay un subagente: `.claude/agents/accesibilidad.md`.
 
@@ -61,7 +62,7 @@ Para auditar accesibilidad hay un subagente: `.claude/agents/accesibilidad.md`.
 | --- | --- | --- |
 | **ACT-01 Persona mayor** | Llama, escribe y hace fotos desde el inicio, siempre igual. No entra en los ajustes. | Pantalla de inicio |
 | **ACT-02 Familiar o cuidador** | Configura el móvil: apps, contactos de un toque, letra y tema. | Ajustes, tras el PIN |
-| **ACT-03 Asistente de IA** | Interpreta órdenes habladas y actúa o guía. | Pendiente |
+| **ACT-03 Asistente de IA** | Interpreta órdenes habladas y, tras un «Sí», actúa; o guía. | Círculo fijo del inicio |
 
 El **modo administrador** no es un actor: es un estado de 15 minutos en el que el
 familiar abre las salidas a Android. Fichas completas en la ERS, §4.1.1.
@@ -113,7 +114,7 @@ Por feature, no por capa:
 app/src/main/java/com/doado/
 ├── launcher/   Inicio y la Activity: navegación, permisos e Intents.
 ├── settings/   Ajustes: PIN, interfaz, contactos, apps y modo administrador.
-├── assistant/  (vacío) Asistente de voz.
+├── assistant/  Asistente de voz: grabar, nube (solo en cloud/), confirmar o guiar.
 ├── core/ui/    Tema, medidas y piezas comunes. Todo lo visual bebe de aquí.
 └── data/       Apps instaladas, casillas, contactos, ajustes y PIN guardados.
 ```
@@ -132,7 +133,9 @@ adb shell cmd package set-home-activity com.doado.launcher/.LauncherActivity   #
 ```
 
 Hace falta `local.properties` con la ruta del SDK (en `.gitignore`):
-`sdk.dir=C\:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk`
+`sdk.dir=C\:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk`. Para el asistente,
+además `doado.ai.apiKey=…` (Groq); el resto de claves `doado.ai.*` están en
+`docs/arquitectura.md`. **La clave nunca va en git ni en un log.**
 
 ### Si se rompe el launcher
 

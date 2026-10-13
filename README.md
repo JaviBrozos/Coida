@@ -17,7 +17,7 @@ encarga de dejarlo a punto.
 
 | Pantalla de inicio | Entrar en los ajustes |
 | --- | --- |
-| ![Pantalla de inicio de Doado: reloj, cuatro casillas grandes y el botón de ajustes abajo](docs/capturas/inicio.png) | ![Pantalla de PIN: cuatro puntos y un teclado numérico grande](docs/capturas/pin.png) |
+| ![Pantalla de inicio de Doado: reloj y cuatro casillas grandes (captura anterior al asistente)](docs/capturas/inicio.png) | ![Pantalla de PIN: cuatro puntos y un teclado numérico grande](docs/capturas/pin.png) |
 
 | Ajustes | Modo administrador |
 | --- | --- |
@@ -31,7 +31,7 @@ encarga de dejarlo a punto.
 | --- | --- | --- |
 | **La persona mayor** | Llama, escribe, hace fotos. Todos los días, y siempre igual. | La pantalla de inicio. No llega nunca a los ajustes. |
 | **El familiar o cuidador** | Deja el móvil configurado: qué apps se ven, a quién se llama de un toque, cómo de grande es la letra. | Ajustes, detrás del PIN. |
-| **El asistente de voz** (pendiente) | Recibe órdenes habladas y las ejecuta, o guía paso a paso para hacerlas. | Por definir. |
+| **El asistente de voz** (en pruebas) | Recibe órdenes habladas y las hace tras confirmarlas, o guía paso a paso para hacerlas. | Un círculo fijo en el inicio. |
 
 Cuando el familiar necesita tocar Android por debajo —instalar apps, entrar en
 los ajustes del sistema o cambiar la pantalla de inicio— activa el **modo
@@ -43,13 +43,33 @@ administrador**, que no es un perfil aparte sino un estado que dura 15 minutos.
 
 ### Pantalla de inicio
 
-- **Reloj y fecha** grandes, con el isotipo de la marca.
+- **Reloj y fecha** grandes y, en la esquina, un **botón pequeño de Ajustes**,
+  en tono apagado y lejos del pulgar.
 - **Accesos directos de personas**: hasta cuatro contactos con su nombre. Un
   toque y les llama (o les abre WhatsApp).
 - **Casillas de aplicaciones** en una o dos columnas, que se estiran para
   ocupar la pantalla. Si una app no está instalada, su casilla **se queda en su
   sitio pero apagada**: la posición de cada icono es memoria muscular.
-- **Botón de Ajustes** abajo del todo, en tono apagado y con candado.
+- **El círculo del asistente**, abajo en el centro, si el familiar lo enciende.
+  No se mueve con la rejilla ni tapa ninguna casilla.
+
+### Asistente de voz
+
+Se pulsa el círculo y se habla con calma: espera a que la persona empiece,
+aguanta pausas largas y tiene un botón «Ya he terminado». Puede llamar o abrir el
+WhatsApp de un contacto guardado y abrir una casilla del inicio, o explicar cómo
+hacer algo con el móvil. Lo que dice en voz alta también se ve escrito.
+
+Es una conversación: cuando el móvil acaba de hablar, suena un pitido y vuelve a
+escuchar solo, así que se le puede contestar «sí», «no, mejor a Luis»,
+«siguiente» o «gracias» sin tocar nada. Lo hablado se olvida al cerrarlo.
+
+El familiar elige el modo: **«Lo hace»**, que siempre pregunta antes («¿Llamo a
+María?») y espera un «Sí», pulsado o dicho, o **«Explica cómo»**, que da los pasos de uno en uno y
+al acabar marca en el inicio el botón que hay que pulsar.
+
+La voz se entiende en la nube (hoy Groq, gratis para pruebas). Al servicio solo
+le llegan la voz y los nombres, nunca los números de teléfono.
 
 ### Ajustes, para el familiar
 
@@ -57,6 +77,7 @@ Detrás de un **PIN de cuatro cifras**, que se crea la primera vez que se entra.
 
 | Apartado | Qué permite |
 | --- | --- |
+| **Asistente de voz** | Encender el círculo del inicio (pide el permiso del micrófono) y elegir si lo hace o explica cómo. |
 | **Interfaz** | Tamaño de letra (tres niveles, encima del que ya tenga Android), una o dos casillas por fila, tema claro u oscuro, y mostrar o no el reloj. Con una maqueta en pequeño que va cambiando. |
 | **Contactos** | Elegir personas del listín del móvil, decidir si cada una llama o abre WhatsApp, y cuáles salen en el inicio (caben cuatro). |
 | **Aplicaciones** | Encender y apagar las casillas, instalar las recomendadas (WhatsApp, Sofascore) y subir al inicio cualquier otra app del móvil. |
@@ -125,7 +146,7 @@ app/src/main/java/com/doado/
 ├── launcher/       Pantalla de inicio y la Activity, que lleva la navegación
 │                   y todo lo que abre Intents.
 ├── settings/       Ajustes: PIN, interfaz, contactos, apps y modo administrador.
-├── assistant/      (vacío) Asistente de voz.
+├── assistant/      Asistente de voz: grabar, entender, confirmar o guiar.
 ├── core/ui/        Tema, medidas y las piezas comunes de interfaz.
 └── data/           Apps instaladas, casillas, contactos y ajustes guardados.
 ```
@@ -150,7 +171,7 @@ el del PIN, a propósito, no:
 | --- | --- |
 | `doado_favorites` | Qué casillas salen en el inicio y en qué orden. |
 | `doado_contacts` | Los accesos directos de personas. |
-| `doado_settings` | Tema, letra, columnas, reloj y el fin del modo administrador. |
+| `doado_settings` | Tema, letra, columnas, reloj, el asistente y el fin del modo administrador. |
 | `doado_security` | El PIN, derivado con PBKDF2 y sal (nunca en claro), y la pregunta de recuperación. |
 
 ### Visibilidad de paquetes
@@ -170,7 +191,20 @@ ruta del SDK — está en `.gitignore` porque es propio de cada equipo:
 
 ```
 sdk.dir=C\:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk
+
+# Asistente de voz: sin clave no se puede encender. Gratis en console.groq.com.
+doado.ai.apiKey=gsk_...
+# Opcionales; estos son los valores por defecto. Vale cualquier proveedor con
+# la API de OpenAI.
+# doado.ai.baseUrl=https://api.groq.com/openai/v1
+# doado.ai.sttModel=whisper-large-v3
+# doado.ai.llmModel=openai/gpt-oss-120b
+# doado.ai.reasoningEffort=low
 ```
+
+La clave acaba dentro del APK: sirve para probar, no para publicar (CON-06 en la
+ERS). En el emulador, para hablarle: *Extended controls → Microphone → Virtual
+microphone uses host audio input*.
 
 ```bash
 ./gradlew assembleDebug     # compila el APK de depuración
@@ -212,7 +246,7 @@ El producto completo son dos piezas:
 | Pieza | Estado |
 | --- | --- |
 | **Launcher** — inicio, ajustes, contactos, apps y modo administrador | implementado |
-| **Asistente de voz** | pendiente, carpeta vacía |
+| **Asistente de voz** | programado, en pruebas: falta probarlo con voz real |
 
 Probado a mano en emulador (Android 16, Pixel). **No hay pruebas automáticas**
 ni traducciones: la app está solo en español.
@@ -223,6 +257,9 @@ Lo que hay que arreglar:
 
 - **La respuesta de recuperación se guarda en claro** (normalizada), aunque fuera
   de la copia de seguridad. Es más débil que el propio PIN, que va derivado.
+
+- **La clave del servicio de voz va dentro del APK** y se puede extraer. Hay que
+  resolverlo antes de publicar (CON-06).
 
 Asumido, y escrito para no volver a discutirlo:
 

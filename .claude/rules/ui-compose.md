@@ -49,6 +49,13 @@ Los textos del inicio los lee ella; los de ajustes, el familiar.
   reordenadas ni ocultas.
 - `HOME` se pinta fuera del `Box` con `safeDrawingPadding()`; el resto de
   pantallas van dentro.
+- En el inicio, Ajustes es el botón pequeño de arriba a la derecha y el asistente,
+  el círculo flotante de abajo. La columna le reserva al círculo su franja:
+  **nada flotante puede tapar una casilla**, ni en reposo ni al desplazar.
+- Para señalar una casilla (el asistente guiando): relleno `primary`, contenido
+  `onPrimary`, `borderWidth = DoadoDimens.HighlightBorderWidth` y
+  `stateDescription` para TalkBack. Solo el borde no basta: en claro el contorno ya
+  es del color del acento. Nunca moverla, agrandarla ni hacerla parpadear.
 - Si cambias la jerarquía de pantallas (el `enum Screen` o `parentOf`),
   actualiza `docs/arquitectura.md` en el mismo commit.
 

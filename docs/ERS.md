@@ -5,8 +5,8 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.5 (borrador) |
-| Fecha | 30/09/2026 |
+| Versión | 0.6 (borrador) |
+| Fecha | 13/10/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
 
@@ -19,6 +19,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.3 | 30/09/2026 | El producto pasa a dos piezas: se retiran del alcance un caso de uso, un conflicto y dos términos del glosario. Los identificadores no se renumeran | Javier Brozos Martínez |
 | 0.4 | 30/09/2026 | CU-16 implementado y CON-05 cerrado con la pregunta de recuperación del PIN (implementada por Gonzalo el 29/09, decisión D-23) | Javier Brozos Martínez |
 | 0.5 | 30/09/2026 | RNF-SEG-03 nuevo e implementado: límite de intentos con bloqueo progresivo en la puerta de ajustes (D-24). Se corrige la excepción de CU-06 | Javier Brozos Martínez |
+| 0.6 | 13/10/2026 | Se cierran CON-01 a CON-04 (D-25 a D-27) y se abre CON-06. CU-04, CU-05 y CU-15 pasan a «En pruebas» y se detallan. RNF-PRI-02 y RNF-DIS-01 se concretan; RNF-USA-03 nuevo. CU-05 pasa a conversación, con «sí» dicho (D-31) | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -83,20 +84,20 @@ Tres actores: dos personas con distinto nivel de acceso y el asistente, que act�
 | --- | --- | --- | --- | --- |
 | ACT-01 | Persona mayor | Usuario final. Llama, escribe y hace fotos desde la pantalla de inicio, siempre de la misma forma. No entra en los ajustes. | Usuario, mayor | Actor principal. Se asume visión reducida, poca destreza con pantallas táctiles y poca experiencia previa con smartphones. |
 | ACT-02 | Familiar o cuidador | Configura el móvil tras el PIN: apps visibles, contactos de un toque, tamaño de letra y tema. Cuando necesita tocar Android por debajo (instalar apps, ajustes del sistema, cambiar la pantalla de inicio), activa el modo administrador durante 15 minutos (CU-12). | Configurador, tutor | Hereda de ACT-01. Suele estar presente de forma ocasional, no a diario. |
-| ACT-03 | Asistente de IA | Actor secundario (sistema). Interpreta órdenes habladas de ACT-01 y ejecuta acciones en el móvil, o guía paso a paso. | Asistente de voz | Pendiente de definir. Qué puede hacer sin confirmación es un conflicto abierto (sección 7). |
+| ACT-03 | Asistente de IA | Actor secundario (sistema). Interpreta órdenes habladas de ACT-01 y, según elija ACT-02, las ejecuta tras confirmar o guía paso a paso. Solo actúa sobre los contactos guardados y las casillas del inicio. | Asistente de voz | Se procesa en la nube (D-25). Nunca actúa sin un «Sí» pulsado (D-26). |
 
 El modo administrador no es un actor aparte: es un estado temporal en el que el familiar tiene más permisos. Por eso se modela como caso de uso (CU-12 a CU-14).
 
 ### 4.1.2 Casos de uso del sistema
 
-15 casos de uso: 12 ya funcionan en el launcher y los 3 pendientes son del asistente. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: el hueco entre CU-02 y CU-04 es un caso retirado del alcance.
+15 casos de uso: 12 ya funcionan en el launcher y los 3 del asistente están «En pruebas»: programados y compilados, pendientes de probar con voz real. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: el hueco entre CU-02 y CU-04 es un caso retirado del alcance.
 
 | ID | Caso de uso | Actor | Importancia | Estado | Fuente |
 | --- | --- | --- | --- | --- | --- |
 | CU-01 | Abrir una app desde el inicio | ACT-01 | Alta | Implementado | Código |
 | CU-02 | Contactar con una persona de un toque | ACT-01 | Alta | Implementado | Código |
-| CU-04 | Pedir ayuda al asistente | ACT-01, ACT-03 | Alta | Pendiente | Descripción del proyecto |
-| CU-05 | Realizar una acción por voz | ACT-01, ACT-03 | Alta | Pendiente | README |
+| CU-04 | Pedir ayuda al asistente | ACT-01, ACT-03 | Alta | En pruebas | Descripción del proyecto |
+| CU-05 | Realizar una acción por voz | ACT-01, ACT-03 | Alta | En pruebas | README |
 | CU-06 | Acceder a los ajustes con PIN | ACT-02 | Alta | Implementado | Código |
 | CU-07 | Cambiar el PIN | ACT-02 | Media | Implementado | Código |
 | CU-08 | Configurar la interfaz | ACT-02 | Alta | Implementado | Código |
@@ -106,14 +107,14 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 | CU-12 | Activar y desactivar el modo administrador | ACT-02 | Media | Implementado | Código |
 | CU-13 | Instalar una app recomendada | ACT-02 | Media | Implementado | Código |
 | CU-14 | Abrir la tienda, los ajustes de Android o cambiar el inicio | ACT-02 | Media | Implementado | Código |
-| CU-15 | Configurar el asistente | ACT-02 | Media | Pendiente | Propuesta |
+| CU-15 | Configurar el asistente | ACT-02 | Media | En pruebas | Propuesta |
 | CU-16 | Recuperar un PIN olvidado | ACT-02 | Media | Implementado | Código |
 
 Ambos figuraban como parciales en la versión 0.1 y se completaron el 29/09/2026: CU-07 pide ahora el PIN anterior antes de cambiarlo, y en CU-13 el botón deja de aparentar que instala cuando no hay modo administrador (pasa a ofrecer activarlo).
 
 #### Descripciones detalladas
 
-Se detallan los cuatro casos que más condicionan el diseño. El resto se describirá con el mismo formato conforme se validen.
+Se detallan los casos que más condicionan el diseño. El resto se describirá con el mismo formato conforme se validen.
 
 ##### CU-02. Contactar con una persona de un toque
 
@@ -190,26 +191,92 @@ Comentario: el modo no impide salir a Android de verdad; solo cierra las salidas
 | Campo | Valor |
 | --- | --- |
 | Actor | ACT-01 Persona mayor, ACT-03 Asistente de IA |
-| Descripción | La persona mayor pide algo hablando (por ejemplo, «llama a mi hija») y el asistente lo ejecuta o le guía para hacerlo. |
-| Precondición | Pendiente: cómo se activa el asistente (botón, palabra clave, siempre escuchando). |
-| Postcondición | Pendiente: la acción queda hecha o el usuario sabe cómo hacerla. |
+| Descripción | La persona mayor pide algo hablando (por ejemplo, «llama a María») y el asistente lo hace tras confirmarlo o le guía para hacerlo, según haya elegido el familiar (CU-15). |
+| Precondición | El familiar ha activado el asistente (CU-15) y el móvil tiene conexión. En el inicio se ve el círculo del asistente, abajo en el centro. |
+| Postcondición | Modo «Lo hace»: la llamada, el chat o la app quedan abiertos. Modo «Explica cómo»: el usuario ha visto los pasos y vuelve al inicio con el botón que debe pulsar marcado. |
 | Importancia | Alta |
 
-**Secuencia normal (propuesta a validar)**
+Acciones admitidas, y solo estas: llamar a un contacto guardado, abrir su WhatsApp y abrir una casilla del inicio. El número sale siempre de lo guardado, nunca de lo que diga el modelo.
 
-1. El usuario activa el asistente.
-2. El usuario dice lo que quiere.
-3. El asistente interpreta la orden y la repite en voz alta para confirmar.
-4. El usuario confirma.
-5. El asistente ejecuta la acción.
+**Secuencia normal**
 
-**Excepciones (propuesta a validar)**
+1. El usuario pulsa el círculo del asistente.
+2. El sistema escucha y muestra «Te escucho» con un botón «Ya he terminado». Da la frase por acabada tras 2,5 s de silencio o al pulsar el botón (RNF-USA-03).
+3. El sistema transcribe la voz, muestra lo que ha entendido e interpreta la orden.
+4. Modo «Lo hace»: el sistema pregunta en voz alta y por escrito («¿Llamo a María?»). Al acabar de hablar, da un pitido y vuelve a escuchar solo, con la pregunta en pantalla.
+5. El usuario pulsa «Sí» o lo dice («sí», «vale», «llámala»).
+6. El sistema vuelve al inicio y ejecuta la acción.
 
-- 3: Orden no entendida: el asistente pide que la repita o ofrece opciones.
-- 3: Orden fuera de lo permitido: el asistente explica que no puede hacerlo.
-- 4: El usuario dice que no: el asistente cancela sin hacer nada.
+La conversación sigue así tras cada respuesta del sistema: el usuario puede contestar hablando («no, mejor a Luis», «siguiente», «repite», «gracias») sin pulsar nada. El sistema recuerda lo hablado mientras el asistente está abierto (D-31).
 
-Comentario: qué acciones admite y cuáles exigen confirmación se decide en la sección 7.
+**Secuencia alternativa: modo «Explica cómo»**
+
+4. El sistema enseña y lee los pasos de uno en uno («Pulsa el botón de María. Está arriba del todo»).
+5. El usuario pasa de paso con «Siguiente» o lo vuelve a oír con «Repetir».
+6. Al terminar, el sistema vuelve al inicio con la casilla o el contacto marcado (relleno de color y borde grueso, anunciado por TalkBack), sin mover nada. La marca se quita al pulsar cualquier cosa o el botón de inicio del móvil; no desaparece sola, ni al apagarse la pantalla.
+
+**Excepciones**
+
+- 2: No se oye voz en 10 s: el sistema dice «No te he oído» y ofrece probar otra vez.
+- 3: Orden no entendida: el sistema pide que la repita. No ejecuta nada.
+- 3: Hay dudas entre varios contactos o casillas: el sistema pregunta y muestra un botón grande por opción.
+- 3: Orden fuera de lo permitido (comprar, marcar un número dictado…): el sistema explica que no puede hacerlo.
+- 3: Sin conexión, o el servicio falla: mensaje en lenguaje llano que dice qué hacer; el inicio sigue funcionando (RNF-DIS-01).
+- 5: El usuario pulsa o dice «No»: el sistema no hace nada y lo dice.
+- 5: El usuario contesta con algo que no es un sí limpio («sí, pero a Luis»): el sistema no actúa; lo interpreta como una orden nueva y vuelve a preguntar.
+- 5: El usuario no dice nada en 10 s: el sistema deja de escuchar sin dar error y se queda en la misma pantalla, con «Hablar otra vez».
+- 1..5: El usuario pulsa «Cancelar» o sale de Doado: el sistema deja de escuchar y descarta la petición. Mientras el asistente está abierto, la pantalla no se apaga sola.
+- 2: Con TalkBack, el sistema espera a que TalkBack anuncie «Te escucho» y da un pitido antes de grabar.
+
+Comentario: la confirmación es obligatoria en todas las acciones (D-26), pulsada o dicha (D-31). Las órdenes se procesan en la nube (D-25).
+
+##### CU-04. Pedir ayuda al asistente
+
+| Campo | Valor |
+| --- | --- |
+| Actor | ACT-01 Persona mayor, ACT-03 Asistente de IA |
+| Descripción | La persona mayor pregunta cómo hacer algo con el móvil («¿cómo hago una foto?») y el asistente se lo explica en pasos cortos. |
+| Precondición | La misma que CU-05. |
+| Postcondición | El usuario ha visto y oído la explicación. |
+| Importancia | Alta |
+
+**Secuencia normal**
+
+1-3. Como en CU-05.
+4. El sistema enseña y lee la explicación, en un máximo de cuatro pasos y uno a uno.
+5. El usuario pulsa «Terminar» y vuelve al inicio.
+
+**Excepciones**
+
+- Las de CU-05.
+- 3: Pregunta médica, legal o de dinero: el sistema no responde y sugiere hablarlo con la familia o el médico.
+- 3: Emergencia: el sistema indica cómo llamar al 112, pero no marca él ningún número.
+
+Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se sigue CU-05 en modo «Explica cómo», con pasos fijos y la casilla marcada. Si es sobre el móvil en general, los pasos los redacta el modelo y pueden no cuadrar con cada marca.
+
+##### CU-15. Configurar el asistente
+
+| Campo | Valor |
+| --- | --- |
+| Actor | ACT-02 Familiar o cuidador |
+| Descripción | El familiar enciende o apaga el asistente y elige si actúa o explica. |
+| Precondición | Haber entrado en los ajustes (CU-06) y que la app tenga configurado el servicio de IA. |
+| Postcondición | El círculo del asistente aparece o desaparece del inicio, con el modo elegido. |
+| Importancia | Media |
+
+**Secuencia normal**
+
+1. El usuario entra en Ajustes → Asistente de voz.
+2. El sistema explica que la voz se envía a un servicio externo para entenderla.
+3. El usuario enciende «Botón del asistente en el inicio».
+4. Si falta el permiso del micrófono, el sistema lo pide en ese momento, con el familiar delante.
+5. El usuario elige «Lo hace» o «Explica cómo». Por defecto, «Explica cómo».
+6. Opcionalmente, pulsa «Probar el asistente».
+
+**Excepciones**
+
+- 4: Se deniega el permiso: el interruptor se queda apagado y una nota explica cómo darlo.
+- 1: Sin servicio configurado: el sistema lo indica y no deja encenderlo.
 
 ### 4.2 Requisitos no funcionales
 
@@ -226,12 +293,13 @@ En DOADO los no funcionales son el núcleo del producto, no un añadido: la acce
 | RNF-ACC-07 | Accesibilidad | Compatible con lector de pantalla | Todo lo pulsable tiene etiqueta de TalkBack; los iconos con texto al lado son decorativos | CLAUDE.md |
 | RNF-USA-01 | Usabilidad | Tareas básicas sin aprendizaje | Cualquier tarea básica (abrir una app, llamar a un contacto) se hace con un solo toque desde el inicio | Código |
 | RNF-USA-02 | Usabilidad | La persona mayor no puede desconfigurar el móvil sin querer | Los ajustes y las salidas a Android solo son accesibles tras el PIN o el modo administrador | README |
+| RNF-USA-03 | Usabilidad | El asistente no corta a quien habla despacio | Espera hasta 10 s a que empiece a hablar, da la frase por acabada tras 2,5 s de silencio y corta a los 30 s. Siempre hay un botón «Ya he terminado». Todo lo que dice en voz alta se ve escrito, con «Repetir». Valores de partida en `VoiceTuning.kt`, a ajustar con personas reales | Propuesta |
 | RNF-SEG-01 | Seguridad | El PIN se guarda protegido | PIN derivado con PBKDF2 y sal aleatoria, en un fichero de preferencias propio que queda fuera de las reglas de copia de seguridad. Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Salir de Doado cierra los ajustes: al volver hay que repetir el PIN. Se exceptúa la ida y vuelta que inicia el propio Doado (tienda, selector de contactos, ajustes de Android). Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-SEG-03 | Seguridad | No se puede probar el PIN a ciegas | Un solo contador de fallos para el PIN y la respuesta de recuperación. Los fallos 1 a 4 no bloquean y, desde el cuarto de la misma visita, se ofrece volver al inicio con un botón grande; el 5.º bloquea 30 s, el 6.º 1 min, el 7.º 5 min, el 8.º 15 min y del 9.º en adelante 1 h. El bloqueo sobrevive a cerrar la app, a cambiar la hora y a reiniciar, y no afecta al inicio. Cumplido desde el 30/09/2026 | Propuesta (D-24) |
 | RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | Solo se lee el contacto elegido en el selector, sin permiso sobre toda la agenda | Código |
-| RNF-PRI-02 | Privacidad | Tratamiento de datos del asistente conforme al RGPD | Pendiente: definir qué audio y datos salen del móvil, con qué base legal y durante cuánto tiempo | Propuesta |
-| RNF-DIS-01 | Disponibilidad | Las funciones básicas funcionan sin conexión | Abrir apps y llamar no dependen de internet. Pendiente: qué hace el asistente sin conexión | Propuesta |
+| RNF-PRI-02 | Privacidad | Tratamiento de datos del asistente conforme al RGPD | Al servicio externo solo salen el audio de cada frase, su transcripción, las últimas frases de la conversación en curso y los nombres de contactos y casillas; nunca los números de teléfono. Ni el audio ni la conversación se guardan en el móvil: se olvidan al cerrar el asistente. El familiar lo acepta al activar el asistente, tras leer la nota. Pendiente antes de publicar: base legal formal y contrato con el proveedor | Propuesta |
+| RNF-DIS-01 | Disponibilidad | Las funciones básicas funcionan sin conexión | Abrir apps y llamar no dependen de internet. Sin conexión, el asistente dice en lenguaje llano que la necesita y que los botones siguen funcionando | Propuesta |
 | RNF-COM-01 | Compatibilidad | Funciona en móviles de cualquier marca | minSdk 24; favoritos definidos por acción de Android, no por paquete | CLAUDE.md |
 | RNF-IDI-01 | Idioma | Interfaz en español | Pendiente: decidir si se añade gallego | README |
 
@@ -273,14 +341,11 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 
 ## 7. Conflictos pendientes de resolución
 
-Cuatro decisiones abiertas, todas del asistente, y las cuatro bloquean su diseño. Los conflictos cerrados no se listan: CON-05 (recuperar un PIN olvidado) se resolvió el 29/09/2026 con la pregunta de recuperación, razonada en `docs/decisiones.md` (D-23).
+Una decisión abierta, del asistente. No bloquea las pruebas, pero sí publicar. Los conflictos cerrados no se listan y están razonados en `docs/decisiones.md`: CON-05 (recuperar un PIN olvidado, D-23, 29/09/2026), y el 13/10/2026 CON-01 (la voz se procesa en la nube, D-25), CON-02 (ninguna acción sin confirmación, D-26), CON-03 (botón fijo en el inicio, D-28) y CON-04 (actúa o guía, lo elige el familiar, D-27).
 
 | ID | Conflicto | Opciones | Afecta a |
 | --- | --- | --- | --- |
-| CON-01 | Dónde se procesa la voz y la IA | En el dispositivo (privado, sin conexión, menos capaz) · En la nube (más capaz, coste y RGPD) · Mixto | CU-04, CU-05, RNF-PRI-02, RNF-DIS-01 |
-| CON-02 | Qué acciones puede ejecutar el asistente sin confirmación | Ninguna · Solo las reversibles (abrir una app) · Todas las configuradas por el familiar | CU-05, CU-15 |
-| CON-03 | Cómo se activa el asistente | Botón fijo en el inicio · Palabra clave · Ambos | CU-04, CU-05 |
-| CON-04 | Alcance del asistente: actúa o solo guía | Ejecuta acciones · Explica paso a paso cómo hacerlas · Ambas según el caso | CU-04, CU-05 |
+| CON-06 | Cómo se protege la clave del servicio de IA sin servidor propio | Clave dentro de la app (hoy; se puede extraer del APK) · Un intermediario mínimo (rompe «sin servidor propio») · Que cada familiar ponga su propia clave | CU-04, CU-05, RNF-PRI-02 |
 
 ## Apéndices
 
@@ -290,4 +355,4 @@ Cada reunión entre los creadores se registra con el formato de acta (código AC
 
 ### Anexo B. Prototipos de pantallas
 
-Las pantallas del launcher ya están diseñadas en la carpeta [design](../design) del repositorio y capturadas en [docs/capturas](capturas). Pendiente: prototipos del asistente.
+Las pantallas del launcher ya están diseñadas en la carpeta [design](../design) del repositorio y capturadas en [docs/capturas](capturas). El asistente se programó sin prototipo previo; sus capturas quedan pendientes, y las del inicio se han quedado viejas (Ajustes ya no es una barra, D-28).
