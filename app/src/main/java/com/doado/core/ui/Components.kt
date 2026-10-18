@@ -139,10 +139,9 @@ internal fun rememberClickFeedback(): () -> Unit {
 }
 
 /**
- * Plato hundido con un icono de acento: a la izquierda de filas y tarjetas, y
- * dentro de las casillas del inicio. El plato es del color del fondo de pantalla,
- * así el icono se lee igual sobre una casilla que sobre la pantalla (cian sobre
- * tinta 7,86:1, marino sobre Mist 15,18:1).
+ * Icono de acento a la izquierda de filas y tarjetas. Por defecto va sin plato,
+ * solo la silueta (D-35): cian sobre la casilla 6,34:1, marino sobre blanco
+ * 17,08:1. [plate] queda para el círculo del asistente, que sí lo lleva.
  */
 @Composable
 fun IconBadge(
@@ -150,7 +149,7 @@ fun IconBadge(
     modifier: Modifier = Modifier,
     size: Dp = 48.dp,
     tint: Color = MaterialTheme.colorScheme.primary,
-    plate: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    plate: Color = Color.Transparent,
     shape: Shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius),
 ) {
     Box(

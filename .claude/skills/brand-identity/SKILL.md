@@ -5,6 +5,11 @@ description: "Design or evaluate a brand visual identity system covering logo, c
 
 # Brand Identity
 
+> Origen: skill «Brand Identity» del registro claudskills.com (colección
+> rampstackco/claude-skills), descargada el 18/10/2026. Adaptada: sin las
+> referencias a otras skills de esa colección que no están en este proyecto.
+> En Doado mandan sus normas: la accesibilidad va por delante de la estética.
+
 Design or evaluate the visual artifacts that express a brand: logo system, color, typography, imagery, iconography, and motion. Stack-agnostic. Tool-agnostic.
 
 This skill assumes a brand direction is already approved (positioning, mood, name). If not, define it first.

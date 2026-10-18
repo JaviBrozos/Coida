@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Auricular descolgado en trazo. Se mantiene la curva del auricular (no la barra recta, que a tamaño grande se confunde con una pesa). -->
+<!-- Teléfono: auricular de esquinas suaves. Lenguaje común de los iconos (D-34): rejilla de 24, trazo 1,7, puntas y uniones redondas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -11,5 +11,5 @@
         android:strokeWidth="1.7"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M6.4,3.6 h3.2 l1.5,4 l-2.1,1.5 a12.5,12.5 0 0,0 6,6 l1.5,-2.1 l4,1.5 v3.2 a1.6,1.6 0 0,1 -1.7,1.6 A16.8,16.8 0 0,1 4.8,5.3 a1.6,1.6 0 0,1 1.6,-1.7 z" />
+        android:pathData="M5.2,3.8 h3 a1,1 0 0,1 0.95,0.68 l1.15,3.45 a1,1 0 0,1 -0.3,1.07 l-1.6,1.4 a12.5,12.5 0 0,0 5.2,5.2 l1.4,-1.6 a1,1 0 0,1 1.07,-0.3 l3.45,1.15 a1,1 0 0,1 0.68,0.95 v3 a1.6,1.6 0 0,1 -1.7,1.6 C10.6,20.4 3.6,13.4 3.6,5.5 a1.6,1.6 0 0,1 1.6,-1.7 z" />
 </vector>

@@ -4,7 +4,7 @@
 > (obligación de `CLAUDE.md`). Máximo unas 50 líneas: lo antiguo se borra, el
 > historial completo está en git. El estado de cada caso de uso vive en la ERS.
 
-**Última actualización: 18/10/2026 · Javier Brozos**
+**Última actualización: 19/10/2026 · Javier Brozos**
 
 ## Dónde estamos
 
@@ -39,15 +39,18 @@
    con guion («Men-sajes»). Se leen, pero siguen en dos líneas.
 5. Auditoría de seguridad del 30/09: la respuesta de recuperación en claro.
 6. Sacar el `PackageManager` del hilo principal (riesgo de ANR en Play).
+7. Ver en el emulador los iconos nuevos y sin plato (D-34, D-35), en los dos
+   temas y con una casilla señalada por el asistente.
+8. Decidir con Gonzalo la propuesta de marca (`docs/propuestas/marca.md`): logo
+   «Botón» y letra Atkinson Hyperlegible Next, pendientes. Arregla además el
+   icono adaptativo, que hoy lleva un cuadrado dentro.
 
-Deuda menor: sin pruebas automáticas, solo español, isotipo sin usar (D-28),
-capturas viejas y contrastes desfasados en `Color.kt`.
+Deuda menor: sin pruebas automáticas, solo español, isotipo sin usar (D-28) y
+capturas viejas.
 
 ## Registro
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 19/10 | Javier | Auditoría de la identidad visual (agente `auditor-marca`, skill `brand-identity`): 19 iconos redibujados (D-34) y sin plato en casillas y filas (D-35); contrastes corregidos en `Color.kt` y la documentación; logo y letra nuevos, pendientes, en `docs/propuestas/marca.md` |
 | 18/10 | Javier | Fuera las apps «Recomendadas» de Ajustes → Aplicaciones (D-33, CU-13 retirado, ERS 0.7): las instaladas salen en «Otras apps» |
-| 18/10 | Javier | Interfaz más profesional (D-32) con la skill `apple-design` en el proyecto y sus límites en `ui-compose.md`; el PIN pinta la cuarta cifra y comprueba fuera del hilo de la pantalla; teclado del PIN más pequeño y centrado; nombres partidos por sílabas |
-| 13/10 | Javier | Propuesta de CON-06 para hablar con Gonzalo: intermediario con suscripción, costes y obligaciones (`docs/propuestas/`) |
-| 13/10 | Javier | Asistente en modo conversación (D-31): micrófono que se reabre al acabar de hablar, «sí/no/siguiente/gracias» reconocidos en el móvil, memoria de seis turnos, tope de dos malentendidos, prompt que tutea |

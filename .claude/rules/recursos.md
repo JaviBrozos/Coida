@@ -23,13 +23,16 @@ paths:
 
 ## Iconos
 
-- **De trazo**: lienzo de 24×24, `strokeWidth` 1,7, puntas y uniones redondas,
+- **De trazo**: lienzo de 24×24, zona viva de 20, `strokeWidth` 1,7, puntas y
+  uniones redondas, radio 3 en contenedores y el círculo como motivo (D-34),
   `fillColor="#00000000"` y `strokeColor="#FF000000"` para que el tint del tema
   los recoloree.
 - Siluetas reconocibles a tamaño grande. Nada de iconografía fina, abstracta ni
   decorativa, y **nunca emoji**.
 - El isotipo tiene dos versiones (`ic_doado_mark` y `ic_doado_mark_light`) porque
   el cian no llega a 3:1 sobre blanco. Usa la que toque según el fondo.
+- Los iconos van sin plato detrás (D-35): `IconBadge` solo lleva plato si se lo
+  pasas, como el círculo del asistente.
 
 ## Otros
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Aplicaciones: tres casillas y una por añadir. -->
+<!-- Aplicaciones: tres casillas y un círculo. Lenguaje común de los iconos (D-34): rejilla de 24, trazo 1,7, puntas y uniones redondas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
@@ -11,33 +11,26 @@
         android:strokeWidth="1.7"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M6,4 h3 a2,2 0 0,1 2,2 v3 a2,2 0 0,1 -2,2 h-3 a2,2 0 0,1 -2,-2 v-3 a2,2 0 0,1 2,-2 z" />
+        android:pathData="M6.5,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="1.7"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M15,4 h3 a2,2 0 0,1 2,2 v3 a2,2 0 0,1 -2,2 h-3 a2,2 0 0,1 -2,-2 v-3 a2,2 0 0,1 2,-2 z" />
+        android:pathData="M15,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="1.7"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M6,13 h3 a2,2 0 0,1 2,2 v3 a2,2 0 0,1 -2,2 h-3 a2,2 0 0,1 -2,-2 v-3 a2,2 0 0,1 2,-2 z" />
+        android:pathData="M6.5,13 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="1.7"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M16.5,13.5 v6" />
-    <path
-        android:fillColor="#00000000"
-        android:strokeColor="#FF000000"
-        android:strokeWidth="1.7"
-        android:strokeLineCap="round"
-        android:strokeLineJoin="round"
-        android:pathData="M13.5,16.5 h6" />
+        android:pathData="M12.5,16.75 a3.75,3.75 0 1,0 7.5,0 a3.75,3.75 0 1,0 -7.5,0" />
 </vector>

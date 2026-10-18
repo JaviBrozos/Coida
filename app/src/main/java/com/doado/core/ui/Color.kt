@@ -8,22 +8,22 @@ import androidx.compose.ui.graphics.Color
  * Regla de la casa: nada por debajo de 4.5:1 de contraste, y para texto y bordes
  * apuntamos a 7:1 (nivel AAA de WCAG). Por eso el color "protagonista" de la marca
  * en superficies claras es el azul marino y no el cian: el cian de la marca sobre
- * blanco se queda en ~2.2:1, insuficiente para texto o iconos, así que se reserva
+ * blanco se queda en 2,32:1, insuficiente para texto o iconos, así que se reserva
  * para acentos grandes y para el modo oscuro.
  */
 
 // --- Marca -----------------------------------------------------------------
 
-/** Azul marino del logotipo. Sobre blanco da ~16.8:1. */
+/** Azul marino del logotipo. Sobre blanco da 17,08:1. */
 val DoadoNavy = Color(0xFF0B1D2E)
 
 /** Cian del logotipo. Solo para áreas grandes, nunca para texto sobre blanco. */
 val DoadoCyan = Color(0xFF29B6F0)
 
-/** Cian oscurecido hasta llegar a ~4.6:1 sobre blanco: apto para texto secundario. */
+/** Cian oscurecido: 6,71:1 sobre blanco, apto para texto secundario. */
 val DoadoCyanDeep = Color(0xFF10618F)
 
-/** Cian aclarado para el modo oscuro: ~9.5:1 sobre negro. */
+/** Cian aclarado para el modo oscuro: 11,94:1 sobre negro, 10,38:1 sobre [DoadoInk]. */
 val DoadoCyanLight = Color(0xFF6CCFFA)
 
 // --- Neutros ---------------------------------------------------------------
@@ -31,7 +31,7 @@ val DoadoCyanLight = Color(0xFF6CCFFA)
 val DoadoWhite = Color(0xFFFFFFFF)
 val DoadoBlack = Color(0xFF000000)
 
-/** Fondo de tarjeta en claro: azul muy tenue, mantiene 15.9:1 con el texto marino. */
+/** Fondo de tarjeta en claro: azul muy tenue, mantiene 15,18:1 con el texto marino. */
 val DoadoMist = Color(0xFFE9F3FA)
 val DoadoMistDim = Color(0xFFDCEBF5)
 

@@ -20,30 +20,14 @@ object DoadoDimens {
     /** Alto mínimo de una casilla del grid de favoritos. */
     val TileMinHeight = 168.dp
 
-    /** Icono de trazo dentro de la casilla de dos columnas: tres cuartos de su plato. */
+    /** Icono de la casilla de dos columnas, directamente sobre ella (D-35). */
     val TileIconSize = 72.dp
 
-    /** Icono de trazo dentro de la casilla de una columna, también tres cuartos del plato. */
+    /** Icono de la casilla de una columna, que va en horizontal. */
     val TileIconSizeCompact = 54.dp
 
-    /**
-     * Radio de casilla. Va a juego con el del plato del icono que lleva dentro
-     * ([PlateCornerRadius]): dos curvas que no casan es lo que hace que algo
-     * parezca hecho deprisa.
-     */
+    /** Radio de casilla y de contacto del inicio. */
     val TileCornerRadius = 28.dp
-
-    /**
-     * Plato del icono en una casilla de dos columnas: el cuadrado hundido detrás
-     * del dibujo, que da a todas las casillas el mismo peso aunque unas lleven un
-     * icono de trazo y otras el de la app.
-     */
-    val TilePlateSize = 96.dp
-
-    /** Plato del icono en una casilla de una columna, que va en horizontal. */
-    val TilePlateSizeCompact = 72.dp
-
-    val PlateCornerRadius = 20.dp
 
     /** Círculo con la inicial de un contacto del inicio. */
     val AvatarSize = 52.dp

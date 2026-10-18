@@ -104,6 +104,7 @@ fun AssistantScreen(
         IconBadge(
             icon = R.drawable.ic_assistant,
             size = DoadoDimens.AssistantBadgeSize,
+            plate = MaterialTheme.colorScheme.surfaceContainerLowest,
             shape = CircleShape,
         )
 

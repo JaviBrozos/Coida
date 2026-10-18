@@ -1,23 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--
-    Asistente de voz: un micrófono. PROVISIONAL. Se llama ic_assistant y no ic_mic
-    a propósito: para poner el icono definitivo basta con sustituir este fichero,
-    sin tocar código. Mismas normas que el resto: trazo de 1,7 en rejilla de 24.
--->
+<!-- Asistente de voz: micrófono. Cápsula, horquilla y pie corto. Lenguaje común de los iconos (D-34): rejilla de 24, trazo 1,7, puntas y uniones redondas. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="24dp"
     android:height="24dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <!-- Cápsula del micrófono. -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="1.7"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M9,6 a3,3 0 0,1 6,0 v5 a3,3 0 0,1 -6,0 z" />
-    <!-- Soporte en U. -->
+        android:pathData="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z" />
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
@@ -25,12 +19,11 @@
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
         android:pathData="M5.5,11 a6.5,6.5 0 0,0 13,0" />
-    <!-- Pie. -->
     <path
         android:fillColor="#00000000"
         android:strokeColor="#FF000000"
         android:strokeWidth="1.7"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"
-        android:pathData="M12,17.5 v3.5 M9,21 h6" />
+        android:pathData="M12,17.5 V20.5 M9.5,20.5 H14.5" />
 </vector>

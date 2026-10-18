@@ -17,7 +17,8 @@ import androidx.compose.ui.graphics.Color
  *  · primary          -> iconos de acento, botón principal, estado activo.
  *  · surfaceContainer -> fondo de casillas y filas.
  *  · surfaceContainerHigh -> casilla pulsada y fondo de las notas.
- *  · surfaceContainerLowest -> plato hundido detrás de un icono o una inicial.
+ *  · surfaceContainerLowest -> plato hundido detrás de una inicial y del micrófono
+ *    del asistente. Los iconos de casillas y filas van sin plato (D-35).
  *  · outline          -> contorno de casillas y botones.
  *  · onSurfaceVariant -> texto secundario.
  *  · outlineVariant   -> contenido apagado (app no disponible, acción bloqueada).
@@ -48,10 +49,10 @@ private val DoadoLightColors = lightColorScheme(
     surface = DoadoWhite,
     onSurface = DoadoNavy,
     surfaceVariant = DoadoMist,
-    // Cian oscurecido: ~4.6:1 sobre blanco, cumple AA aun siendo secundario.
+    // Cian oscurecido: 6,71:1 sobre blanco, cumple AA aun siendo secundario.
     onSurfaceVariant = DoadoCyanDeep,
 
-    // El plato hundido de los iconos (ver [IconBadge]): marino sobre Mist, 15,18:1.
+    // El plato de iniciales y del asistente: marino sobre Mist, 15,18:1.
     surfaceContainerLowest = DoadoMist,
     surfaceContainerLow = DoadoWhite,
     surfaceContainer = DoadoWhite,
@@ -102,8 +103,7 @@ private val DoadoDarkColors = darkColorScheme(
     surfaceVariant = DoadoSurfaceHigh,
     onSurfaceVariant = DoadoTextMuted,
 
-    // El plato hundido de los iconos: cian sobre tinta, 7,86:1. Sobre el fondo de
-    // pulsado se quedaba en 5,27:1.
+    // El plato de iniciales y del asistente: cian sobre tinta, 7,86:1.
     surfaceContainerLowest = DoadoInk,
     surfaceContainerLow = DoadoInk,
     surfaceContainer = DoadoSurface,

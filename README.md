@@ -110,7 +110,7 @@ se volverá a cerrar.
 > **Toda UI nueva prioriza la accesibilidad sobre la estética.**
 
 - **Contraste**: mínimo 4,5:1 con el fondo; para texto y bordes se busca 7:1. El
-  cian de la marca se queda en 2,2:1 sobre blanco, así que **no se usa para
+  cian de la marca se queda en 2,32:1 sobre blanco, así que **no se usa para
   texto ni iconos sobre fondo claro**.
 - **Objetivo táctil**: nunca por debajo de 48 dp. En la práctica, mucho más: las
   casillas del inicio pasan de 168 dp.

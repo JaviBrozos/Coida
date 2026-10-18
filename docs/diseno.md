@@ -16,10 +16,10 @@ alrededor. Definidos en `core/ui/Color.kt`.
 
 | Token | Hex | Para qué | Contraste |
 | --- | --- | --- | --- |
-| `DoadoNavy` | `#0B1D2E` | Marca. Texto y bordes en el tema claro | 16,8:1 sobre blanco |
-| `DoadoCyan` | `#29B6F0` | Acento: iconos, estado activo, botón principal | 7,3:1 sobre tinta · **2,2:1 sobre blanco** |
+| `DoadoNavy` | `#0B1D2E` | Marca. Texto y bordes en el tema claro | 17,08:1 sobre blanco |
+| `DoadoCyan` | `#29B6F0` | Acento: iconos, estado activo, botón principal | 7,86:1 sobre tinta · **2,32:1 sobre blanco** |
 | `DoadoCyanDeep` | `#10618F` | Texto secundario en el tema claro | 6,71:1 sobre blanco |
-| `DoadoCyanLight` | `#6CCFFA` | Reservado para oscuro | 9,5:1 sobre negro |
+| `DoadoCyanLight` | `#6CCFFA` | Reservado para oscuro | 10,38:1 sobre tinta |
 | `DoadoInk` | `#0A1622` | Fondo del tema oscuro | — |
 | `DoadoSurface` | `#122A3E` | Casilla y fila elevadas | 13:1 con el texto |
 | `DoadoSurfaceHigh` | `#17384F` | Pulsada, y cuadrito tras un icono | — |
@@ -53,7 +53,7 @@ funciona en los dos temas. Definido en `core/ui/Theme.kt`.
 | `background` / `onBackground` | Fondo de pantalla y su texto | Tinta / Texto | Blanco / Marino |
 | `surfaceContainer` | Fondo de casillas y filas | `DoadoSurface` | Blanco |
 | `surfaceContainerHigh` | Pulsada, y relleno de las notas | `DoadoSurfaceHigh` | Mist |
-| `surfaceContainerLowest` | Plato hundido de iconos e iniciales (cian 7,86:1, marino 15,18:1) | Tinta | Mist |
+| `surfaceContainerLowest` | Plato de las iniciales y del micrófono del asistente (cian 7,86:1, marino 15,18:1) | Tinta | Mist |
 | `onSurface` | Texto sobre una casilla | Texto | Marino |
 | `onSurfaceVariant` | Texto secundario | TextMuted | CyanDeep |
 | `outline` | Contorno | `DoadoLine` | Marino |
@@ -66,7 +66,8 @@ borde, no por sombra ni por elevación**.
 
 `core/ui/Type.kt`: la escala de Material multiplicada por ~1,5, con más grosor
 (el trazo fino se pierde a tamaño grande) e interletrado a 0 (el negativo de
-Material apelmaza el texto cuando se amplía). Todo en `sp`.
+Material apelmaza el texto cuando se amplía). Todo en `sp`. Hay una propuesta
+pendiente de cambiar la letra en `docs/propuestas/marca.md`.
 
 | Estilo | Tamaño | Dónde se usa |
 | --- | --- | --- |
@@ -94,9 +95,7 @@ los borres sin mirar.
 | `MinTouchTarget` | 48 dp | Suelo innegociable de cualquier pulsable |
 | `ComfortableTouchTarget` | 72 dp | Lo normal para un botón suelto |
 | `TileMinHeight` | 168 dp | Alto mínimo de una casilla (en el inicio suelen salir ~260) |
-| `TileIconSize` / `TileIconSizeCompact` | 72 / 54 dp | Icono dentro del plato, en dos columnas / en una (tres cuartos del plato) |
-| `TilePlateSize` / `TilePlateSizeCompact` | 96 / 72 dp | Plato hundido del icono de una casilla |
-| `PlateCornerRadius` | 20 dp | Radio del plato |
+| `TileIconSize` / `TileIconSizeCompact` | 72 / 54 dp | Icono de una casilla, sin plato (D-35), en dos columnas / en una |
 | `TileCornerRadius` | 28 dp | Radio de casilla y de contacto del inicio |
 | `AvatarSize` | 52 dp | Círculo con la inicial de un contacto del inicio |
 | `CardCornerRadius` | 20 dp | Radio de fila, tarjeta y botón |
@@ -121,6 +120,11 @@ al token.
 ## Iconografía
 
 - **De trazo**, dibujados sobre rejilla de 24 con grosor 1,7 y puntas redondas.
+  Mismo lenguaje en todos (D-34): zona viva de 20, radio 3 en los contenedores grandes
+  (2,5 en los pequeños) y el círculo como motivo donde tiene sentido: objetivo de
+  la cámara, cabeza, tiradores de los ajustes, cerradura, centro del engranaje y
+  la cuarta casilla de «Aplicaciones». «Volver» es una flecha con asta, no un
+  ángulo suelto.
   Rellenos escalados a 100 px se ven hinchados; el trazo aguanta cualquier
   tamaño y se recolorea con el tint.
 - Se tiñen con un rol del tema, nunca con un color escrito.
@@ -129,18 +133,19 @@ al token.
   `ic_doado_mark` (D cian, visto marino) para fondo oscuro y
   `ic_doado_mark_light` (D marina, visto blanco) para fondo claro. Es marca, no
   información: siempre `contentDescription = null`. Desde D-28 ya no sale en el
-  inicio, donde está ahora el botón de Ajustes; los ficheros se conservan.
-- **`ic_assistant` es provisional** (un micrófono). Se llama así, y no `ic_mic`,
-  para que poner el definitivo sea sustituir el fichero sin tocar código.
+  inicio, donde está ahora el botón de Ajustes; los ficheros se conservan. Hay
+  una propuesta pendiente de logo nuevo en `docs/propuestas/marca.md`.
+- **`ic_assistant` es un micrófono.** Se llama así, y no `ic_mic`, para que
+  cambiarlo sea sustituir el fichero sin tocar código.
 
 ## El inicio
 
 - **Ajustes** es un círculo de 64 dp arriba a la derecha, solo con icono, contorno
   y tono apagado (`onSurfaceVariant`). Es del familiar: lejos del pulgar. Redondo
   como el del asistente: lo que flota fuera de la rejilla no parece una casilla.
-- **Casillas**: el icono va sobre un plato hundido (`surfaceContainerLowest`), que
-  iguala el peso de los iconos de trazo y los de las apps. Una app que no está va
-  sin plato, para que el gris no pierda contraste.
+- **Casillas**: el icono va directamente sobre la casilla, sin plato (D-35): solo
+  su silueta dentro del contorno. Vale igual para los iconos de trazo y para los
+  de las apps. En la casilla que señala el asistente, el icono va en `onPrimary`.
 - **Contactos**: la inicial en un círculo, el nombre y debajo la acción escrita.
   Con la letra por encima de 1,3 se quita la inicial, para que el nombre no se
   parta.
@@ -174,8 +179,8 @@ apagada, no suena). Las pantallas cambian con un fundido de 180 ms (D-32).
 | `OutlineButton` | Acción secundaria, solo contorno |
 | `ScreenHeader` | Cabecera de ajustes: «Volver» escrito, y debajo título y subtítulo a todo lo ancho |
 | `SectionLabel` | Rótulo de un grupo de filas |
-| `IconBadge` | Icono de acento sobre su plato hundido |
-| `InitialBadge` | La inicial de un nombre sobre el mismo plato; decorativa para TalkBack |
+| `IconBadge` | Icono de acento, sin plato salvo el del asistente |
+| `InitialBadge` | La inicial de un nombre sobre un plato; decorativa para TalkBack |
 | `NoteCard` | Nota explicativa, no pulsable: relleno y contorno |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
 | `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |

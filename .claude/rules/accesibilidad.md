@@ -13,7 +13,7 @@ RNF-ACC-07). Los valores concretos —paleta, escala, medidas— en `docs/diseno
   `core/ui/Color.kt`. Si de verdad hace falta uno nuevo, propónlo con su ratio de
   contraste calculado **antes** de usarlo.
 - **El cian de marca nunca para texto ni iconos sobre fondo claro**: se queda en
-  2,2:1. Ahí manda el marino.
+  2,32:1. Ahí manda el marino.
 - **Contraste**: 4,5:1 como mínimo; 7:1 es lo que se busca para texto y bordes.
   Se mide contra el fondo real sobre el que cae el texto, no contra el de la
   pantalla.

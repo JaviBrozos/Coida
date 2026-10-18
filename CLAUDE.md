@@ -37,7 +37,7 @@ Ningún cambio está terminado sin esto, lo haga una persona o Claude:
 | Paleta, tipografía, medidas, iconos y componentes | [`docs/diseno.md`](docs/diseno.md) |
 | Por qué algo es como es y qué se descartó | [`docs/decisiones.md`](docs/decisiones.md) |
 | Qué hay hecho, qué falta y quién hizo qué | [`docs/estado.md`](docs/estado.md) |
-| Propuestas en discusión, antes de decidirlas (hoy, CON-06) | [`docs/propuestas/`](docs/propuestas) |
+| Propuestas en discusión, antes de decidirlas (hoy, CON-06 y la marca) | [`docs/propuestas/`](docs/propuestas) |
 | Presentación en diez láminas, con PDF | [`design/presentacion/`](design/presentacion) |
 | Vista para alguien de fuera | [`README.md`](README.md) |
 
@@ -55,6 +55,11 @@ algo desde cero, ábrelas tú:
 
 Para auditar accesibilidad hay un subagente: `.claude/agents/accesibilidad.md`.
 Toda UI nueva pasa por él antes de darse por hecha.
+
+Para la marca (logo, icono, color de marca, logotipo) hay otro subagente,
+`.claude/agents/auditor-marca.md`, que trabaja con la skill
+`.claude/skills/brand-identity/`. La propuesta de logo y letra, pendiente, está en
+`docs/propuestas/marca.md`, con su material en `design/propuestas-marca/`.
 
 Hay una skill de diseño en el proyecto, `.claude/skills/apple-design/` (de Emil
 Kowalski, licencia MIT): los principios de Apple para interfaces. Sirve de
@@ -81,7 +86,7 @@ Si se rompe uno, se rompe el producto.
 2. **Las casillas no cambian de sitio.** Una app que falta se pinta apagada, pero
    no se quita: la posición es memoria muscular.
 3. **Nada de color dinámico** (Material You): no garantiza el contraste.
-4. **El cian de marca nunca para texto ni iconos sobre fondo claro** (2,2:1).
+4. **El cian de marca nunca para texto ni iconos sobre fondo claro** (2,32:1).
    Para eso está el marino.
 5. **Los ajustes van detrás del PIN**, y las salidas a Android detrás del modo
    administrador.

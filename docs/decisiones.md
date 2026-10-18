@@ -408,3 +408,33 @@ revisar, y que nombraba a apps concretas dentro del producto.
 **Consecuencia**: instalar una app pide un paso más, buscarla en la tienda.
 Desaparece también la puesta automática en el inicio de lo que se instalaba
 desde ahí.
+
+### D-34 · Iconos redibujados con un mismo lenguaje (19/10/2026)
+
+**Contexto**: los iconos cumplían D-11, pero cada uno tenía sus radios y
+proporciones. Una auditoría de la identidad visual
+(`docs/propuestas/marca.md`) pidió darles un acabado más profesional.
+**Decisión**: se redibujan los 19 con las reglas de D-11 (rejilla de 24, trazo
+1,7, puntas redondas, teñidos por el tema) y además: zona viva de 20, radio 3 en
+los contenedores grandes y 2,5 en los pequeños, y el círculo como motivo
+(objetivo, cabeza, tiradores, cerradura, centro del engranaje). «Volver» pasa a
+flecha con asta y «Aplicaciones» lleva un círculo como cuarta casilla, en lugar
+del «+».
+**Descartado**: iconos rellenos o de dos tonos, que a 72 dp se ven pesados
+(D-11), y librerías de terceros.
+**Consecuencia**: mismos nombres de fichero, así que el código no cambia.
+
+### D-35 · Los iconos van sin plato (19/10/2026)
+
+**Contexto**: D-32 puso los iconos de casillas y filas sobre un plato hundido.
+Se pidió quitar ese cuadrado y dejar solo la silueta dentro del contorno de la
+casilla, también para los iconos de las demás apps.
+**Decisión**: sustituye a esa parte de D-32. Iconos de trazo e iconos de apps van
+directamente sobre la casilla o la fila. En una casilla señalada por el
+asistente, el icono pasa a `onPrimary`. El plato se queda solo en las iniciales
+de los contactos y en el círculo del micrófono de la pantalla del asistente.
+**Descartado**: mantener el plato, que hacía de cuadrado dentro del cuadrado.
+**Consecuencia**: el cian queda a 6,34:1 sobre la casilla y a 5,27:1 sobre el
+fondo de pulsado, por encima del 3:1 que piden los gráficos (antes, 7,86:1 sobre
+el plato). Desaparecen `TilePlateSize`, `TilePlateSizeCompact` y
+`PlateCornerRadius`.
