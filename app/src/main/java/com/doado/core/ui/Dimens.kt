@@ -20,10 +20,62 @@ object DoadoDimens {
     /** Alto mínimo de una casilla del grid de favoritos. */
     val TileMinHeight = 168.dp
 
-    /** Tamaño del icono dentro de la casilla. */
+    /** Icono de trazo dentro de la casilla de dos columnas: tres cuartos de su plato. */
     val TileIconSize = 72.dp
 
-    val TileCornerRadius = 22.dp
+    /** Icono de trazo dentro de la casilla de una columna, también tres cuartos del plato. */
+    val TileIconSizeCompact = 54.dp
+
+    /**
+     * Radio de casilla. Va a juego con el del plato del icono que lleva dentro
+     * ([PlateCornerRadius]): dos curvas que no casan es lo que hace que algo
+     * parezca hecho deprisa.
+     */
+    val TileCornerRadius = 28.dp
+
+    /**
+     * Plato del icono en una casilla de dos columnas: el cuadrado hundido detrás
+     * del dibujo, que da a todas las casillas el mismo peso aunque unas lleven un
+     * icono de trazo y otras el de la app.
+     */
+    val TilePlateSize = 96.dp
+
+    /** Plato del icono en una casilla de una columna, que va en horizontal. */
+    val TilePlateSizeCompact = 72.dp
+
+    val PlateCornerRadius = 20.dp
+
+    /** Círculo con la inicial de un contacto del inicio. */
+    val AvatarSize = 52.dp
+
+    /**
+     * Separador entre las filas de un grupo de ajustes. Del mismo grosor que un
+     * contorno: separa dos pulsables distintos, y a 1dp, en oscuro (3,18:1), era
+     * la frontera más débil de la app. No sale doble raya: solo la pinta la fila
+     * de abajo. (Un número y no [BorderWidth], que se declara más abajo y aquí
+     * aún valdría cero.)
+     */
+    val DividerWidth = 2.dp
+
+    /** Alto del botón «Volver» de las cabeceras de ajustes. */
+    val BackButtonHeight = 60.dp
+
+    /** Alto mínimo de una tecla del PIN: crece con la letra, nunca baja de aquí. */
+    val PinKeyHeight = 64.dp
+
+    /** Ancho máximo del teclado del PIN, centrado: más ancho, las teclas eran losas. */
+    val PinPadMaxWidth = 320.dp
+
+    /** Círculo con el micrófono arriba de la pantalla del asistente. No es pulsable. */
+    val AssistantBadgeSize = 64.dp
+
+    /**
+     * Escala de letra (la del sistema por la de Doado) a partir de la que hay que
+     * dejar sitio al texto: el contacto del inicio pierde la inicial y las opciones
+     * de un [ChoiceGroup] pasan a columna. Es la de «Muy grande» con Android en
+     * normal. No es una medida, pero vive con ellas porque decide el reparto.
+     */
+    const val LargeTextScale = 1.3f
 
     /**
      * Grosor de contorno de casillas, filas y botones. Con el contorno en un tono

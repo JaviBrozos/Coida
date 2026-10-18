@@ -16,7 +16,8 @@ import androidx.compose.ui.graphics.Color
  * Convención de roles que usan las pantallas de Doado (en los dos esquemas):
  *  · primary          -> iconos de acento, botón principal, estado activo.
  *  · surfaceContainer -> fondo de casillas y filas.
- *  · surfaceContainerHigh -> casilla pulsada y cuadrito detrás de un icono.
+ *  · surfaceContainerHigh -> casilla pulsada y fondo de las notas.
+ *  · surfaceContainerLowest -> plato hundido detrás de un icono o una inicial.
  *  · outline          -> contorno de casillas y botones.
  *  · onSurfaceVariant -> texto secundario.
  *  · outlineVariant   -> contenido apagado (app no disponible, acción bloqueada).
@@ -50,7 +51,8 @@ private val DoadoLightColors = lightColorScheme(
     // Cian oscurecido: ~4.6:1 sobre blanco, cumple AA aun siendo secundario.
     onSurfaceVariant = DoadoCyanDeep,
 
-    surfaceContainerLowest = DoadoWhite,
+    // El plato hundido de los iconos (ver [IconBadge]): marino sobre Mist, 15,18:1.
+    surfaceContainerLowest = DoadoMist,
     surfaceContainerLow = DoadoWhite,
     surfaceContainer = DoadoWhite,
     surfaceContainerHigh = DoadoMist,
@@ -100,6 +102,8 @@ private val DoadoDarkColors = darkColorScheme(
     surfaceVariant = DoadoSurfaceHigh,
     onSurfaceVariant = DoadoTextMuted,
 
+    // El plato hundido de los iconos: cian sobre tinta, 7,86:1. Sobre el fondo de
+    // pulsado se quedaba en 5,27:1.
     surfaceContainerLowest = DoadoInk,
     surfaceContainerLow = DoadoInk,
     surfaceContainer = DoadoSurface,

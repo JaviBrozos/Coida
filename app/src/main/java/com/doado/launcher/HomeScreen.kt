@@ -1,7 +1,6 @@
 package com.doado.launcher
 
 import android.text.format.DateFormat
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -43,6 +42,8 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -55,6 +56,7 @@ import com.doado.assistant.ui.AssistantButton
 import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
+import com.doado.core.ui.InitialBadge
 import com.doado.data.AppIcon
 import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
@@ -186,7 +188,10 @@ private fun HomeHeaderContent(now: Long, showClock: Boolean, onSettingsClick: ()
                 val time = remember(now) { DateFormat.getTimeFormat(context).format(Date(now)) }
                 val date = remember(now, locale) {
                     val pattern = DateFormat.getBestDateTimePattern(locale, "EEEEdMMMM")
+                    // En español el día sale en minúscula («domingo, 18 de
+                    // octubre»); suelta, en su línea, se lee como un titular.
                     SimpleDateFormat(pattern, locale).format(Date(now))
+                        .replaceFirstChar { it.titlecase(locale) }
                 }
                 Text(
                     text = time,
@@ -225,10 +230,12 @@ private fun HomeHeaderContent(now: Long, showClock: Boolean, onSettingsClick: ()
 @Composable
 private fun SettingsCornerButton(onClick: () -> Unit) {
     val label = stringResource(R.string.cd_open_settings)
+    // Redondo, a juego con el círculo del asistente: las dos piezas que flotan
+    // fuera de la rejilla comparten forma, y ninguna se confunde con una casilla.
     DoadoCard(
         onClick = onClick,
         color = Color.Transparent,
-        shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius),
+        shape = CircleShape,
         modifier = Modifier
             .size(DoadoDimens.CornerButtonSize)
             .semantics { contentDescription = label },
@@ -337,6 +344,7 @@ private fun ContactTile(
     )
     val clickLabel = stringResource(R.string.cd_contact_action, actionText, shortcut.name)
     val unavailableLabel = stringResource(R.string.cd_contact_unavailable, shortcut.name)
+    val showInitial = LocalDensity.current.fontScale < DoadoDimens.LargeTextScale
     val highlightedLabel = stringResource(R.string.cd_highlighted)
     // Señalado por el asistente: relleno de acento, como las casillas (AppTile).
     val contentColor = when {
@@ -355,6 +363,7 @@ private fun ContactTile(
         enabled = contact.isAvailable,
         highlighted = highlighted,
         color = if (highlighted) colors.primary else colors.surfaceContainer,
+        shape = RoundedCornerShape(DoadoDimens.TileCornerRadius),
         borderWidth = if (highlighted) DoadoDimens.HighlightBorderWidth else DoadoDimens.BorderWidth,
         modifier = modifier
             .heightIn(min = 104.dp)
@@ -372,26 +381,28 @@ private fun ContactTile(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            Box(
-                modifier = Modifier
-                    .size(52.dp)
-                    .background(colors.surfaceContainerHigh, CircleShape),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    painter = painterResource(
-                        if (shortcut.action == ContactAction.WHATSAPP) R.drawable.ic_messages
-                        else R.drawable.ic_call,
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier.size(28.dp),
-                    tint = if (contact.isAvailable) colors.primary else colors.outlineVariant,
-                )
-            }
+            // La inicial, como en la agenda de cualquier móvil: se reconoce a la
+            // persona antes de leer el nombre. Con la letra grande se quita: le
+            // robaba al nombre el ancho que necesita para no partirse.
+            if (showInitial) InitialBadge(
+                name = shortcut.name,
+                size = DoadoDimens.AvatarSize,
+                shape = CircleShape,
+                color = if (contact.isAvailable) colors.primary else colors.outlineVariant,
+                plate = when {
+                    !contact.isAvailable -> colors.surfaceContainer
+                    highlighted -> colors.onPrimary
+                    else -> colors.surfaceContainerLowest
+                },
+            )
             Column(modifier = Modifier.weight(1f)) {
+                // Como en las casillas: si el nombre no cabe, se parte por sílabas.
                 Text(
                     text = shortcut.name,
-                    style = MaterialTheme.typography.titleSmall,
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        hyphens = Hyphens.Auto,
+                        lineBreak = LineBreak.Paragraph,
+                    ),
                     color = contentColor,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

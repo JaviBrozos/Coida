@@ -1,32 +1,17 @@
 package com.doado.data
 
-import androidx.annotation.StringRes
-import com.doado.R
+/** Paquete de WhatsApp: los contactos de un toque escriben por ahí (D-15). */
+const val WHATSAPP_PACKAGE = "com.whatsapp"
 
 /**
- * Apps que Doado propone instalar desde Ajustes → Aplicaciones.
+ * Nombre de las apps que Doado conoce por su paquete. Sirve para pintar la
+ * casilla apagada de una app que se ha desinstalado, que ya no tiene nombre en
+ * Android: sin esto saldría «com.whatsapp».
  *
- * A diferencia de los favoritos de fábrica, aquí sí se fija el paquete: no hay
- * una "acción de Android" genérica que signifique "WhatsApp". Cualquier otra app
- * instalada se puede añadir igualmente desde la lista de apps del móvil.
+ * Antes eran las apps que Doado proponía instalar desde Ajustes; esa sección se
+ * quitó (D-33) y solo queda el nombre.
  */
-data class SuggestedApp(
-    val packageName: String,
-    val label: String,
-    @param:StringRes val descriptionRes: Int,
+val KnownAppLabels: Map<String, String> = mapOf(
+    WHATSAPP_PACKAGE to "WhatsApp",
+    "com.sofascore.results" to "Sofascore",
 )
-
-val SuggestedApps: List<SuggestedApp> = listOf(
-    SuggestedApp(
-        packageName = WHATSAPP_PACKAGE,
-        label = "WhatsApp",
-        descriptionRes = R.string.suggested_whatsapp_description,
-    ),
-    SuggestedApp(
-        packageName = "com.sofascore.results",
-        label = "Sofascore",
-        descriptionRes = R.string.suggested_sofascore_description,
-    ),
-)
-
-const val WHATSAPP_PACKAGE = "com.whatsapp"

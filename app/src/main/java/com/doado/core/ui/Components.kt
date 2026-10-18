@@ -4,16 +4,20 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -26,16 +30,34 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.drawOutline
+import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipRect
+import androidx.compose.ui.graphics.drawscope.inset
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.paneTitle
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -47,6 +69,13 @@ import androidx.compose.ui.unit.dp
  * Todas siguen la misma receta: superficie plana con contorno de 2dp (nunca
  * sombra), el contorno pasa al color de acento mientras se pulsa, y el área
  * pulsable es la pieza entera, nunca un botoncito dentro.
+ *
+ * Al pulsar, además, el móvil da un toque de vibración cuando el toque cuenta:
+ * quien tiene el pulso o la vista cansados nota que ha acertado sin tener que
+ * mirar. Va en el toque y no al apoyar el dedo, que en una lista que se desplaza
+ * vibraría también al arrastrar, confirmando algo que no ha pasado. Es la
+ * vibración de teclado de Android: si la persona la tiene apagada en el sistema,
+ * aquí tampoco suena.
  */
 
 /**
@@ -63,7 +92,7 @@ fun DoadoCard(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     highlighted: Boolean = false,
-    shape: RoundedCornerShape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
+    shape: Shape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
     borderWidth: Dp = DoadoDimens.BorderWidth,
     content: @Composable () -> Unit,
@@ -71,6 +100,7 @@ fun DoadoCard(
     val colors = MaterialTheme.colorScheme
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
+    val feedback = rememberClickFeedback()
 
     val borderColor = when {
         !enabled -> colors.outlineVariant
@@ -86,8 +116,10 @@ fun DoadoCard(
         }
     } else {
         Surface(
-            onClick = onClick,
-            modifier = modifier,
+            onClick = { feedback(); onClick() },
+            // El Surface pulsable de Material no dice que es un botón; sin esto
+            // TalkBack decía «botón» en unas piezas y en otras no.
+            modifier = modifier.semantics { role = Role.Button },
             enabled = enabled,
             shape = shape,
             color = background,
@@ -99,21 +131,32 @@ fun DoadoCard(
     }
 }
 
-/** Cuadrito con un icono de acento, a la izquierda de filas y tarjetas. */
+/** El toque de vibración de un toque que cuenta. Ver la cabecera del fichero. */
+@Composable
+internal fun rememberClickFeedback(): () -> Unit {
+    val haptic = LocalHapticFeedback.current
+    return remember(haptic) { { haptic.performHapticFeedback(HapticFeedbackType.VirtualKey) } }
+}
+
+/**
+ * Plato hundido con un icono de acento: a la izquierda de filas y tarjetas, y
+ * dentro de las casillas del inicio. El plato es del color del fondo de pantalla,
+ * así el icono se lee igual sobre una casilla que sobre la pantalla (cian sobre
+ * tinta 7,86:1, marino sobre Mist 15,18:1).
+ */
 @Composable
 fun IconBadge(
     @DrawableRes icon: Int,
     modifier: Modifier = Modifier,
     size: Dp = 48.dp,
     tint: Color = MaterialTheme.colorScheme.primary,
+    plate: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    shape: Shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius),
 ) {
     Box(
         modifier = modifier
             .size(size)
-            .background(
-                MaterialTheme.colorScheme.surfaceContainerHigh,
-                RoundedCornerShape(DoadoDimens.ControlCornerRadius),
-            ),
+            .background(plate, shape),
         contentAlignment = Alignment.Center,
     ) {
         Icon(
@@ -125,7 +168,46 @@ fun IconBadge(
     }
 }
 
-/** Cabecera de las pantallas de ajustes: volver, título y una frase de contexto. */
+/**
+ * La inicial de un nombre sobre el mismo plato que [IconBadge]: el contacto del
+ * inicio y las apps de la lista de ajustes. Es decoración: el nombre ya va
+ * escrito al lado, y TalkBack no la lee: dentro de una fila que es un solo nodo
+ * pulsable, la arrastraría al principio y leería «W, WhatsApp, interruptor».
+ * Tampoco imita el logotipo de ninguna app.
+ */
+@Composable
+fun InitialBadge(
+    name: String,
+    modifier: Modifier = Modifier,
+    size: Dp = 48.dp,
+    color: Color = MaterialTheme.colorScheme.primary,
+    plate: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
+    shape: Shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius),
+) {
+    Box(
+        modifier = modifier
+            .clearAndSetSemantics {}
+            .size(size)
+            .background(plate, shape),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = name.trim().take(1).uppercase(),
+            style = MaterialTheme.typography.titleSmall,
+            color = color,
+        )
+    }
+}
+
+/**
+ * Cabecera de las pantallas de ajustes: «Volver» arriba, y debajo el título y
+ * una frase de contexto a todo lo ancho.
+ *
+ * El título va solo en su línea para que a letra grande no tenga que compartirla
+ * con el botón y se parta en tres. El botón lleva la palabra escrita, no solo la
+ * flecha: el familiar no tiene por qué saber qué significa un icono. Para
+ * TalkBack dice adónde vuelve («Volver a ajustes»), que empieza por lo que se ve.
+ */
 @Composable
 fun ScreenHeader(
     title: String,
@@ -134,28 +216,44 @@ fun ScreenHeader(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
+    // Título de panel: al llegar a la pantalla, TalkBack dice dónde está. Sin él,
+    // con la pantalla anterior ya fuera de su árbol, no anunciaba nada.
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .semantics { paneTitle = title },
+        verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         DoadoCard(
             onClick = onBack,
             modifier = Modifier
-                .size(DoadoDimens.ComfortableTouchTarget - 12.dp),
-            shape = RoundedCornerShape(16.dp),
+                .heightIn(min = DoadoDimens.BackButtonHeight)
+                .semantics { contentDescription = backLabel },
+            shape = CircleShape,
             color = Color.Transparent,
         ) {
-            Box(contentAlignment = Alignment.Center) {
+            Row(
+                modifier = Modifier.padding(start = 14.dp, end = 22.dp, top = 8.dp, bottom = 8.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+            ) {
                 Icon(
                     painter = painterResource(com.doado.R.drawable.ic_back),
-                    contentDescription = backLabel,
+                    contentDescription = null,
                     modifier = Modifier.size(28.dp),
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+                // Fuera del árbol de TalkBack: si no, leería la etiqueta y luego
+                // otra vez «Volver».
+                Text(
+                    text = stringResource(com.doado.R.string.back),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    modifier = Modifier.clearAndSetSemantics {},
                 )
             }
         }
-        Column(modifier = Modifier.weight(1f)) {
+        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
@@ -181,9 +279,39 @@ fun SectionLabel(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.labelMedium,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier
-            .padding(top = 8.dp)
+            .padding(top = 12.dp, start = 4.dp)
             .semantics { heading() },
     )
+}
+
+/**
+ * Dónde cae una fila dentro de un grupo de ajustes.
+ *
+ * Las filas de un mismo apartado van juntas en un solo bloque con contorno, y
+ * entre ellas una raya fina; no cada una en su caja. Es el mismo contenido con
+ * la mitad de líneas, y se ve de un vistazo qué filas son del mismo apartado.
+ */
+enum class GroupPosition {
+    Single, First, Middle, Last;
+
+    internal val roundsTop get() = this == Single || this == First
+    internal val roundsBottom get() = this == Single || this == Last
+
+    companion object {
+        /** La posición de la fila [index] de un grupo de [count] filas. */
+        fun of(index: Int, count: Int): GroupPosition = when {
+            count <= 1 -> Single
+            index == 0 -> First
+            index == count - 1 -> Last
+            else -> Middle
+        }
+    }
+}
+
+/** Grupo de filas que van pegadas, sin el hueco de [SettingsColumn] entre ellas. */
+@Composable
+fun SettingsGroup(modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
+    Column(modifier = modifier.fillMaxWidth(), content = content)
 }
 
 /** Fila de ajustes que lleva a otra pantalla. */
@@ -195,24 +323,31 @@ fun SettingsRow(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     highlighted: Boolean = false,
+    position: GroupPosition = GroupPosition.Single,
 ) {
-    DoadoCard(
-        onClick = onClick,
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(min = DoadoDimens.RowHeight),
+    val interaction = remember { MutableInteractionSource() }
+    val feedback = rememberClickFeedback()
+    GroupedRow(
+        position = position,
+        interaction = interaction,
         highlighted = highlighted,
+        minHeight = DoadoDimens.RowHeight,
+        modifier = modifier,
+        interactive = Modifier.clickable(
+            interactionSource = interaction,
+            indication = ripple(),
+            role = Role.Button,
+            onClick = { feedback(); onClick() },
+        ),
     ) {
-        RowContent {
-            IconBadge(icon)
-            TitleAndSubtitle(title, subtitle, Modifier.weight(1f))
-            Icon(
-                painter = painterResource(com.doado.R.drawable.ic_chevron_right),
-                contentDescription = null,
-                modifier = Modifier.size(24.dp),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
-        }
+        IconBadge(icon)
+        TitleAndSubtitle(title, subtitle, Modifier.weight(1f))
+        Icon(
+            painter = painterResource(com.doado.R.drawable.ic_chevron_right),
+            contentDescription = null,
+            modifier = Modifier.size(24.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
@@ -228,22 +363,108 @@ fun SwitchRow(
     modifier: Modifier = Modifier,
     subtitle: String? = null,
     leading: (@Composable () -> Unit)? = null,
+    position: GroupPosition = GroupPosition.Single,
+) {
+    val interaction = remember { MutableInteractionSource() }
+    val feedback = rememberClickFeedback()
+    GroupedRow(
+        position = position,
+        interaction = interaction,
+        highlighted = false,
+        minHeight = DoadoDimens.ComfortableTouchTarget,
+        modifier = modifier,
+        interactive = Modifier.toggleable(
+            value = checked,
+            interactionSource = interaction,
+            indication = ripple(),
+            role = Role.Switch,
+            onValueChange = { feedback(); onCheckedChange(it) },
+        ),
+    ) {
+        leading?.invoke()
+        TitleAndSubtitle(title, subtitle, Modifier.weight(1f))
+        DoadoSwitchVisual(checked)
+    }
+}
+
+/**
+ * Lo común a las filas de un grupo: fondo, contorno compartido y estado pulsado.
+ *
+ * El contorno no es el de un `Surface`, porque entonces entre dos filas saldría
+ * una línea doble. Cada fila pinta solo su parte: los lados, la curva si es la
+ * primera o la última, y arriba la raya fina que la separa de la anterior.
+ * Pulsada o resaltada, se recorta entera en acento, como cualquier otra pieza.
+ */
+@Composable
+private fun GroupedRow(
+    position: GroupPosition,
+    interaction: MutableInteractionSource,
+    highlighted: Boolean,
+    minHeight: Dp,
+    modifier: Modifier,
+    interactive: Modifier,
+    content: @Composable RowScope.() -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
-    Surface(
+    val pressed by interaction.collectIsPressedAsState()
+    val radius = DoadoDimens.CardCornerRadius
+    val shape = RoundedCornerShape(
+        topStart = if (position.roundsTop) radius else 0.dp,
+        topEnd = if (position.roundsTop) radius else 0.dp,
+        bottomStart = if (position.roundsBottom) radius else 0.dp,
+        bottomEnd = if (position.roundsBottom) radius else 0.dp,
+    )
+    val outline = colors.outline
+    val accent = colors.primary
+    val showAccent = pressed || highlighted
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(min = DoadoDimens.ComfortableTouchTarget)
-            .toggleable(value = checked, role = Role.Switch, onValueChange = onCheckedChange),
-        shape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
-        color = colors.surfaceContainer,
-        border = BorderStroke(DoadoDimens.BorderWidth, colors.outline),
+            .heightIn(min = minHeight)
+            .drawWithContent {
+                drawContent()
+                val stroke = DoadoDimens.BorderWidth.toPx()
+                val r = radius.toPx()
+                // Donde sigue otra fila, el contorno se alarga por fuera y se
+                // recorta: así de ese lado solo quedan los laterales, rectos.
+                val overflow = r + stroke
+                val top = if (position.roundsTop) stroke / 2 else -overflow
+                val bottom = if (position.roundsBottom) size.height - stroke / 2 else size.height + overflow
+                clipRect {
+                    drawRoundRect(
+                        color = outline,
+                        topLeft = Offset(stroke / 2, top),
+                        size = Size(size.width - stroke, bottom - top),
+                        cornerRadius = CornerRadius(r - stroke / 2),
+                        style = Stroke(stroke),
+                    )
+                }
+                if (!position.roundsTop) {
+                    val divider = DoadoDimens.DividerWidth.toPx()
+                    drawLine(
+                        color = outline,
+                        start = Offset(stroke, divider / 2),
+                        end = Offset(size.width - stroke, divider / 2),
+                        strokeWidth = divider,
+                    )
+                }
+                if (showAccent) {
+                    inset(stroke / 2) {
+                        drawOutline(
+                            outline = shape.createOutline(this.size, layoutDirection, this),
+                            color = accent,
+                            style = Stroke(stroke),
+                        )
+                    }
+                }
+            }
+            .clip(shape)
+            .background(if (pressed) colors.surfaceContainerHigh else colors.surfaceContainer)
+            .then(interactive),
+        contentAlignment = Alignment.CenterStart,
     ) {
-        RowContent {
-            leading?.invoke()
-            TitleAndSubtitle(title, subtitle, Modifier.weight(1f))
-            DoadoSwitchVisual(checked)
-        }
+        RowContent(content)
     }
 }
 
@@ -267,7 +488,14 @@ fun DoadoSwitchVisual(checked: Boolean, modifier: Modifier = Modifier) {
     }
 }
 
-/** Grupo de opciones excluyentes en fila (tamaño de letra, tema...). */
+/**
+ * Grupo de opciones excluyentes (tamaño de letra, tema...), como un selector
+ * segmentado: un solo marco y la opción elegida rellena de acento.
+ *
+ * En fila solo caben dos opciones con letra normal. Con tres, o con la letra
+ * grande, cada opción va en su línea a todo lo ancho: en fila, «Muy grande» se
+ * partía en «gran/de» justo en el selector del tamaño de letra.
+ */
 @Composable
 fun ChoiceGroup(
     options: List<String>,
@@ -275,36 +503,76 @@ fun ChoiceGroup(
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val colors = MaterialTheme.colorScheme
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .selectableGroup(),
-        horizontalArrangement = Arrangement.spacedBy(10.dp),
-    ) {
-        options.forEachIndexed { index, label ->
-            val selected = index == selectedIndex
-            val shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius)
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .heightIn(min = 64.dp)
-                    .background(if (selected) colors.primary else colors.surfaceContainer, shape)
-                    .border(DoadoDimens.BorderWidth, if (selected) colors.primary else colors.outline, shape)
-                    .selectable(selected = selected, role = Role.RadioButton, onClick = { onSelect(index) })
-                    .padding(horizontal = 6.dp, vertical = 8.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = label,
-                    style = MaterialTheme.typography.labelMedium,
-                    color = if (selected) colors.onPrimary else colors.onSurface,
-                    textAlign = TextAlign.Center,
+    val outer = RoundedCornerShape(DoadoDimens.ControlCornerRadius + SEGMENT_GAP)
+    val stacked = options.size > 2 || LocalDensity.current.fontScale >= DoadoDimens.LargeTextScale
+    val frame = modifier
+        .fillMaxWidth()
+        .border(DoadoDimens.BorderWidth, MaterialTheme.colorScheme.outline, outer)
+        .padding(SEGMENT_GAP)
+        .selectableGroup()
+
+    if (stacked) {
+        Column(modifier = frame, verticalArrangement = Arrangement.spacedBy(SEGMENT_GAP)) {
+            options.forEachIndexed { index, label ->
+                ChoiceSegment(label, index == selectedIndex, { onSelect(index) }, Modifier.fillMaxWidth())
+            }
+        }
+    } else {
+        // Todas miden lo mismo de alto aunque una se parta en dos líneas.
+        Row(
+            modifier = frame.height(IntrinsicSize.Min),
+            horizontalArrangement = Arrangement.spacedBy(SEGMENT_GAP),
+        ) {
+            options.forEachIndexed { index, label ->
+                ChoiceSegment(
+                    label,
+                    index == selectedIndex,
+                    { onSelect(index) },
+                    Modifier
+                        .weight(1f)
+                        .fillMaxHeight(),
                 )
             }
         }
     }
 }
+
+@Composable
+private fun ChoiceSegment(label: String, selected: Boolean, onClick: () -> Unit, modifier: Modifier) {
+    val colors = MaterialTheme.colorScheme
+    val interaction = remember { MutableInteractionSource() }
+    val pressed by interaction.collectIsPressedAsState()
+    val feedback = rememberClickFeedback()
+    Box(
+        modifier = modifier
+            .heightIn(min = 56.dp)
+            .clip(RoundedCornerShape(DoadoDimens.ControlCornerRadius))
+            .background(
+                when {
+                    selected -> colors.primary
+                    pressed -> colors.surfaceContainerHigh
+                    else -> Color.Transparent
+                },
+            )
+            .selectable(
+                selected = selected,
+                interactionSource = interaction,
+                indication = ripple(),
+                role = Role.RadioButton,
+                onClick = { feedback(); onClick() },
+            )
+            .padding(horizontal = 6.dp, vertical = 8.dp),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = if (selected) colors.onPrimary else colors.onSurface,
+            textAlign = TextAlign.Center,
+        )
+    }
+}
+
 
 /** Botón principal: relleno de acento. Uno por pantalla como mucho. */
 @Composable
@@ -361,7 +629,13 @@ fun OutlineButton(
     }
 }
 
-/** Nota explicativa: icono de información y una o dos frases. No es pulsable. */
+/**
+ * Nota explicativa: icono de información y una o dos frases. No es pulsable.
+ *
+ * Lleva relleno, que la distingue de botones y filas, y además contorno: solo
+ * el relleno se quedaba en 1,13:1 contra el fondo en claro (1,49:1 en oscuro),
+ * que es separar por elevación, lo que D-04 descarta.
+ */
 @Composable
 fun NoteCard(
     text: String,
@@ -371,13 +645,17 @@ fun NoteCard(
     Row(
         modifier = modifier
             .fillMaxWidth()
+            .background(
+                MaterialTheme.colorScheme.surfaceContainerHigh,
+                RoundedCornerShape(DoadoDimens.CardCornerRadius),
+            )
             .border(
                 DoadoDimens.BorderWidth,
                 MaterialTheme.colorScheme.outline,
                 RoundedCornerShape(DoadoDimens.CardCornerRadius),
             )
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
+            .padding(horizontal = 18.dp, vertical = 16.dp),
+        horizontalArrangement = Arrangement.spacedBy(14.dp),
     ) {
         Icon(
             painter = painterResource(icon),
@@ -387,10 +665,12 @@ fun NoteCard(
                 .size(26.dp),
             tint = MaterialTheme.colorScheme.primary,
         )
+        // Texto principal y no secundario: sobre el relleno de la nota el
+        // secundario bajaba a 6,65:1 en oscuro y 5,97:1 en claro.
         Text(
             text = text,
             style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.onSurface,
         )
     }
 }
@@ -459,3 +739,6 @@ private fun ButtonContent(text: String, @DrawableRes icon: Int?, contentColor: C
         )
     }
 }
+
+/** Hueco entre el marco de un [ChoiceGroup] y sus opciones. */
+private val SEGMENT_GAP = 6.dp

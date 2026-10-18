@@ -116,9 +116,10 @@ class InstalledAppsRepository(context: Context) {
         val id = FavoritesStore.packageId(packageName)
         val info = applicationInfo(packageName)
         if (info == null || !isInstalled(packageName)) {
-            // Desinstalada: la casilla se queda en su sitio, apagada.
-            val label = SuggestedApps.firstOrNull { it.packageName == packageName }?.label
-                ?: packageName
+            // Desinstalada: la casilla se queda en su sitio, apagada. Android ya no
+            // sabe su nombre; si Doado tampoco, un texto llano y no «com.algo.app».
+            val label = KnownAppLabels[packageName]
+                ?: appContext.getString(R.string.app_removed_label)
             return FavoriteApp(id, label, AppIcon.Vector(R.drawable.ic_apps), null)
         }
         val icon = info.loadIcon(packageManager).toBitmap(ICON_PX, ICON_PX).asImageBitmap()

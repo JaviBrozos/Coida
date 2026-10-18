@@ -1,13 +1,16 @@
 package com.doado.launcher
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +24,8 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,10 +39,14 @@ import com.doado.data.AppIcon
 import com.doado.data.FavoriteApp
 
 /**
- * Una casilla del grid de inicio: icono grande y nombre grande.
+ * Una casilla del grid de inicio: icono grande sobre su plato y nombre grande.
  *
  * Con dos columnas va en vertical (icono arriba, nombre debajo); con una columna
  * pasa a horizontal, que en un móvil estrecho aprovecha mejor el ancho.
+ *
+ * El icono va sobre un plato hundido del color del fondo. Así las casillas pesan
+ * lo mismo lleven un icono de trazo de Doado o el de la app, y el cian se lee a
+ * 7,86:1 en vez de a los 5,27:1 que daba sobre el fondo de pulsado.
  *
  * Decisiones de accesibilidad:
  *  · Toda la casilla es el área pulsable, muy por encima del mínimo de 48dp.
@@ -47,7 +56,8 @@ import com.doado.data.FavoriteApp
  *    el texto de la casilla, y anunciarlo dos veces solo estorba.
  *  · Si la app no está, la casilla se queda en su sitio, apagada y avisando.
  *  · [highlighted] la señala el asistente al guiar: rellena de acento y con borde
- *    grueso, sin moverla ni agrandarla, y TalkBack lo dice.
+ *    grueso, sin moverla ni agrandarla, y TalkBack lo dice. El plato se invierte
+ *    para que el icono siga en el color de acento.
  */
 @Composable
 fun AppTile(
@@ -65,10 +75,13 @@ fun AppTile(
         highlighted -> colors.onPrimary
         else -> colors.onSurface
     }
-    val iconTint = when {
-        !app.isAvailable -> colors.outlineVariant
+    val iconTint = if (app.isAvailable) colors.primary else colors.outlineVariant
+    // Sin plato si la app no está: el gris de apagado baja a 5,07:1 sobre Mist
+    // y se queda en 5,71:1 sobre la casilla blanca.
+    val plate = when {
+        !app.isAvailable -> colors.surfaceContainer
         highlighted -> colors.onPrimary
-        else -> colors.primary
+        else -> colors.surfaceContainerLowest
     }
 
     val openLabel = stringResource(R.string.cd_open_app, app.label)
@@ -91,15 +104,15 @@ fun AppTile(
                 }
                 if (highlighted) stateDescription = highlightedLabel
             },
-        shape = androidx.compose.foundation.shape.RoundedCornerShape(DoadoDimens.TileCornerRadius),
+        shape = RoundedCornerShape(DoadoDimens.TileCornerRadius),
     ) {
         if (horizontal) {
             Row(
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 12.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(20.dp),
             ) {
-                TileIcon(app, iconTint, 60.dp)
+                TileIcon(app, iconTint, plate, DoadoDimens.TilePlateSizeCompact, DoadoDimens.TileIconSizeCompact)
                 TileLabels(app, contentColor, TextAlign.Start, Modifier.weight(1f))
             }
         } else {
@@ -108,7 +121,7 @@ fun AppTile(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(14.dp, Alignment.CenterVertically),
             ) {
-                TileIcon(app, iconTint, 80.dp)
+                TileIcon(app, iconTint, plate, DoadoDimens.TilePlateSize, DoadoDimens.TileIconSize)
                 TileLabels(app, contentColor, TextAlign.Center, Modifier.fillMaxWidth())
             }
         }
@@ -116,22 +129,28 @@ fun AppTile(
 }
 
 @Composable
-private fun TileIcon(app: FavoriteApp, tint: Color, size: Dp) {
-    when (val icon = app.icon) {
-        is AppIcon.Vector -> Icon(
-            painter = painterResource(icon.res),
-            contentDescription = null,
-            modifier = Modifier.size(size),
-            tint = tint,
-        )
+private fun TileIcon(app: FavoriteApp, tint: Color, plate: Color, size: Dp, iconSize: Dp) {
+    Box(
+        modifier = Modifier
+            .size(size)
+            .background(plate, RoundedCornerShape(DoadoDimens.PlateCornerRadius)),
+        contentAlignment = Alignment.Center,
+    ) {
+        when (val icon = app.icon) {
+            is AppIcon.Vector -> Icon(
+                painter = painterResource(icon.res),
+                contentDescription = null,
+                modifier = Modifier.size(iconSize),
+                tint = tint,
+            )
 
-        // El icono real de la app, algo más pequeño: ya trae su propio margen.
-        is AppIcon.Bitmap -> Image(
-            bitmap = icon.image,
-            contentDescription = null,
-            modifier = Modifier.size(size * 0.9f),
-            alpha = if (app.isAvailable) 1f else 0.35f,
-        )
+            is AppIcon.Bitmap -> Image(
+                bitmap = icon.image,
+                contentDescription = null,
+                modifier = Modifier.size(iconSize),
+                alpha = if (app.isAvailable) 1f else 0.35f,
+            )
+        }
     }
 }
 
@@ -146,9 +165,14 @@ private fun TileLabels(
         modifier = modifier,
         horizontalAlignment = if (align == TextAlign.Center) Alignment.CenterHorizontally else Alignment.Start,
     ) {
+        // Con la letra al máximo «Mensajes» no cabe en media pantalla y se partía
+        // en «Mensaje/s»: con guion por sílabas sale «Men-sajes», que se lee.
         Text(
             text = app.label,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge.copy(
+                hyphens = Hyphens.Auto,
+                lineBreak = LineBreak.Paragraph,
+            ),
             color = color,
             textAlign = align,
             maxLines = 2,

@@ -17,13 +17,17 @@
     <!-- Accesibilidad -->
     <string name="cd_open_app">Abrir %1$s</string>
     <string name="app_unavailable">No disponible</string>
+    <string name="app_removed_label">App desinstalada</string>
     <string name="cd_app_unavailable">%1$s no está instalada en este móvil</string>
     <string name="cd_contact_action">%1$s a %2$s</string>
     <string name="cd_contact_unavailable">%1$s: no disponible, falta WhatsApp</string>
     <string name="cd_open_settings">Abrir ajustes, protegidos con PIN</string>
+    <!-- Lo que se ve en el botón de volver; TalkBack dice además adónde (cd_back_*). -->
+    <string name="back">Volver</string>
     <string name="cd_back_home">Volver a la pantalla de inicio</string>
     <string name="cd_back_settings">Volver a ajustes</string>
     <string name="cd_pin_progress">%1$d de %2$d cifras</string>
+    <string name="cd_pin_checking">Comprobando</string>
     <string name="cd_admin_banner">Abrir los ajustes de Doado</string>
     <string name="cd_disabled_admin">%1$s: hace falta desbloquear antes el modo administrador</string>
     <string name="cd_pin_delete">Borrar la última cifra</string>
@@ -35,7 +39,6 @@
     <string name="error_cannot_open">No se ha podido abrir %1$s</string>
     <string name="error_cannot_open_generic">No se ha podido abrir</string>
     <string name="error_contact_pick">No se ha podido leer ese contacto</string>
-    <string name="admin_required">Primero desbloquea el modo administrador</string>
 
     <!-- PIN -->
     <string name="pin_title">Ajustes de Doado</string>
@@ -50,6 +53,11 @@
     <string name="pin_repeat_subtitle">Para comprobar que está bien escrito</string>
     <string name="pin_wrong">PIN incorrecto. Prueba otra vez.</string>
     <string name="pin_mismatch">No coinciden. Vuelve a empezar.</string>
+    <plurals name="pin_wrong_remaining">
+        <item quantity="one">PIN incorrecto. Te queda %d intento antes de tener que esperar.</item>
+        <item quantity="other">PIN incorrecto. Te quedan %d intentos antes de tener que esperar.</item>
+    </plurals>
+    <string name="pin_wrong_will_wait">PIN incorrecto. Si fallas otra vez, tendrás que esperar.</string>
     <string name="pin_delete">Borrar</string>
     <string name="pin_note">El PIN lo pone quien configura el móvil. Así nadie entra en los ajustes sin querer.</string>
     <string name="pin_forgot">¿Olvidaste el PIN?</string>
@@ -85,6 +93,11 @@
     <string name="recovery_access_subtitle">Responde la pregunta para poner un PIN nuevo</string>
     <string name="recovery_access_confirm">Continuar</string>
     <string name="recovery_access_wrong">Respuesta incorrecta. Prueba otra vez.</string>
+    <plurals name="recovery_wrong_remaining">
+        <item quantity="one">Respuesta incorrecta. Te queda %d intento antes de tener que esperar.</item>
+        <item quantity="other">Respuesta incorrecta. Te quedan %d intentos antes de tener que esperar.</item>
+    </plurals>
+    <string name="recovery_wrong_will_wait">Respuesta incorrecta. Si fallas otra vez, tendrás que esperar.</string>
 
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
@@ -99,7 +112,7 @@
         <item quantity="other">%1$d accesos directos en el inicio</item>
     </plurals>
     <string name="settings_apps">Aplicaciones</string>
-    <string name="settings_apps_subtitle">Qué se ve e instalar nuevas</string>
+    <string name="settings_apps_subtitle">Qué apps salen en el inicio</string>
     <string name="settings_sound">Sonido y pantalla</string>
     <string name="settings_sound_subtitle">Volumen, brillo y vibración de Android</string>
     <string name="settings_admin">Modo administrador</string>
@@ -212,13 +225,8 @@
     <!-- Ajustes → Aplicaciones -->
     <string name="apps_subtitle">Qué casillas salen en el inicio</string>
     <string name="apps_section_basic">Básicas</string>
-    <string name="apps_section_suggested">Recomendadas</string>
     <string name="apps_section_others">Otras apps de este móvil</string>
-    <string name="apps_install">Instalar</string>
-    <string name="apps_install_needs_admin">Activar el modo administrador</string>
-    <string name="apps_note">Para instalar hace falta el modo administrador. Cuando una app termina de instalarse, aparece en esta lista y se puede poner en el inicio.</string>
-    <string name="suggested_whatsapp_description">Mensajes y videollamadas</string>
-    <string name="suggested_sofascore_description">Resultados y partidos en directo</string>
+    <string name="apps_note">Para instalar una app, abre la tienda desde Modo administrador. Cuando termina de instalarse, aparece en esta lista y se puede poner en el inicio.</string>
 
     <!-- Ajustes → Modo administrador -->
     <string name="admin_locked">Doado está al mando</string>

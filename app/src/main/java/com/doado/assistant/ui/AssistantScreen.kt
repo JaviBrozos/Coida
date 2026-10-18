@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -98,7 +98,14 @@ fun AssistantScreen(
             .padding(DoadoDimens.ScreenPadding),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        IconBadge(icon = R.drawable.ic_assistant, size = DoadoDimens.CornerButtonSize)
+        // Redondo como el círculo del inicio, para que se vea que esto sale de ahí,
+        // pero hundido y no relleno de acento: relleno parecía un botón más, y no
+        // se puede pulsar.
+        IconBadge(
+            icon = R.drawable.ic_assistant,
+            size = DoadoDimens.AssistantBadgeSize,
+            shape = CircleShape,
+        )
 
         // Lo que va encima de la frase principal.
         when (state) {
@@ -284,7 +291,7 @@ private fun RepeatButton(onRepeat: () -> Unit) {
 @Composable
 private fun LevelBar(level: Float) {
     val colors = MaterialTheme.colorScheme
-    val shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius)
+    val shape = CircleShape
     Box(
         modifier = Modifier
             .fillMaxWidth()

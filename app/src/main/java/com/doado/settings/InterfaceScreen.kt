@@ -22,6 +22,9 @@ import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.ChoiceGroup
 import com.doado.core.ui.DoadoCard
+import com.doado.core.ui.DoadoDimens
+import com.doado.core.ui.IconBadge
+import androidx.compose.foundation.shape.RoundedCornerShape
 import com.doado.core.ui.NoteCard
 import com.doado.core.ui.ScreenHeader
 import com.doado.core.ui.SectionLabel
@@ -107,7 +110,8 @@ private fun ColumnsPreview(columns: Int) {
         R.drawable.ic_call to R.string.app_phone,
         R.drawable.ic_messages to R.string.app_messages,
     )
-    DoadoCard(onClick = null, modifier = Modifier.fillMaxWidth()) {
+    // Como en el inicio: casillas sobre el fondo de pantalla.
+    DoadoCard(onClick = null, modifier = Modifier.fillMaxWidth(), color = MaterialTheme.colorScheme.background) {
         Column(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -130,15 +134,10 @@ private fun MiniTile(icon: Int, label: Int, horizontal: Boolean, modifier: Modif
     DoadoCard(
         onClick = null,
         modifier = modifier.heightIn(min = 72.dp),
-        color = MaterialTheme.colorScheme.background,
+        shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius),
     ) {
         val content: @Composable () -> Unit = {
-            Icon(
-                painter = painterResource(icon),
-                contentDescription = null,
-                modifier = Modifier.size(32.dp),
-                tint = MaterialTheme.colorScheme.primary,
-            )
+            IconBadge(icon = icon, size = 44.dp)
             Text(
                 text = stringResource(label),
                 style = MaterialTheme.typography.labelSmall,

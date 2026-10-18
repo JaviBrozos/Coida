@@ -75,7 +75,7 @@ val DoadoSurface = Color(0xFF122A3E)
 val DoadoSurfaceHigh = Color(0xFF17384F)
 
 /**
- * Contorno de casillas y botones en oscuro: ~3.3:1 contra [DoadoSurface],
+ * Contorno de casillas y botones en oscuro: 3,18:1 contra [DoadoSurface],
  * por encima del 3:1 que piden las WCAG para límites de componentes.
  */
 val DoadoLine = Color(0xFF3D7AA6)

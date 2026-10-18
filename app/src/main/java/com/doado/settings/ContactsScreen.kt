@@ -1,5 +1,6 @@
 package com.doado.settings
 
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +23,8 @@ import com.doado.R
 import com.doado.core.ui.ChoiceGroup
 import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoSwitchVisual
-import com.doado.core.ui.IconBadge
+import com.doado.core.ui.InitialBadge
+import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.NoteCard
 import com.doado.core.ui.OutlineButton
 import com.doado.core.ui.PrimaryButton
@@ -102,7 +104,8 @@ private fun ContactCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
             ) {
-                IconBadge(icon = R.drawable.ic_contacts, size = 56.dp)
+                // La misma inicial que en el inicio: el familiar reconoce el acceso directo.
+                InitialBadge(name = contact.name, size = DoadoDimens.AvatarSize, shape = CircleShape)
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = contact.name,

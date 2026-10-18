@@ -18,6 +18,12 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.EnterExitState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -32,7 +38,10 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Density
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
@@ -56,8 +65,6 @@ import com.doado.data.InstalledAppsRepository
 import com.doado.data.InterfaceSettings
 import com.doado.data.PinStore
 import com.doado.data.SettingsStore
-import com.doado.data.SuggestedApp
-import com.doado.data.SuggestedApps
 import com.doado.data.ThemeMode
 import com.doado.data.WHATSAPP_PACKAGE
 import com.doado.settings.ADMIN_UNLOCK_MINUTES
@@ -70,7 +77,6 @@ import com.doado.settings.InterfaceScreen
 import com.doado.settings.OtherAppRow
 import com.doado.settings.PinGate
 import com.doado.settings.SettingsScreen
-import com.doado.settings.SuggestedAppRow
 import java.util.Locale
 import java.util.UUID
 
@@ -100,7 +106,7 @@ class LauncherActivity : ComponentActivity() {
     private var homeIds by mutableStateOf(emptyList<String>())
     private var contacts by mutableStateOf(emptyList<ContactShortcut>())
     private var adminUnlockedUntil by mutableLongStateOf(0L)
-    private var installedSuggested by mutableStateOf(emptySet<String>())
+    private var whatsappInstalled by mutableStateOf(false)
     private var installedApps by mutableStateOf(emptyList<InstalledApp>())
     private var defaultPackages by mutableStateOf(emptySet<String>())
 
@@ -114,9 +120,6 @@ class LauncherActivity : ComponentActivity() {
 
     /** A dónde vuelve el asistente al cerrarse: al inicio, o a sus ajustes si se estaba probando. */
     private var assistantReturn = Screen.HOME
-
-    /** Apps que se mandaron instalar: al volver ya instaladas, se ponen en el inicio. */
-    private val pendingInstalls = mutableSetOf<String>()
 
     /**
      * true mientras esperamos volver de algo que hemos abierto nosotros (una app,
@@ -262,14 +265,51 @@ class LauncherActivity : ComponentActivity() {
             onDispose { window.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
         }
 
-        if (screen == Screen.HOME) {
+        // Un fundido corto al cambiar de pantalla, en vez de un salto en seco: se
+        // nota que algo ha cambiado sin que nada se desplace ni rebote. Con
+        // «Quitar animaciones» de Android el fundido dura cero y es un corte, como
+        // antes.
+        AnimatedContent(
+            targetState = screen,
+            transitionSpec = {
+                fadeIn(tween(SCREEN_FADE_IN_MS)) togetherWith fadeOut(tween(SCREEN_FADE_OUT_MS))
+            },
+            label = "pantalla",
+        ) { target ->
+            // Mientras se desvanece, la pantalla que sale sigue compuesta: que
+            // TalkBack no pueda dejar el foco en ella y que un segundo toque por
+            // temblor no caiga en un botón que ya se va.
+            val leaving = transition.targetState == EnterExitState.PostExit
+            Box(
+                modifier = if (leaving) {
+                    Modifier
+                        .clearAndSetSemantics {}
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    awaitPointerEvent(PointerEventPass.Initial).changes.forEach { it.consume() }
+                                }
+                            }
+                        }
+                } else {
+                    Modifier
+                },
+            ) {
+                ScreenContent(target)
+            }
+        }
+    }
+
+    @Composable
+    private fun ScreenContent(target: Screen) {
+        if (target == Screen.HOME) {
             HomeScreen(
                 apps = homeApps,
                 contacts = contacts.filter { it.onHome }.map {
                     HomeContact(
                         shortcut = it,
                         isAvailable = it.action != ContactAction.WHATSAPP ||
-                            WHATSAPP_PACKAGE in installedSuggested,
+                            whatsappInstalled,
                     )
                 },
                 columns = interfaceSettings.columns,
@@ -299,7 +339,7 @@ class LauncherActivity : ComponentActivity() {
                 .fillMaxSize()
                 .safeDrawingPadding(),
         ) {
-            when (screen) {
+            when (target) {
                 Screen.HOME -> Unit
 
                 Screen.PIN -> PinGate(
@@ -359,7 +399,7 @@ class LauncherActivity : ComponentActivity() {
 
                 Screen.CONTACTS -> ContactsScreen(
                     contacts = contacts,
-                    whatsappInstalled = WHATSAPP_PACKAGE in installedSuggested,
+                    whatsappInstalled = whatsappInstalled,
                     onAdd = ::launchContactPicker,
                     onUpdate = { updated ->
                         saveContacts(contacts.map { if (it.id == updated.id) updated else it })
@@ -372,25 +412,13 @@ class LauncherActivity : ComponentActivity() {
                     basics = DefaultFavorites.map {
                         BasicAppRow(it.id, getString(it.labelRes), it.iconRes, it.id in homeIds)
                     },
-                    suggested = SuggestedApps.map {
-                        SuggestedAppRow(
-                            app = it,
-                            installed = it.packageName in installedSuggested,
-                            onHome = FavoritesStore.packageId(it.packageName) in homeIds,
-                        )
-                    },
                     others = installedApps
-                        .filter { app ->
-                            app.packageName !in defaultPackages &&
-                                SuggestedApps.none { it.packageName == app.packageName }
-                        }
+                        .filter { it.packageName !in defaultPackages }
                         .map { OtherAppRow(it, FavoritesStore.packageId(it.packageName) in homeIds) },
-                    adminActive = isAdminActive(),
                     onToggle = { id, onHome ->
                         repository.setOnHome(id, onHome)
                         reload()
                     },
-                    onInstall = ::installSuggested,
                     onBack = { screen = Screen.SETTINGS },
                 )
 
@@ -448,17 +476,7 @@ class LauncherActivity : ComponentActivity() {
         assistantSettings = settingsStore.assistantSettings()
         adminUnlockedUntil = settingsStore.adminUnlockedUntil()
         contacts = contactsStore.all()
-        installedSuggested = SuggestedApps
-            .map { it.packageName }
-            .filter { repository.isInstalled(it) }
-            .toSet()
-
-        // Lo que se mandó instalar y ya está: directo al inicio.
-        pendingInstalls.filter { it in installedSuggested }.forEach { packageName ->
-            val id = FavoritesStore.packageId(packageName)
-            if (id !in repository.homeIds()) repository.setOnHome(id, true)
-            pendingInstalls.remove(packageName)
-        }
+        whatsappInstalled = repository.isInstalled(WHATSAPP_PACKAGE)
 
         homeIds = repository.homeIds()
         homeApps = repository.homeApps()
@@ -540,7 +558,7 @@ class LauncherActivity : ComponentActivity() {
                 contacts = contacts,
                 homeApps = homeApps,
                 columns = interfaceSettings.columns,
-                whatsappInstalled = WHATSAPP_PACKAGE in installedSuggested,
+                whatsappInstalled = whatsappInstalled,
             ),
         )
     }
@@ -661,16 +679,6 @@ class LauncherActivity : ComponentActivity() {
         }
     }
 
-    private fun installSuggested(app: SuggestedApp) {
-        if (!isAdminActive()) {
-            Toast.makeText(this, R.string.admin_required, Toast.LENGTH_LONG).show()
-            screen = Screen.ADMIN
-            return
-        }
-        pendingInstalls += app.packageName
-        startFirst(*repository.storeIntents(app.packageName).toTypedArray(), label = app.label)
-    }
-
     private fun openStore() {
         val store = packageManager.getLaunchIntentForPackage(PLAY_STORE_PACKAGE)
         val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps"))
@@ -707,5 +715,9 @@ class LauncherActivity : ComponentActivity() {
 
         /** Escala de letra máxima: la misma que Android permite por sí solo (200 %). */
         const val MAX_TEXT_SCALE = 2f
+
+        /** El fundido entre pantallas: la nueva entra algo más despacio de lo que sale la vieja. */
+        const val SCREEN_FADE_IN_MS = 180
+        const val SCREEN_FADE_OUT_MS = 120
     }
 }
