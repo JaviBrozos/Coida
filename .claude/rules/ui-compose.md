@@ -7,9 +7,10 @@ paths:
 
 ## Antes de escribir un composable
 
-Mira si ya existe en `core/ui/Components.kt`: `DoadoCard`, `SettingsRow`,
-`SwitchRow`, `ChoiceGroup`, `PrimaryButton`, `OutlineButton`, `ScreenHeader`,
-`SectionLabel`, `IconBadge`, `NoteCard`, `SettingsColumn`, `DoadoSwitchVisual`.
+Mira si ya existe en `core/ui/Components.kt`: `DoadoCard`, `SettingsGroup`,
+`SettingsRow`, `SwitchRow`, `ChoiceGroup`, `PrimaryButton`, `OutlineButton`,
+`ScreenHeader`, `SectionLabel`, `IconBadge`, `InitialBadge`, `NoteCard`,
+`SettingsColumn`, `DoadoSwitchVisual`.
 Casi toda pantalla de ajustes sale de ahí. La tabla de para qué sirve cada uno
 está en `docs/diseno.md`.
 
@@ -30,6 +31,12 @@ está en `docs/diseno.md`.
 - **El área pulsable es la pieza entera**, no un botoncito dentro. Una fila con
   interruptor se hace `toggleable` completa, con `Role.Switch`.
 - **Previews con `DoadoTheme(darkTheme = true)`**, que es el tema de fábrica.
+- **Filas de un mismo apartado, en un `SettingsGroup`**, cada una con su
+  `GroupPosition`. En una `LazyColumn`, sin `spacedBy` general: el hueco se pone
+  entre apartados, no entre filas.
+- **La vibración del toque ya la dan los componentes** (`rememberClickFeedback`).
+  No la añadas a mano, y nunca al apoyar el dedo: en una lista vibraría al
+  arrastrar.
 
 ## Escribir para una persona mayor
 
@@ -63,3 +70,12 @@ Los textos del inicio los lee ella; los de ajustes, el familiar.
 
 Si la pantalla ya existe ahí, síguelo. Si te separas, dilo en el resumen y
 explica por qué. Cuando el lienzo y el código no cuadran, **manda el código**.
+
+## La skill `apple-design`
+
+Está en `.claude/skills/apple-design/` y explica cómo diseña Apple: respuesta
+inmediata, movimiento que se puede interrumpir y coherencia espacial. Está
+pensada para la web y para el estilo de Apple. **Aquí mandan las normas de
+Doado**: nada de translucidez ni sombras (D-04), nada de interletrado negativo
+(D-03), nada de gestos de arrastre ni muelles, y el asistente confirma siempre
+(D-26). Qué se tomó de ella y qué no está en D-32.

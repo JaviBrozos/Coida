@@ -80,7 +80,7 @@ Detrás de un **PIN de cuatro cifras**, que se crea la primera vez que se entra.
 | **Asistente de voz** | Encender el círculo del inicio (pide el permiso del micrófono) y elegir si lo hace o explica cómo. |
 | **Interfaz** | Tamaño de letra (tres niveles, encima del que ya tenga Android), una o dos casillas por fila, tema claro u oscuro, y mostrar o no el reloj. Con una maqueta en pequeño que va cambiando. |
 | **Contactos** | Elegir personas del listín del móvil, decidir si cada una llama o abre WhatsApp, y cuáles salen en el inicio (caben cuatro). |
-| **Aplicaciones** | Encender y apagar las casillas, instalar las recomendadas (WhatsApp, Sofascore) y subir al inicio cualquier otra app del móvil. |
+| **Aplicaciones** | Encender y apagar las casillas básicas y subir al inicio cualquier otra app del móvil. Para instalar, la tienda del modo administrador. |
 | **Sonido y pantalla** | Atajo a los ajustes de Android de volumen, brillo y vibración. |
 | **Modo administrador** | Ver más abajo. |
 | **PIN de ajustes** | Cambiar las cuatro cifras, pidiendo antes las actuales, y fijar una pregunta de recuperación por si se olvidan. |

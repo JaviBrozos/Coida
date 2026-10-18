@@ -54,6 +54,11 @@ algo desde cero, ábrelas tú:
 - `assistant/` → `.claude/rules/asistente.md`
 
 Para auditar accesibilidad hay un subagente: `.claude/agents/accesibilidad.md`.
+Toda UI nueva pasa por él antes de darse por hecha.
+
+Hay una skill de diseño en el proyecto, `.claude/skills/apple-design/` (de Emil
+Kowalski, licencia MIT): los principios de Apple para interfaces. Sirve de
+inspiración, pero **mandan las normas de Doado**; qué se tomó y qué no, en D-32.
 
 ## Producto
 

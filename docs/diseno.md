@@ -4,7 +4,7 @@
 > compartidos. Enlaza desde otros documentos; no copies las cifras. Quien manda
 > de verdad es `core/ui/`: si esto no cuadra con el código, **gana el código**.
 >
-> Última revisión: 13/10/2026.
+> Última revisión: 18/10/2026.
 
 El principio está en la ERS como requisitos medibles (RNF-ACC-01 a RNF-ACC-07).
 Aquí está el cómo.
@@ -23,7 +23,7 @@ alrededor. Definidos en `core/ui/Color.kt`.
 | `DoadoInk` | `#0A1622` | Fondo del tema oscuro | — |
 | `DoadoSurface` | `#122A3E` | Casilla y fila elevadas | 13:1 con el texto |
 | `DoadoSurfaceHigh` | `#17384F` | Pulsada, y cuadrito tras un icono | — |
-| `DoadoLine` | `#3D7AA6` | Contorno de 2 dp | 3,3:1 con la casilla |
+| `DoadoLine` | `#3D7AA6` | Contorno de 2 dp y raya entre filas | 3,18:1 con la casilla · 3,94:1 sobre tinta |
 | `DoadoText` | `#F2F7FB` | Texto principal en oscuro | 16:1 sobre tinta |
 | `DoadoTextMuted` | `#9FC4DC` | Texto secundario en oscuro | 9,9:1 sobre tinta |
 | `DoadoMist` / `DoadoMistDim` | `#E9F3FA` / `#DCEBF5` | Superficies suaves del tema claro | — |
@@ -52,7 +52,8 @@ funciona en los dos temas. Definido en `core/ui/Theme.kt`.
 | `onPrimary` | Lo que va encima de `primary` | Tinta | Blanco |
 | `background` / `onBackground` | Fondo de pantalla y su texto | Tinta / Texto | Blanco / Marino |
 | `surfaceContainer` | Fondo de casillas y filas | `DoadoSurface` | Blanco |
-| `surfaceContainerHigh` | Pulsada, cuadrito de icono | `DoadoSurfaceHigh` | Mist |
+| `surfaceContainerHigh` | Pulsada, y relleno de las notas | `DoadoSurfaceHigh` | Mist |
+| `surfaceContainerLowest` | Plato hundido de iconos e iniciales (cian 7,86:1, marino 15,18:1) | Tinta | Mist |
 | `onSurface` | Texto sobre una casilla | Texto | Marino |
 | `onSurfaceVariant` | Texto secundario | TextMuted | CyanDeep |
 | `outline` | Contorno | `DoadoLine` | Marino |
@@ -93,21 +94,29 @@ los borres sin mirar.
 | `MinTouchTarget` | 48 dp | Suelo innegociable de cualquier pulsable |
 | `ComfortableTouchTarget` | 72 dp | Lo normal para un botón suelto |
 | `TileMinHeight` | 168 dp | Alto mínimo de una casilla (en el inicio suelen salir ~260) |
-| `TileIconSize` | 72 dp | Icono dentro de la casilla |
-| `TileCornerRadius` | 22 dp | Radio de casilla |
+| `TileIconSize` / `TileIconSizeCompact` | 72 / 54 dp | Icono dentro del plato, en dos columnas / en una (tres cuartos del plato) |
+| `TilePlateSize` / `TilePlateSizeCompact` | 96 / 72 dp | Plato hundido del icono de una casilla |
+| `PlateCornerRadius` | 20 dp | Radio del plato |
+| `TileCornerRadius` | 28 dp | Radio de casilla y de contacto del inicio |
+| `AvatarSize` | 52 dp | Círculo con la inicial de un contacto del inicio |
 | `CardCornerRadius` | 20 dp | Radio de fila, tarjeta y botón |
 | `ControlCornerRadius` | 14 dp | Radio de control pequeño |
 | `BorderWidth` | 2 dp | Grosor de contorno |
+| `DividerWidth` | 2 dp | Raya entre las filas de un grupo de ajustes |
 | `HighlightBorderWidth` | 4 dp | Contorno de la casilla o el contacto que señala el asistente al guiar (que además va relleno de acento) |
 | `AssistantButtonSize` | 96 dp | Círculo del asistente en el inicio, y la franja que le reserva la columna |
 | `CornerButtonSize` | 64 dp | Botón de Ajustes en la esquina del inicio |
+| `BackButtonHeight` | 60 dp | Alto del botón «Volver» de las cabeceras |
+| `PinKeyHeight` / `PinPadMaxWidth` | 64 / 320 dp | Tecla del PIN (alto mínimo) y ancho máximo del teclado, centrado |
+| `AssistantBadgeSize` | 64 dp | Círculo hundido con el micrófono en la pantalla del asistente (no pulsable) |
+| `LargeTextScale` | 1,3 | Escala de letra a partir de la que el contacto pierde la inicial y las opciones van en columna |
 | `RowHeight` | 88 dp | Alto de fila de ajustes |
 | `ScreenPadding` | 20 dp | Margen de pantalla |
 | `GridSpacing` | 16 dp | Separación de la rejilla |
 
-**Deuda conocida**: `TileIconSize` y `MinTouchTarget` están declarados y no se
-usan —`AppTile` pone 60/80 dp a pelo— y hay medidas de layout sueltas en
-`HomeScreen`. Si tocas esas zonas, pásalas al token.
+**Deuda conocida**: `MinTouchTarget` está declarado y no se usa, y hay medidas de
+layout sueltas en `HomeScreen` y en los componentes. Si tocas esas zonas, pásalas
+al token.
 
 ## Iconografía
 
@@ -126,8 +135,15 @@ usan —`AppTile` pone 60/80 dp a pelo— y hay medidas de layout sueltas en
 
 ## El inicio
 
-- **Ajustes** es un botón de 64 dp arriba a la derecha, solo con icono, contorno
-  y tono apagado (`onSurfaceVariant`). Es del familiar: lejos del pulgar.
+- **Ajustes** es un círculo de 64 dp arriba a la derecha, solo con icono, contorno
+  y tono apagado (`onSurfaceVariant`). Es del familiar: lejos del pulgar. Redondo
+  como el del asistente: lo que flota fuera de la rejilla no parece una casilla.
+- **Casillas**: el icono va sobre un plato hundido (`surfaceContainerLowest`), que
+  iguala el peso de los iconos de trazo y los de las apps. Una app que no está va
+  sin plato, para que el gris no pierda contraste.
+- **Contactos**: la inicial en un círculo, el nombre y debajo la acción escrita.
+  Con la letra por encima de 1,3 se quita la inicial, para que el nombre no se
+  parta.
 - **El asistente** es un círculo de 96 dp abajo en el centro, relleno `primary`
   con el icono en `onPrimary` (7,86:1 en oscuro, 17,08:1 en claro). Al pulsarlo
   pasa a `surfaceContainerHigh` con el icono en `onSurface` (11,35:1 y 15,18:1).
@@ -143,20 +159,24 @@ usan —`AppTile` pone 60/80 dp a pelo— y hay medidas de layout sueltas en
 
 `core/ui/Components.kt`. **Antes de crear un composable nuevo, mira si ya está.**
 Todos siguen la misma receta: superficie plana con contorno de 2 dp que pasa al
-color de acento mientras se pulsa, y el área pulsable es la pieza entera.
+color de acento mientras se pulsa, el área pulsable es la pieza entera, y un
+toque que cuenta da una vibración corta de teclado (la del sistema: si está
+apagada, no suena). Las pantallas cambian con un fundido de 180 ms (D-32).
 
 | Componente | Cuándo |
 | --- | --- |
 | `DoadoCard` | Base de todo: casilla, fila, botón, tarjeta. `onClick = null` si no es pulsable. `borderWidth` solo cambia para señalar algo |
+| `SettingsGroup` + `GroupPosition` | Filas de un mismo apartado en un bloque, con una raya entre ellas. Cada fila recibe su posición (`GroupPosition.of`) |
 | `SettingsRow` | Fila que lleva a otra pantalla (icono, título, subtítulo, chevron) |
 | `SwitchRow` | Fila con interruptor. **Toda la fila** es el control, no la bolita |
-| `ChoiceGroup` | Opciones excluyentes en fila (tamaño de letra, tema…) |
+| `ChoiceGroup` | Opciones excluyentes como selector segmentado; en columna con tres opciones o con letra por encima de 1,3 |
 | `PrimaryButton` | Acción principal, rellena de acento. Una por pantalla |
 | `OutlineButton` | Acción secundaria, solo contorno |
-| `ScreenHeader` | Cabecera de ajustes: volver + título + subtítulo |
+| `ScreenHeader` | Cabecera de ajustes: «Volver» escrito, y debajo título y subtítulo a todo lo ancho |
 | `SectionLabel` | Rótulo de un grupo de filas |
-| `IconBadge` | Cuadrito con icono de acento |
-| `NoteCard` | Nota explicativa, no pulsable |
+| `IconBadge` | Icono de acento sobre su plato hundido |
+| `InitialBadge` | La inicial de un nombre sobre el mismo plato; decorativa para TalkBack |
+| `NoteCard` | Nota explicativa, no pulsable: relleno y contorno |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
 | `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |
 | `AssistantButton` | El círculo del asistente. Vive en `assistant/ui/`, no en `core/ui/`: solo se usa en el inicio |

@@ -7,7 +7,7 @@
 > Las decisiones **todavía abiertas** no están aquí: viven en la ERS, sección 7,
 > y son sobre todo del asistente. No las cierres por tu cuenta.
 >
-> Última revisión: 13/10/2026.
+> Última revisión: 18/10/2026.
 
 ---
 
@@ -369,3 +369,42 @@ pregunta sola.
 se preguntaba. La pregunta la redacta el código y nombra a la persona, y el sí
 tiene que ser corto y limpio, así que el riesgo es el de pulsar «Sí» sin leer.
 Con TalkBack, la espera antes de grabar crece con lo que acaba de leer.
+
+### D-32 · Interfaz más sobria: grupos, platos y una respuesta al toque (18/10/2026)
+
+**Contexto**: cada fila de ajustes iba en su caja y cada icono suelto sobre la
+casilla; se veía como un prototipo. Se pidió un cambio de imagen hacia algo más
+profesional, siguiendo los principios de diseño de Apple (skill `apple-design`
+en `.claude/skills/`) sin tocar la accesibilidad.
+**Decisión**: las filas de un mismo apartado van en un solo bloque con contorno y
+una raya de 2 dp entre ellas; los iconos y las iniciales van sobre un plato
+hundido del color del fondo; las opciones excluyentes son un selector
+segmentado, en columna con tres opciones o con letra grande; «Volver» lleva la
+palabra escrita; las pantallas cambian con un fundido de 180 ms; y un toque que
+cuenta da una vibración corta de teclado. Lo auditó el agente de accesibilidad en
+tres rondas antes de cerrarlo.
+**Descartado**, de lo que propone la skill: superficies translúcidas y sombras
+para dar profundidad (D-04), interletrado negativo en los títulos (D-03),
+animaciones con muelle, gestos de arrastre o de lanzar, y confirmar solo lo
+irreversible (D-26). También la nota rellena sin contorno: el relleno solo
+separaba a 1,13:1 en claro, y eso es elevación.
+**Consecuencia**: con letra grande el contacto del inicio pierde la inicial, para
+que el nombre no se parta. Durante el fundido, la pantalla que sale no recibe
+toques ni foco de TalkBack. Con «Quitar animaciones» de Android, el fundido es
+un corte.
+
+### D-33 · Doado no propone apps para instalar (18/10/2026)
+
+**Contexto**: Ajustes → Aplicaciones tenía un apartado «Recomendadas»
+(WhatsApp y Sofascore) con un botón para instalarlas, que llevaba a la tienda
+con el modo administrador. Se pidió quitarlo.
+**Decisión**: fuera el apartado y su botón; CU-13 se retira de la ERS sin
+renumerar. Si una de esas apps está instalada, sale con las demás en «Otras apps
+de este móvil» y se pone en el inicio igual. Para instalar, «Abrir la tienda de
+apps» del modo administrador (CU-14). Del código solo queda el nombre de esas
+apps, para pintar su casilla apagada si se desinstalan.
+**Descartado**: mantener una lista curada de apps, que había que elegir y
+revisar, y que nombraba a apps concretas dentro del producto.
+**Consecuencia**: instalar una app pide un paso más, buscarla en la tienda.
+Desaparece también la puesta automática en el inicio de lo que se instalaba
+desde ahí.

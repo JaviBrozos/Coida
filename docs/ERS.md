@@ -5,8 +5,8 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.6 (borrador) |
-| Fecha | 13/10/2026 |
+| Versión | 0.7 (borrador) |
+| Fecha | 18/10/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
 
@@ -20,6 +20,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.4 | 30/09/2026 | CU-16 implementado y CON-05 cerrado con la pregunta de recuperación del PIN (implementada por Gonzalo el 29/09, decisión D-23) | Javier Brozos Martínez |
 | 0.5 | 30/09/2026 | RNF-SEG-03 nuevo e implementado: límite de intentos con bloqueo progresivo en la puerta de ajustes (D-24). Se corrige la excepción de CU-06 | Javier Brozos Martínez |
 | 0.6 | 13/10/2026 | Se cierran CON-01 a CON-04 (D-25 a D-27) y se abre CON-06. CU-04, CU-05 y CU-15 pasan a «En pruebas» y se detallan. RNF-PRI-02 y RNF-DIS-01 se concretan; RNF-USA-03 nuevo. CU-05 pasa a conversación, con «sí» dicho (D-31) | Javier Brozos Martínez |
+| 0.7 | 18/10/2026 | Se retira CU-13 (instalar una app recomendada): Ajustes deja de proponer apps; se instalan desde la tienda del modo administrador (CU-14, D-33). Los identificadores no se renumeran | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -90,7 +91,7 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 
 ### 4.1.2 Casos de uso del sistema
 
-15 casos de uso: 12 ya funcionan en el launcher y los 3 del asistente están «En pruebas»: programados y compilados, pendientes de probar con voz real. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: el hueco entre CU-02 y CU-04 es un caso retirado del alcance.
+14 casos de uso: 11 ya funcionan en el launcher y los 3 del asistente están «En pruebas»: programados y compilados, pendientes de probar con voz real. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: los huecos de CU-03 y CU-13 son casos retirados del alcance.
 
 | ID | Caso de uso | Actor | Importancia | Estado | Fuente |
 | --- | --- | --- | --- | --- | --- |
@@ -105,12 +106,11 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 | CU-10 | Gestionar las apps del inicio | ACT-02 | Alta | Implementado | Código |
 | CU-11 | Abrir los ajustes de sonido y pantalla | ACT-02 | Baja | Implementado | Código |
 | CU-12 | Activar y desactivar el modo administrador | ACT-02 | Media | Implementado | Código |
-| CU-13 | Instalar una app recomendada | ACT-02 | Media | Implementado | Código |
 | CU-14 | Abrir la tienda, los ajustes de Android o cambiar el inicio | ACT-02 | Media | Implementado | Código |
 | CU-15 | Configurar el asistente | ACT-02 | Media | En pruebas | Propuesta |
 | CU-16 | Recuperar un PIN olvidado | ACT-02 | Media | Implementado | Código |
 
-Ambos figuraban como parciales en la versión 0.1 y se completaron el 29/09/2026: CU-07 pide ahora el PIN anterior antes de cambiarlo, y en CU-13 el botón deja de aparentar que instala cuando no hay modo administrador (pasa a ofrecer activarlo).
+CU-07 figuraba como parcial en la versión 0.1 y se completó el 29/09/2026: pide ahora el PIN anterior antes de cambiarlo.
 
 #### Descripciones detalladas
 
@@ -320,7 +320,6 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | CU-10. Gestionar las apps del inicio | X | X |  |
 | CU-11. Abrir los ajustes de sonido y pantalla | X | X |  |
 | CU-12. Activar y desactivar el modo administrador | X | X |  |
-| CU-13. Instalar una app recomendada | X | X |  |
 | CU-14. Abrir la tienda, los ajustes de Android o cambiar el inicio | X | X |  |
 | CU-15. Configurar el asistente |  |  | X |
 | CU-16. Recuperar un PIN olvidado | X | X |  |

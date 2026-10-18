@@ -98,7 +98,7 @@ El coste técnico es pequeño; lo que pesa son las obligaciones de vender y de t
 
 Si elegimos el intermediario, el orden sería este; nada de esto bloquea seguir probando con la clave en el APK.
 
-1. Apuntar la decisión: D-32 en `docs/decisiones.md`, cerrar CON-06 en la ERS y corregir las normas.
+1. Apuntar la decisión en `docs/decisiones.md` (la siguiente D libre), cerrar CON-06 en la ERS y corregir las normas.
 2. Montar el intermediario con dos rutas (transcribir e interpretar), sin registros de contenido.
 3. Cambiar en la app solo `cloud/`: apuntar al intermediario y mandar el comprobante de Play Integrity.
 4. Añadir la suscripción con Google Play Billing en Ajustes → Asistente de voz, detrás del PIN.
