@@ -8,7 +8,7 @@ paths:
 
 El asistente oye a una persona mayor y le hace caso, así que un error aquí no es
 un fallo de interfaz: es una llamada a quien no era. Las decisiones están en
-`docs/decisiones.md` (D-25 a D-31) y los casos de uso en la ERS (CU-04, CU-05 y
+`docs/decisiones.md` (D-25 a D-31 y D-37) y los casos de uso en la ERS (CU-04, CU-05 y
 CU-15).
 
 ## Lo que no se negocia

@@ -10,7 +10,7 @@
 
 - Launcher completo: inicio y siete pantallas de ajustes tras el PIN, con límite
   de intentos (RNF-SEG-03) y recuperación del PIN (D-23).
-- Asistente de voz en pruebas (CU-04, CU-05, CU-15; D-25 a D-31): Groq, siempre
+- Asistente de voz en pruebas (CU-04, CU-05, CU-15; D-25 a D-31, D-37): Groq, siempre
   confirma, actúa o guía, y conversa. Groq acierta 5 de 5 órdenes y 3 de 3
   correcciones desde el PC; en el emulador se vio el bucle entero.
 - Interfaz renovada (D-32): grupos en ajustes, platos de icono, selector
@@ -52,6 +52,6 @@ capturas viejas.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 19/10 | Javier | Asistente: oye mejor (D-37). Graba sin supresor ni ganancia, cuenta voz con 2,5× el ruido y sigue con 1,6×, corrige el ruido si se habla nada más pitar y solo envía el tramo con voz. Sin probar con voz real |
 | 19/10 | Javier | Logo: la D con visto de siempre, con esquinas redondeadas y visto nuevo en hueco (D-36); icono adaptativo sin cuadrado dentro, monocroma con visto y PNG de mdpi a xxxhdpi. Fuera las marcas B y C de la propuesta |
 | 19/10 | Javier | Auditoría de la identidad visual (agente `auditor-marca`, skill `brand-identity`): 19 iconos redibujados (D-34) y sin plato en casillas y filas (D-35); contrastes corregidos en `Color.kt` y la documentación; logo y letra nuevos, pendientes, en `docs/propuestas/marca.md` |
-| 18/10 | Javier | Fuera las apps «Recomendadas» de Ajustes → Aplicaciones (D-33, CU-13 retirado, ERS 0.7): las instaladas salen en «Otras apps» |

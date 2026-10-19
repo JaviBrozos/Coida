@@ -32,15 +32,41 @@ object VoiceTuning {
 
     /**
      * Volumen (RMS sobre 32 767) por debajo del cual nunca se considera voz. Bajo a
-     * propósito: hay voces muy flojas y el móvil puede estar en la mesa.
+     * propósito: hay voces muy flojas, el móvil puede estar en la mesa y ya no hay
+     * ganancia automática que las suba (D-37).
      */
-    const val MIN_SPEECH_RMS = 250.0
+    const val MIN_SPEECH_RMS = 150.0
 
-    /** La voz tiene que superar el ruido de fondo medido por este factor. */
-    const val NOISE_FACTOR = 3.0
+    /**
+     * Cuántas veces tiene que superar la voz al ruido de fondo para empezar a
+     * contar (unos 8 dB). Con 3 y la ganancia automática encendida, una voz floja
+     * no llegaba y la frase se cortaba a medias.
+     */
+    const val SPEECH_START_FACTOR = 2.5
 
-    /** Volumen que llena la barra de «te estoy oyendo». Solo es para pintar. */
-    const val LEVEL_FULL_SCALE = 3_000.0
+    /**
+     * Una vez empezada, basta con esto para seguir contando voz (unos 4 dB): el
+     * final de las palabras, más flojo, no cuenta como silencio.
+     */
+    const val SPEECH_CONTINUE_FACTOR = 1.6
+
+    /** Lo que sube la medida del ruido en cada trozo sin voz: alcanza a una tele en unos 2 s. */
+    const val NOISE_RISE = 0.05
+
+    /** Lo mismo durante la voz, mucho más despacio, para no tomar la voz por ruido. */
+    const val NOISE_RISE_IN_SPEECH = 0.01
+
+    /** Audio que se envía antes de la primera voz: el arranque de una palabra es flojo. */
+    const val PADDING_BEFORE_SPEECH_MS = 500L
+
+    /** Y después de la última: una sílaba final que se apaga. */
+    const val PADDING_AFTER_SPEECH_MS = 800L
+
+    /** Volumen que deja vacía la barra de «te estoy oyendo». Solo es para pintar. */
+    const val LEVEL_EMPTY_RMS = 60.0
+
+    /** Volumen que la llena. Solo es para pintar. */
+    const val LEVEL_FULL_RMS = 3_000.0
 
     /**
      * Con TalkBack, cuánto se espera como mínimo antes de grabar: lo que tarda en

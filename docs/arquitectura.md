@@ -244,7 +244,7 @@ toque en el círculo → LauncherActivity.openAssistant() → AssistantControlle
 | --- | --- |
 | `AssistantController` | Máquina de estados (`AssistantState`) y la conversación: reabre el micrófono al acabar de hablar (`followUpListening`) y guarda en memoria los últimos turnos. Corre en el `lifecycleScope`; `onStop` lo cancela y olvida la conversación |
 | `VoiceReplies` | Reconoce respuestas cortas sin IA. Solo cuentan si todas sus palabras son de esa respuesta o de relleno (D-31) |
-| `audio/VoiceRecorder` | `AudioRecord` a 16 kHz, fuente `VOICE_RECOGNITION`, supresor de ruido y ganancia si el móvil los tiene. Decide qué es voz comparando con el ruido de fondo. El WAV vive en memoria |
+| `audio/VoiceRecorder` | `AudioRecord` a 16 kHz, fuente `VOICE_RECOGNITION`, sin supresor de ruido ni ganancia (D-37). Decide qué es voz comparando con el ruido de fondo, con un umbral para empezar y otro más bajo para seguir, y solo envía el tramo con voz. El WAV vive en memoria |
 | `audio/Speaker` | `TextToSpeech` en español a 0,85. Calla con TalkBack encendido, salvo en «Repetir». Avisa al acabar de hablar (`UtteranceProgressListener`), que es cuando se reabre el micrófono. Con TalkBack, el controlador espera lo que tarda en leer la pantalla (de 2,5 a 10 s) antes del pitido |
 | `cloud/OpenAiCompatibleClient` | `/audio/transcriptions` y `/chat/completions` con `HttpURLConnection`. Conexión 10 s, lectura 20 s. Traduce cada fallo a un `AssistantFailure` |
 | `ActionCatalog` | Da a cada contacto y casilla un id corto (`c1`, `a1`). Al modelo solo le llegan ids y nombres |

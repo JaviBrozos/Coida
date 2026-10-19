@@ -455,3 +455,24 @@ xxxhdpi; y el logo toma los colores de `Color.kt`.
 se decida la letra (pendiente en la propuesta). Las láminas de
 `design/presentacion/` aún llevan el isotipo antiguo.
 
+### D-37 · El micrófono graba sin supresor de ruido ni ganancia automática (19/10/2026)
+
+**Contexto**: el asistente oía mal incluso voces jóvenes. El grabador encendía el
+supresor de ruido y la ganancia automática del móvil, contaba voz solo si
+triplicaba el ruido de fondo, tomaba el primer trozo grabado como medida del
+ruido y enviaba todo, silencios incluidos.
+**Decisión**: sin supresor ni ganancia, como trae la fuente
+`VOICE_RECOGNITION`. Para empezar a contar voz basta con 2,5 veces el ruido, y
+para seguir, con 1,6. La medida del ruido baja deprisa y sube despacio, así que
+hablar nada más sonar el pitido ya no deja el umbral por encima de la voz. A
+Whisper solo le llega el tramo con voz, con medio segundo antes y 0,8 s
+después. La barra de volumen pasa a escala logarítmica. Los tiempos de
+RNF-USA-03 no cambian.
+**Descartado**: dejar los dos efectos. El supresor deja artefactos que confunden
+a Whisper, que ya tolera el ruido. La ganancia sube también el silencio y
+aplana la voz, y eso dejaba una voz floja por debajo del umbral, de modo que la
+frase se cortaba a medias.
+**Consecuencia**: en depuración, el grabador deja en el log (`DoadoVoz`) cifras
+de cada grabación (duración, voz, ruido, pico y lo enviado), sin audio ni
+texto, para ajustar `VoiceTuning` con voces reales.
+
