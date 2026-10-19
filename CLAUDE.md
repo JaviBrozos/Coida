@@ -58,8 +58,8 @@ Toda UI nueva pasa por él antes de darse por hecha.
 
 Para la marca (logo, icono, color de marca, logotipo) hay otro subagente,
 `.claude/agents/auditor-marca.md`, que trabaja con la skill
-`.claude/skills/brand-identity/`. La propuesta de logo y letra, pendiente, está en
-`docs/propuestas/marca.md`, con su material en `design/propuestas-marca/`.
+`.claude/skills/brand-identity/`. La propuesta de letra, pendiente, está en
+`docs/propuestas/marca.md`, con la fuente en `design/propuestas-marca/fuente/`.
 
 Hay una skill de diseño en el proyecto, `.claude/skills/apple-design/` (de Emil
 Kowalski, licencia MIT): los principios de Apple para interfaces. Sirve de

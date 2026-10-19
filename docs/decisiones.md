@@ -438,3 +438,20 @@ de los contactos y en el círculo del micrófono de la pantalla del asistente.
 fondo de pulsado, por encima del 3:1 que piden los gráficos (antes, 7,86:1 sobre
 el plato). Desaparecen `TilePlateSize`, `TilePlateSizeCompact` y
 `PlateCornerRadius`.
+
+### D-36 · El logo sigue siendo la D con visto, redondeada (19/10/2026)
+
+**Contexto**: la propuesta de marca (`docs/propuestas/marca.md`) ofrecía afinar
+la D con visto (A), una D con hueco redondo (B) y un bocadillo (C). El icono
+adaptativo llevaba además un cuadrado dentro y el visto se perdía en pequeño.
+**Decisión**: se queda la D con visto, con las esquinas de la recta redondeadas
+(radio 6 en rejilla de 64) y un visto nuevo: más grande, con el brazo largo más
+alto, trazo de 5 (9,6 % del alto de la D) y puntas redondas, en hueco
+(`evenOdd`). El icono adaptativo lleva delante solo la D, sin inset ni cuadrado;
+la capa monocroma es la misma figura, visto incluido; hay PNG de mdpi a
+xxxhdpi; y el logo toma los colores de `Color.kt`.
+**Descartado**: B y C. También dejar el visto fino, que a 48 px medía 1,2 px.
+**Consecuencia**: el texto del logotipo sigue en Baloo 2 y Quicksand hasta que
+se decida la letra (pendiente en la propuesta). Las láminas de
+`design/presentacion/` aún llevan el isotipo antiguo.
+

@@ -1,16 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Capa monocroma del icono (Android 13+, "iconos temáticos"): el sistema la
-    rellena con un color suyo, así que solo cuenta la silueta. Es la "D" de la
-    marca: lado izquierdo recto y derecho semicircular. Lienzo de 108 con la
-    figura dentro de la zona segura central de 72.
+    Capa monocroma (Android 13+, iconos temáticos): el sistema la rellena con
+    un color suyo. Es la misma marca que la capa delantera, visto incluido. Lienzo de 108 dp: la D (recta de 22, medio círculo de radio 26 y esquinas de la recta de
+    radio 6, en rejilla de 64) con el visto en hueco (evenOdd): puntos (18,8; 32,2),
+    (25; 38,8) y (39,6; 24,6), trazo de 5 (9,6 % del alto de la D), puntas y codo
+    redondos. La D mide 44x48 dp,
+    centrada a ojo (2,2 dp a la derecha del centro geométrico) y dentro de la
+    zona segura de 66 dp. Ver docs/diseno.md, «Marca» (D-36).
 -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path
-        android:fillColor="#FF000000"
-        android:pathData="M34,28 h12 a26,26 0 0 1 0,52 h-12 z" />
+    <group
+        android:scaleX="0.923"
+        android:scaleY="0.923"
+        android:translateX="26.66"
+        android:translateY="24.46">
+        <path
+            android:fillColor="#FF000000"
+            android:fillType="evenOdd"
+            android:pathData="M14,6 H30 A26,26 0 0 1 30,58 H14 A6,6 0 0 1 8,52 V12 A6,6 0 0 1 14,6 Z M23.2,40.5 L23.6,40.8 L24,41.1 L24.5,41.2 L24.9,41.3 L25.4,41.3 L25.9,41.1 L26.4,40.9 L26.7,40.6 L41.3,26.4 L41.7,26 L41.9,25.6 L42,25.1 L42.1,24.6 L42.1,24.1 L41.9,23.7 L41.7,23.2 L41.4,22.9 L41,22.5 L40.6,22.3 L40.1,22.2 L39.6,22.1 L39.1,22.1 L38.7,22.3 L38.2,22.5 L37.9,22.8 L25.1,35.2 L20.6,30.5 L20.3,30.2 L19.8,29.9 L19.4,29.8 L18.9,29.7 L18.4,29.7 L17.9,29.9 L17.5,30.1 L17.1,30.4 L16.8,30.7 L16.5,31.2 L16.4,31.6 L16.3,32.1 L16.3,32.6 L16.5,33.1 L16.7,33.5 L17,33.9 Z" />
+    </group>
 </vector>

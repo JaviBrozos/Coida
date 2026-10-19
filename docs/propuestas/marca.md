@@ -1,13 +1,14 @@
 # Propuesta: identidad visual de Doado
 
-> Estado: **pendiente**. De la auditoría ya están aplicados los iconos (D-34 y
-> D-35) y las cifras de contraste corregidas. El logo y la letra esperan a que
-> decidan los dos creadores. Javier prefiere el logo «Botón» (B) y la letra
-> Atkinson Hyperlegible Next para la marca y la app.
+> Estado: **logo decidido, letra pendiente.** El logo sigue siendo la D con
+> visto, con las esquinas redondeadas y un visto nuevo (D-36). Ya están
+> aplicados también los iconos (D-34 y D-35) y las cifras de contraste
+> corregidas. Queda por decidir la letra: Javier propone Atkinson Hyperlegible
+> Next para la marca y la app.
 >
 > Auditoría del 18/10/2026, hecha con el agente `.claude/agents/auditor-marca.md`
-> y la skill `.claude/skills/brand-identity/`. Todo el material listo para
-> aplicar está en `design/propuestas-marca/`. Los lienzos con las opciones, el
+> y la skill `.claude/skills/brand-identity/`. La fuente lista para aplicar está en
+> `design/propuestas-marca/fuente/`. Los lienzos con las opciones, el
 > sistema, los iconos y las animaciones están en un artefacto privado de Claude
 > de Javier («Doado — identidad visual»). Para que Gonzalo lo vea, hay que
 > compartirlo.
@@ -18,8 +19,7 @@
    entero (cuadrado marino incluido) con un inset del 17 %, y es el mismo fichero
    que el icono heredado y que `doado_icono.png`. No se nota porque los dos
    marinos separan a 1,02:1, pero aparece con otro fondo o con el paralaje. La D
-   solo ocupa 40 × 44 dp de los 66 de la zona segura. **Sigue sin arreglar**: se
-   arregla al aplicar cualquier logo de esta propuesta.
+   solo ocupa 40 × 44 dp de los 66 de la zona segura. **Arreglado en D-36.**
 2. **Dos juegos de colores de marca.** El logo usa `#0B1F33` y `#29B6F6`, y el
    código usa `#0B1D2E` y `#29B6F0`.
 3. **El visto desaparece en pequeño.** Mide el 4 % del alto de la D, así que a
@@ -34,22 +34,11 @@
 
 | | Idea | A favor | En contra |
 | --- | --- | --- | --- |
-| **A. La D de siempre** | La D con el visto, afinada: visto en hueco, el doble de grueso | Continuidad | Un visto es un recurso muy visto |
-| **B. Botón** (preferida) | D con un hueco redondo: el círculo del asistente y las «o» de «Doado» | La más legible a 16 px; sobria | Pierde el «hecho» del visto |
-| **C. Diálogo** | La D como bocadillo, con el visto | Cuenta el asistente de voz | Se confunde con las apps de mensajes |
+| **A. La D de siempre** (elegida, D-36, con esquinas redondeadas y visto nuevo) | La D con el visto, afinada: visto en hueco, el doble de grueso | Continuidad | Un visto es un recurso muy visto |
+| **B. Botón** (descartada) | D con un hueco redondo: el círculo del asistente y las «o» de «Doado» | La más legible a 16 px; sobria | Pierde el «hecho» del visto |
+| **C. Diálogo** (descartada) | La D como bocadillo, con el visto | Cuenta el asistente de voz | Se confunde con las apps de mensajes |
 
-**Construcción de B** (rejilla de 64): la D mide 48 × 52 desde (8, 6), con una
-recta de 22, medio círculo de radio 26 y las esquinas de la recta redondeadas
-con radio 5. El hueco es un círculo de radio 10,5 con centro en (31,5; 32), un
-hueco de verdad (`evenOdd`). En el icono adaptativo, la capa delantera es solo la
-D, de 48 dp de alto, 2,45 dp a la derecha del centro (donde cae su peso), sin
-inset ni cuadrado. La capa monocroma es la misma figura.
-
-**Cómo se aplica B**: copiar `design/propuestas-marca/android/drawable/*` a
-`res/drawable/`, `android/mipmap/anydpi-v26/ic_launcher.xml` a
-`res/mipmap-anydpi-v26/`, y cada `android/mipmap/<densidad>/ic_launcher.png` a
-`res/mipmap-<densidad>/`. Después, borrar `mipmap-xxxhdpi/ic_launcher_foreground.png`
-y sustituir `doado_logo.*` y `doado_icono.png` por los de la carpeta.
+La geometría del logo elegido está en `docs/diseno.md`, «Marca».
 
 ## Letra
 
@@ -69,31 +58,19 @@ la licencia. Para aplicarla:
 4. Pasar el agente de accesibilidad con letra al 200 %: es más ancha que Roboto
    y puede partir antes «Mensajes» y los nombres.
 
-## Movimiento de marca (para el logo B)
+## Movimiento de marca
 
-Para vídeos, redes y presentaciones. En la app solo entraría la Pulsación, como
-splash de Android 12 y siguientes, y siempre sin rebotes (D-32).
+Las cinco animaciones del lienzo se diseñaron para el logo B, que se descartó.
+Hay que rehacerlas para la D con visto, con las mismas reglas:
 
-| Nombre | Qué pasa | Duración | Para qué |
-| --- | --- | --- | --- |
-| Pulsación | La D se hunde un 6 % y el hueco se abre desde el centro | 0,9 s | Firma: cierre de cada vídeo, splash |
-| Construcción | Se dibuja el contorno de la D, se rellena y se abre el hueco | 1,6 s | Entrada de vídeos y presentaciones |
-| Escucha | Del hueco salen dos ondas que se desvanecen | 1,6 s en bucle | Vídeos del asistente de voz |
-| Del botón al nombre | La D se aparta, sale «Doado» y las dos «o» crecen como el hueco | 2 s | Cabecera de LinkedIn, final con lema |
-| Entrar por el botón | El hueco crece hasta llenar la pantalla y por él se entra en la app | 1,2 s | Transición a imágenes de la app |
-
-Reglas:
-
-- **Curvas**: las entradas, con salida suave (`cubic-bezier(0.2, 0, 0, 1)`); los
-  bucles, con `ease-in-out`.
-- **Rebote**: como mucho un 4 %, y solo en vídeo.
+- **Curvas**: entradas con salida suave (`cubic-bezier(0.2, 0, 0, 1)`).
+- **Rebote**: como mucho un 4 %, y solo en vídeo; en la app, ninguno (D-32).
 - **Colores**: solo los de marca.
-- **Sin animaciones**: siempre hay una versión quieta para quien las tiene
-  quitadas.
-- **Formatos**: 1080 × 1080, 1080 × 1920 y 1920 × 1080, con la marca dentro del
-  80 % central.
-- **Entrega**: Lottie para web y redes; la Pulsación, como vector animado de
-  Android.
+- **Sin animaciones**: siempre una versión quieta.
+- **Formatos**: 1080 × 1080, 1080 × 1920 y 1920 × 1080.
+
+El punto de partida natural es que el visto se dibuje, como al confirmar una
+orden del asistente.
 
 ## Pendiente, sea cual sea la elección
 

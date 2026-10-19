@@ -1,15 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Icono adaptativo (API 26+). El sistema recorta las capas con la máscara del
-    dispositivo, y solo se garantiza visible el 66% central: por eso el logotipo
-    va con un inset del 17%, para que no se coma los bordes.
+    Icono adaptativo (API 26+). Fondo marino de marca y delante solo la D, ya
+    dibujada dentro de la zona segura: sin inset y sin un segundo cuadrado. Para
+    API 24-25 están los PNG de mipmap-*dpi.
 -->
 <adaptive-icon xmlns:android="http://schemas.android.com/apk/res/android">
     <background android:drawable="@color/ic_launcher_background" />
-    <foreground>
-        <inset
-            android:drawable="@mipmap/ic_launcher_foreground"
-            android:inset="17%" />
-    </foreground>
+    <foreground android:drawable="@drawable/ic_launcher_foreground" />
     <monochrome android:drawable="@drawable/ic_launcher_monochrome" />
 </adaptive-icon>

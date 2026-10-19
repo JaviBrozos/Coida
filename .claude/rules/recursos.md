@@ -30,7 +30,11 @@ paths:
 - Siluetas reconocibles a tamaño grande. Nada de iconografía fina, abstracta ni
   decorativa, y **nunca emoji**.
 - El isotipo tiene dos versiones (`ic_doado_mark` y `ic_doado_mark_light`) porque
-  el cian no llega a 3:1 sobre blanco. Usa la que toque según el fondo.
+  el cian no llega a 3:1 sobre blanco. Usa la que toque según el fondo. Son
+  rellenos con el visto en hueco (`fillType="evenOdd"`), D-36.
+- El icono de la app: `drawable/ic_launcher_foreground.xml` es solo la D, sin
+  inset ni cuadrado; la monocroma es la misma figura. Si cambias la marca,
+  regenera también los PNG de `mipmap-*dpi`.
 - Los iconos van sin plato detrás (D-35): `IconBadge` solo lleva plato si se lo
   pasas, como el círculo del asistente.
 

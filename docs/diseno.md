@@ -117,6 +117,24 @@ los borres sin mirar.
 layout sueltas en `HomeScreen` y en los componentes. Si tocas esas zonas, pásalas
 al token.
 
+## Marca
+
+La D con un visto dentro (D-36). Tres reglas: **el visto es un hueco**, nunca una
+pintura encima; **los colores son los de `Color.kt`**; y el icono de la app
+lleva **solo la D**, sin un segundo cuadrado.
+
+- **Construcción** (rejilla de 64): la D mide 48 × 52 desde (8, 6), con una recta
+  de 22, medio círculo de radio 26 y las esquinas de la recta de radio 6. El visto
+  pasa por (18,8; 32,2), (25; 38,8) y (39,6; 24,6), con un trazo de 5 (el 9,6 %
+  del alto de la D) y puntas y codo redondos. Se sigue viendo a 16 px.
+- **Icono adaptativo**: fondo `ic_launcher_background` (marino) y delante
+  `drawable/ic_launcher_foreground.xml`, sin inset. La D mide 48 dp de alto en el
+  lienzo de 108, 2,2 dp a la derecha del centro geométrico (centrado a ojo), y
+  queda dentro de la zona segura de 66. La capa monocroma es la misma figura.
+  Para API 24-25, PNG de mdpi a xxxhdpi (48 a 192 px).
+- **Logotipo** (`doado_logo.svg`): el texto sigue en Baloo 2 y Quicksand mientras
+  la letra esté pendiente (`docs/propuestas/marca.md`).
+
 ## Iconografía
 
 - **De trazo**, dibujados sobre rejilla de 24 con grosor 1,7 y puntas redondas.
@@ -130,11 +148,10 @@ al token.
 - Se tiñen con un rol del tema, nunca con un color escrito.
 - **Nunca emoji ni dingbats.**
 - El **isotipo** tiene dos versiones porque el cian no llega a 3:1 sobre blanco:
-  `ic_doado_mark` (D cian, visto marino) para fondo oscuro y
-  `ic_doado_mark_light` (D marina, visto blanco) para fondo claro. Es marca, no
-  información: siempre `contentDescription = null`. Desde D-28 ya no sale en el
-  inicio, donde está ahora el botón de Ajustes; los ficheros se conservan. Hay
-  una propuesta pendiente de logo nuevo en `docs/propuestas/marca.md`.
+  `ic_doado_mark` (D cian) para fondo oscuro y `ic_doado_mark_light` (D marina)
+  para fondo claro; en las dos el visto es un hueco. Es marca, no información:
+  siempre `contentDescription = null`. Desde D-28 ya no sale en el inicio, donde
+  está ahora el botón de Ajustes; los ficheros se conservan. Geometría en «Marca».
 - **`ic_assistant` es un micrófono.** Se llama así, y no `ic_mic`, para que
   cambiarlo sea sustituir el fichero sin tocar código.
 
