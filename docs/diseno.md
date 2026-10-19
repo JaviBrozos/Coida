@@ -71,13 +71,14 @@ pendiente de cambiar la letra en `docs/propuestas/marca.md`.
 
 | Estilo | Tamaño | Dónde se usa |
 | --- | --- | --- |
-| `displayMedium` | 52 sp | El reloj del inicio, la cuenta atrás del modo admin |
-| `displaySmall` | 44 sp | El nombre «Doado» cuando el reloj está apagado |
+| `displayMedium` | 52 sp | La cuenta atrás del modo admin |
+| `headlineLarge` | 40 sp | El reloj del inicio (D-38) |
+| `headlineMedium` | 34 sp | El nombre «Doado» cuando el reloj está apagado |
 | `headlineSmall` | 30 sp | Las cifras del teclado del PIN |
 | `titleLarge` | 30 sp | Título de una pantalla de ajustes |
 | `titleSmall` | 22 sp | Texto de botón, nombre de un contacto |
-| `bodyMedium` | 22 sp | La fecha, textos de cuerpo |
-| `bodySmall` | 20 sp | Subtítulos y notas |
+| `bodyMedium` | 22 sp | Textos de cuerpo |
+| `bodySmall` | 20 sp | Subtítulos, notas y la fecha del inicio |
 | `labelLarge` | 24 sp | **La etiqueta de una casilla** y los títulos de fila |
 | `labelMedium` | 20 sp | Rótulos de grupo y opciones |
 | `labelSmall` | 18 sp | El «No disponible» de una casilla apagada. **Suelo: nada por debajo** |
@@ -97,13 +98,14 @@ los borres sin mirar.
 | `TileMinHeight` | 168 dp | Alto mínimo de una casilla (en el inicio suelen salir ~260) |
 | `TileIconSize` / `TileIconSizeCompact` | 72 / 54 dp | Icono de una casilla, sin plato (D-35), en dos columnas / en una |
 | `TileCornerRadius` | 28 dp | Radio de casilla y de contacto del inicio |
-| `AvatarSize` | 52 dp | Círculo con la inicial de un contacto del inicio |
+| `AvatarSize` | 52 dp | Círculo con la inicial de un contacto en Ajustes → Contactos |
 | `CardCornerRadius` | 20 dp | Radio de fila, tarjeta y botón |
 | `ControlCornerRadius` | 14 dp | Radio de control pequeño |
 | `BorderWidth` | 2 dp | Grosor de contorno |
 | `DividerWidth` | 2 dp | Raya entre las filas de un grupo de ajustes |
 | `HighlightBorderWidth` | 4 dp | Contorno de la casilla o el contacto que señala el asistente al guiar (que además va relleno de acento) |
-| `AssistantButtonSize` | 96 dp | Círculo del asistente en el inicio, y la franja que le reserva la columna |
+| `AssistantButtonSize` | 96 dp | Círculo del asistente en el inicio |
+| `AssistantRingWidth` | 8 dp | Aro del color del fondo alrededor del círculo, que lo separa de las casillas que pasan por debajo |
 | `CornerButtonSize` | 64 dp | Botón de Ajustes en la esquina del inicio |
 | `BackButtonHeight` | 60 dp | Alto del botón «Volver» de las cabeceras |
 | `PinKeyHeight` / `PinPadMaxWidth` | 64 / 320 dp | Tecla del PIN (alto mínimo) y ancho máximo del teclado, centrado |
@@ -157,20 +159,21 @@ lleva **solo la D**, sin un segundo cuadrado.
 
 ## El inicio
 
-- **Ajustes** es un círculo de 64 dp arriba a la derecha, solo con icono, contorno
+- **Ajustes** es un círculo de 64 dp arriba a la derecha, solo con un engranaje (D-39), contorno
   y tono apagado (`onSurfaceVariant`). Es del familiar: lejos del pulgar. Redondo
   como el del asistente: lo que flota fuera de la rejilla no parece una casilla.
 - **Casillas**: el icono va directamente sobre la casilla, sin plato (D-35): solo
   su silueta dentro del contorno. Vale igual para los iconos de trazo y para los
   de las apps. En la casilla que señala el asistente, el icono va en `onPrimary`.
-- **Contactos**: la inicial en un círculo, el nombre y debajo la acción escrita.
-  Con la letra por encima de 1,3 se quita la inicial, para que el nombre no se
-  parta.
+- **Contactos**: casillas como las de las apps, en la misma rejilla y tras el
+  rótulo «Tus contactos» (D-38): la inicial en un círculo en el sitio del icono,
+  el nombre y debajo la acción escrita. Sin límite de número.
 - **El asistente** es un círculo de 96 dp abajo en el centro, relleno `primary`
   con el icono en `onPrimary` (7,86:1 en oscuro, 17,08:1 en claro). Al pulsarlo
   pasa a `surfaceContainerHigh` con el icono en `onSurface` (11,35:1 y 15,18:1).
-  No se desplaza con la rejilla, y la columna le reserva su franja: **nunca tapa
-  una casilla**.
+  Flota encima de la rejilla, que se ve pasar por sus lados (D-38), con un aro de
+  8 dp del color del fondo. La rejilla acaba con un margen de su alto: cualquier
+  casilla se puede subir hasta dejarla entera a la vista.
 - **Señalar sin mover**: al guiar, la casilla o el contacto se **rellena de
   `primary`** con el contenido en `onPrimary` y el contorno a
   `HighlightBorderWidth`, y TalkBack lo anuncia («El asistente te lo señala»). Solo

@@ -100,7 +100,7 @@ guardado no existe: ante datos corruptos, la app arranca, no peta.
 Una sola clave, `contacts`, con un `JSONArray`. Cada elemento: `id`, `name`,
 `number`, `action` (`CALL` \| `WHATSAPP`) y `onHome`. La lectura entera va en un
 `runCatching`: si el JSON se corrompe, la lista queda vacía en vez de romper el
-arranque. `MAX_ON_HOME = 4`.
+arranque. Sin límite de accesos directos en el inicio (D-38). Cada casilla es un elemento; la misma persona (el mismo número, comparando sus 9 últimas cifras) puede tener uno `CALL` y otro `WHATSAPP` (D-40), y Ajustes y el asistente los juntan por persona.
 
 ### `doado_favorites` — `FavoritesStore`
 

@@ -476,3 +476,70 @@ frase se cortaba a medias.
 de cada grabación (duración, voz, ruido, pico y lo enviado), sin audio ni
 texto, para ajustar `VoiceTuning` con voces reales.
 
+### D-38 · Contactos en la rejilla y el asistente flotando encima (19/10/2026)
+
+**Contexto**: probando el APK, el inicio tenía tres pisos: los contactos en un
+bloque fijo arriba (como mucho cuatro), la rejilla de apps en medio, que era lo
+único que se desplazaba y se quedaba en un cuadro pequeño, y el círculo del
+asistente con su franja reservada abajo. El reloj se llevaba casi un cuarto de
+la pantalla.
+**Decisión**: una sola rejilla que se desplaza entera. Primero las apps y luego,
+tras el rótulo «Tus contactos» (de fila entera), los accesos directos con la
+misma forma y tamaño que una casilla: la inicial en su círculo ocupa el sitio
+del icono. Sin límite de contactos. El rótulo no dice «Contactos» porque así se
+llama la casilla de la agenda. El círculo del asistente flota encima, con la
+rejilla pasando por sus lados y un aro de 8 dp del color del fondo que lo separa
+de los contornos sin sombra (D-04). La rejilla acaba con un margen de su alto,
+así que toda casilla puede quedar entera a la vista. Si no cabe todo, el alto
+de casilla se ajusta para que al empezar quepan filas enteras (y el rótulo, si
+cae ahí) por encima del círculo, y la siguiente solo asome por sus lados. Pulsar
+Inicio devuelve la rejilla arriba. Al guiar, la rejilla solo se desplaza si la
+casilla no se ve entera, y para un contacto se sube hasta su rótulo. El reloj
+pasa a `headlineLarge` y la fecha a `bodySmall` en `onBackground` (7:1 también
+en claro), con techo de escala 1,5 en vez de 1,3.
+**Descartado**: el bloque fijo de contactos, que comía alto y limitaba a cuatro,
+y la franja reservada al círculo de D-28, que dejaba la rejilla en un cuadro.
+Esto sustituye a la norma «nada flotante puede tapar una casilla, ni al
+desplazar». Ahora el círculo puede tapar parte de una casilla, también si el
+desplazamiento se detiene ahí, pero nunca la deja sin poder verse entera. Lo
+revisó el agente de accesibilidad; quedan abiertos el tamaño mínimo de casilla
+en una columna (112 dp frente a los 168 de RNF-ACC-02) y el orden de lectura
+de TalkBack, que deja el círculo para el final.
+**Consecuencia**: con muchas casillas, los contactos quedan debajo y hay que
+desplazar para llegar; el rótulo marca dónde empiezan. Las posiciones siguen
+fijas: un contacto no cambia de sitio salvo que el familiar lo quite o añada
+otro antes.
+
+### D-39 · Ajustes se abre con un engranaje (19/10/2026)
+
+**Contexto**: el botón de Ajustes de la esquina del inicio llevaba dos
+deslizadores, y el engranaje quedaba para los ajustes de Android en el modo
+administrador.
+**Decisión**: el botón de la esquina lleva el engranaje, que es el dibujo de
+«ajustes» que el familiar ya conoce de cualquier móvil (principio de
+familiaridad de la skill `apple-design`). Los deslizadores se quedan en la fila
+«Interfaz», y el fichero pasa a llamarse `ic_sliders`. El botón de los ajustes
+de Android sigue con el engranaje: también son ajustes, y lleva su texto.
+**Descartado**: mantener los deslizadores en la esquina, que había que aprender,
+y dibujar un icono distinto para los ajustes de Android.
+
+### D-40 · Una persona puede tener botón de llamada y de WhatsApp (19/10/2026)
+
+**Contexto**: cada contacto tenía un único acceso directo y un selector
+Llamada / WhatsApp. Para tener los dos había que añadir a la persona dos veces
+desde la agenda, y el asistente veía a dos personas con el mismo nombre.
+**Decisión**: en Ajustes → Contactos hay una tarjeta por persona con dos
+interruptores, «Botón para llamar» y «Botón de WhatsApp». Se pueden encender
+los dos. Por dentro cada casilla sigue siendo su propio elemento de
+`doado_contacts`, y se agrupan por persona comparando las 9 últimas cifras del
+número. Encender un botón que no existía lo añade al final, para no mover
+casillas; apagarlo lo deja guardado y fuera del inicio. Volver a elegir en la
+agenda a alguien que ya está no lo duplica: avisa. Al asistente se le cuenta
+cada persona una vez, con sus botones. Un acceso directo de WhatsApp sin
+WhatsApp dice «Falta WhatsApp» y no un «No disponible» a secas.
+El aviso de «ya está en la lista» es una nota fija, no un mensaje que se va
+solo, y en la tarjeta la fila de WhatsApp dice «Sale apagado: falta WhatsApp».
+**Descartado**: un tercer valor «Las dos» en el selector, que obligaba a pintar
+dos casillas desde un solo elemento y a cambiar el formato guardado, y un botón
+de «Añadir también…».
+

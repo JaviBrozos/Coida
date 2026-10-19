@@ -43,10 +43,11 @@ administrador**, que no es un perfil aparte sino un estado que dura 15 minutos.
 
 ### Pantalla de inicio
 
-- **Reloj y fecha** grandes y, en la esquina, un **botón pequeño de Ajustes**,
+- **Reloj y fecha** y, en la esquina, un **botón pequeño de Ajustes**,
   en tono apagado y lejos del pulgar.
-- **Accesos directos de personas**: hasta cuatro contactos con su nombre. Un
-  toque y les llama (o les abre WhatsApp).
+- **Accesos directos de personas**: casillas con su nombre, debajo de las apps y
+  tras el rótulo «Tus contactos», sin límite. Un toque y les llama o les abre
+  WhatsApp; la misma persona puede tener los dos botones.
 - **Casillas de aplicaciones** en una o dos columnas, que se estiran para
   ocupar la pantalla. Si una app no está instalada, su casilla **se queda en su
   sitio pero apagada**: la posición de cada icono es memoria muscular.

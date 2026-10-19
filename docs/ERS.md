@@ -5,7 +5,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.7 (borrador) |
+| Versión | 0.8 (borrador) |
 | Fecha | 18/10/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
@@ -21,6 +21,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.5 | 30/09/2026 | RNF-SEG-03 nuevo e implementado: límite de intentos con bloqueo progresivo en la puerta de ajustes (D-24). Se corrige la excepción de CU-06 | Javier Brozos Martínez |
 | 0.6 | 13/10/2026 | Se cierran CON-01 a CON-04 (D-25 a D-27) y se abre CON-06. CU-04, CU-05 y CU-15 pasan a «En pruebas» y se detallan. RNF-PRI-02 y RNF-DIS-01 se concretan; RNF-USA-03 nuevo. CU-05 pasa a conversación, con «sí» dicho (D-31) | Javier Brozos Martínez |
 | 0.7 | 18/10/2026 | Se retira CU-13 (instalar una app recomendada): Ajustes deja de proponer apps; se instalan desde la tienda del modo administrador (CU-14, D-33). Los identificadores no se renumeran | Javier Brozos Martínez |
+| 0.8 | 19/10/2026 | CU-02: los accesos directos van en la rejilla del inicio, tras «Tus contactos», y sin límite (D-38). Una persona puede tener botón de llamada y de WhatsApp a la vez (D-40). En CU-05 el asistente los sitúa ahí | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -122,7 +123,7 @@ Se detallan los casos que más condicionan el diseño. El resto se describirá c
 | --- | --- |
 | Actor | ACT-01 Persona mayor |
 | Descripción | La persona mayor pulsa el acceso directo de un contacto en el inicio y el móvil le llama o abre su chat de WhatsApp, según lo configurado. |
-| Precondición | El familiar ha añadido el contacto y lo ha marcado para el inicio (CU-09). Caben 4 en el inicio. |
+| Precondición | El familiar ha añadido el contacto y lo ha marcado para el inicio (CU-09). No hay límite: salen en la rejilla del inicio, tras el rótulo «Tus contactos» (D-38). Una persona puede tener dos accesos directos, uno para llamar y otro para WhatsApp (D-40). |
 | Postcondición | Se inicia la llamada o se abre el chat de WhatsApp de ese contacto. |
 | Importancia | Alta |
 
@@ -211,7 +212,7 @@ La conversación sigue así tras cada respuesta del sistema: el usuario puede co
 
 **Secuencia alternativa: modo «Explica cómo»**
 
-4. El sistema enseña y lee los pasos de uno en uno («Pulsa el botón de María. Está arriba del todo»).
+4. El sistema enseña y lee los pasos de uno en uno («Mira en "Tus contactos", debajo de las apps: el botón de María está en la fila 1, a la izquierda»).
 5. El usuario pasa de paso con «Siguiente» o lo vuelve a oír con «Repetir».
 6. Al terminar, el sistema vuelve al inicio con la casilla o el contacto marcado (relleno de color y borde grueso, anunciado por TalkBack), sin mover nada. La marca se quita al pulsar cualquier cosa o el botón de inicio del móvil; no desaparece sola, ni al apagarse la pantalla.
 

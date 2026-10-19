@@ -32,9 +32,8 @@
 2. CON-06: decidir con Gonzalo sobre `docs/propuestas/con-06-clave-asistente.md`
    (intermediario con suscripción). Sin resolverlo no se publica.
 3. Auditoría de accesibilidad del 13/10, por decidir: etiqueta «Hablar» bajo el
-   círculo (afecta a D-28), icono de Ajustes a 6,71:1 en claro, rejilla en mirilla
-   con 4 contactos y aviso. Nombres de contacto al 200 %: mejor sin la inicial,
-   pero con dos por fila siguen justos.
+   círculo (afecta a D-28) e icono de Ajustes a 6,71:1 en claro. La rejilla en
+   mirilla ya no aplica (D-38).
 4. Al 200 % y dos columnas, «Mensajes» y «Contactos» se parten, ahora por sílabas
    con guion («Men-sajes»). Se leen, pero siguen en dos líneas.
 5. Auditoría de seguridad del 30/09: la respuesta de recuperación en claro.
@@ -53,6 +52,6 @@ capturas viejas.
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
 | 19/10 | Javier | Skill `doado-brand` en el proyecto: la marca (logo, colores, iconos, letra, tono y movimiento), con los SVG de la marca y `tokens.json`; enlazada en `CLAUDE.md` y en `recursos.md` |
-| 19/10 | Javier | Asistente: oye mejor (D-37). Graba sin supresor ni ganancia, cuenta voz con 2,5× el ruido y sigue con 1,6×, corrige el ruido si se habla nada más pitar y solo envía el tramo con voz. Sin probar con voz real |
-| 19/10 | Javier | Logo: la D con visto de siempre, con esquinas redondeadas y visto nuevo en hueco (D-36); icono adaptativo sin cuadrado dentro, monocroma con visto y PNG de mdpi a xxxhdpi. Fuera las marcas B y C de la propuesta |
-| 19/10 | Javier | Auditoría de la identidad visual (agente `auditor-marca`, skill `brand-identity`): 19 iconos redibujados (D-34) y sin plato en casillas y filas (D-35); contrastes corregidos en `Color.kt` y la documentación; logo y letra nuevos, pendientes, en `docs/propuestas/marca.md` |
+| 19/10 | Javier | Contactos con dos interruptores, llamada y WhatsApp, que se pueden encender a la vez (D-40). Fuera el subtítulo de Ajustes; notas de Aplicaciones y Modo administrador más genéricas, sin nombrar apps. TalkBack lee cada interruptor con el nombre de la persona |
+| 19/10 | Javier | El botón de Ajustes del inicio pasa a engranaje (D-39); los deslizadores, ahora `ic_sliders`, quedan para la fila Interfaz |
+| 19/10 | Javier | Inicio en una sola rejilla (D-38, ERS 0.8): contactos como casillas tras «Tus contactos» y sin límite; círculo del asistente flotando encima, con aro; reloj y fecha más pequeños. Con la auditoría de accesibilidad: filas enteras sobre el círculo, Inicio vuelve arriba, nombres hasta 4 líneas, vibración en el círculo y fecha a 7:1. Visto en el emulador en claro con 5 contactos |
