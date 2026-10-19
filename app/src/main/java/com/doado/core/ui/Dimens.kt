@@ -78,6 +78,12 @@ object DoadoDimens {
     val AssistantButtonSize = 96.dp
 
     /**
+     * Aro del color del fondo alrededor del círculo, que también se puede pulsar:
+     * lo separa de las casillas que pasan por debajo sin recurrir a una sombra.
+     */
+    val AssistantRingWidth = 8.dp
+
+    /**
      * Botón de Ajustes en la esquina del inicio. Pequeño a propósito, porque es del
      * familiar, pero muy por encima del mínimo de 48dp.
      */

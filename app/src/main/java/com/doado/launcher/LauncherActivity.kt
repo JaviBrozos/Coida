@@ -34,6 +34,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -117,6 +118,15 @@ class LauncherActivity : ComponentActivity() {
 
     /** Casilla o contacto que el asistente ha señalado al guiar. Se quita al tocar algo. */
     private var highlightedId by mutableStateOf<String?>(null)
+
+    /**
+     * Aviso fijo de Ajustes → Contactos (alguien que ya estaba). No es un Toast:
+     * nada desaparece solo. Se quita al tocar otra cosa en esa pantalla.
+     */
+    private var contactsNotice by mutableStateOf<String?>(null)
+
+    /** Sube cada vez que se pulsa Inicio: la rejilla vuelve arriba, como estaba. */
+    private var homeResets by mutableIntStateOf(0)
 
     /** A dónde vuelve el asistente al cerrarse: al inicio, o a sus ajustes si se estaba probando. */
     private var assistantReturn = Screen.HOME
@@ -224,6 +234,7 @@ class LauncherActivity : ComponentActivity() {
         assistant.cancel()
         // Pulsar Inicio es «empezar de cero»: también quita la casilla señalada.
         highlightedId = null
+        homeResets++
         screen = Screen.HOME
     }
 
@@ -317,6 +328,7 @@ class LauncherActivity : ComponentActivity() {
                 adminUnlockedUntil = adminUnlockedUntil,
                 showAssistant = assistantSettings.enabled && assistantConfig.isConfigured,
                 highlightedId = highlightedId,
+                scrollResetKey = homeResets,
                 onAppClick = {
                     highlightedId = null
                     openApp(it)
@@ -400,12 +412,17 @@ class LauncherActivity : ComponentActivity() {
                 Screen.CONTACTS -> ContactsScreen(
                     contacts = contacts,
                     whatsappInstalled = whatsappInstalled,
-                    onAdd = ::launchContactPicker,
-                    onUpdate = { updated ->
-                        saveContacts(contacts.map { if (it.id == updated.id) updated else it })
+                    onAdd = {
+                        contactsNotice = null
+                        launchContactPicker()
                     },
-                    onRemove = { removed -> saveContacts(contacts.filterNot { it.id == removed.id }) },
-                    onBack = { screen = Screen.SETTINGS },
+                    onSetButton = ::setContactButton,
+                    notice = contactsNotice,
+                    onRemove = { person ->
+                        contactsNotice = null
+                        saveContacts(contacts.filterNot { it.id == person.id || it.isSamePersonAs(person) })
+                    },
+                    onBack = { contactsNotice = null; screen = Screen.SETTINGS },
                 )
 
                 Screen.APPS -> AppsScreen(
@@ -645,6 +662,26 @@ class LauncherActivity : ComponentActivity() {
      * El selector de contactos concede permiso de lectura solo sobre la fila
      * elegida, así que Doado no necesita pedir acceso a toda la agenda.
      */
+    /**
+     * Enciende o apaga el botón de llamada o de WhatsApp de una persona (D-40). Si
+     * ese botón ya existe, solo cambia si sale en el inicio, y conserva su sitio; si
+     * no, se crea al final, para no mover las casillas que ya hay.
+     */
+    private fun setContactButton(person: ContactShortcut, action: ContactAction, onHome: Boolean) {
+        contactsNotice = null
+        val existing = contacts.firstOrNull {
+            (it.id == person.id || it.isSamePersonAs(person)) && it.action == action
+        }
+        when {
+            existing != null ->
+                saveContacts(contacts.map { if (it.id == existing.id) it.copy(onHome = onHome) else it })
+
+            onHome -> saveContacts(
+                contacts + person.copy(id = UUID.randomUUID().toString(), action = action, onHome = true),
+            )
+        }
+    }
+
     private fun addPickedContact(uri: Uri) {
         val projection = arrayOf(
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
@@ -667,8 +704,13 @@ class LauncherActivity : ComponentActivity() {
             name = picked.first?.takeIf { it.isNotBlank() } ?: number,
             number = number,
             action = ContactAction.CALL,
-            onHome = contacts.count { it.onHome } < ContactShortcutsStore.MAX_ON_HOME,
+            onHome = true,
         )
+        // Ya tiene tarjeta: sus dos botones se encienden desde ahí (D-40).
+        if (contacts.any { it.isSamePersonAs(shortcut) }) {
+            contactsNotice = getString(R.string.contacts_already_added, shortcut.name)
+            return
+        }
         saveContacts(contacts + shortcut)
 
         // Se pide aquí, con el familiar delante, y no en el inicio con la persona mayor.

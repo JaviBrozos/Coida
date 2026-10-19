@@ -34,13 +34,37 @@ class ActionCatalog(
     val columns: Int,
     val whatsappInstalled: Boolean,
 ) {
+    /**
+     * Una persona puede tener dos accesos directos, llamada y WhatsApp (D-40). Al
+     * modelo se le cuenta una vez, con sus botones: si no, preguntaría «¿a María
+     * o a María?».
+     */
+    private val people: List<List<ContactShortcut>> = buildList<MutableList<ContactShortcut>> {
+        contacts.forEach { contact ->
+            val group = firstOrNull { it.first().isSamePersonAs(contact) }
+            if (group != null) group += contact else add(mutableListOf(contact))
+        }
+    }
     private val contactsById: Map<String, ContactShortcut> =
-        contacts.mapIndexed { i, contact -> "c${i + 1}" to contact }.toMap()
+        people.mapIndexed { i, group -> "c${i + 1}" to group.first() }.toMap()
+    private val buttonsById: Map<String, List<ContactAction>> =
+        people.mapIndexed { i, group ->
+            "c${i + 1}" to group.filter { it.onHome }.map { it.action }.distinct()
+        }.toMap()
     private val appsById: Map<String, FavoriteApp> =
         homeApps.mapIndexed { i, app -> "a${i + 1}" to app }.toMap()
 
     /** Los accesos directos del inicio, en el orden en que se pintan. */
     val homeContacts: List<ContactShortcut> = contacts.filter { it.onHome }
+
+    /**
+     * El acceso directo del inicio con el que [contact] hace [action], si lo tiene:
+     * puede ser otro registro de la misma persona.
+     */
+    fun homeButton(contact: ContactShortcut, action: ContactAction): ContactShortcut? =
+        homeContacts.firstOrNull {
+            (it.id == contact.id || it.isSamePersonAs(contact)) && it.action == action
+        }
 
     /** Nombres que probablemente salgan en la orden, para afinar la transcripción. */
     val vocabulary: List<String> =
@@ -51,11 +75,13 @@ class ActionCatalog(
         appendLine("Contactos guardados:")
         if (contactsById.isEmpty()) appendLine("- (ninguno)")
         contactsById.forEach { (id, contact) ->
-            val button = when {
-                !contact.onHome -> ""
-                contact.action == ContactAction.CALL -> " (tiene botón en el inicio: llamada)"
-                else -> " (tiene botón en el inicio: WhatsApp)"
+            val buttons = buttonsById[id].orEmpty().map {
+                when (it) {
+                    ContactAction.CALL -> "llamada"
+                    ContactAction.WHATSAPP -> "WhatsApp"
+                }
             }
+            val button = if (buttons.isEmpty()) "" else " (botones en el inicio: ${buttons.joinToString(" y ")})"
             appendLine("- $id: ${JSONObject.quote(contact.name)}$button")
         }
         appendLine("Casillas del inicio:")

@@ -51,9 +51,6 @@ class ContactShortcutsStore(context: Context) {
     }
 
     companion object {
-        /** Los que caben arriba del inicio sin empujar las casillas fuera de pantalla. */
-        const val MAX_ON_HOME = 4
-
         // Coincide con el fichero declarado en res/xml/backup_rules.xml.
         private const val PREFS_NAME = "doado_contacts"
         private const val KEY_CONTACTS = "contacts"

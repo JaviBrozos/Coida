@@ -42,7 +42,6 @@ fun SettingsScreen(
     ) {
         ScreenHeader(
             title = stringResource(R.string.settings_title),
-            subtitle = stringResource(R.string.settings_subtitle),
             backLabel = stringResource(R.string.cd_back_home),
             onBack = onBack,
         )
@@ -50,7 +49,7 @@ fun SettingsScreen(
         SectionLabel(stringResource(R.string.settings_section_personalize))
         SettingsGroup {
             SettingsRow(
-                icon = R.drawable.ic_settings,
+                icon = R.drawable.ic_sliders,
                 title = stringResource(R.string.settings_interface),
                 subtitle = stringResource(R.string.settings_interface_subtitle),
                 onClick = onInterface,

@@ -52,14 +52,33 @@ enum class ContactAction {
     WHATSAPP,
 }
 
-/** Un contacto fijado arriba del todo en la pantalla de inicio. */
+/**
+ * Un acceso directo a una persona en la pantalla de inicio. La misma persona puede
+ * tener dos, uno para llamar y otro para WhatsApp (D-40): cada casilla es su
+ * propio acceso directo, con su id.
+ */
 data class ContactShortcut(
     val id: String,
     val name: String,
     val number: String,
     val action: ContactAction,
     val onHome: Boolean,
-)
+) {
+    /**
+     * Si es la misma persona que [other]: el mismo número, solo con las cifras,
+     * porque la agenda lo puede guardar con espacios o con prefijo distinto.
+     */
+    fun isSamePersonAs(other: ContactShortcut): Boolean {
+        val digits = number.filter(Char::isDigit).takeLast(PHONE_DIGITS_COMPARED)
+        return digits.isNotEmpty() &&
+            digits == other.number.filter(Char::isDigit).takeLast(PHONE_DIGITS_COMPARED)
+    }
+
+    private companion object {
+        /** Las nueve cifras de un móvil español, sin prefijo de país. */
+        const val PHONE_DIGITS_COMPARED = 9
+    }
+}
 
 /** Tamaño de letra elegido en Ajustes → Interfaz, sobre el que ya pida el sistema. */
 enum class TextSize(val scale: Float) {

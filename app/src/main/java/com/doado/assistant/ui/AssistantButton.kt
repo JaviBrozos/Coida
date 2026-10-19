@@ -1,9 +1,12 @@
 package com.doado.assistant.ui
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -23,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
+import com.doado.core.ui.rememberClickFeedback
 
 /**
  * El círculo del asistente en el inicio (D-28).
@@ -33,6 +37,10 @@ import com.doado.core.ui.DoadoTheme
  * resto de piezas, con el icono en el color del texto (11,35:1 y 15,18:1; en cian
  * se quedaba en 5,27:1) y el contorno de acento.
  *
+ * Flota sobre la rejilla, que pasa por debajo (D-38). Lo rodea un aro del color
+ * del fondo, que es parte del botón: sin él, el contorno de las casillas que
+ * pasan por detrás se pegaba al círculo y no se sabía dónde acababa cada cosa.
+ *
  * El icono es provisional y vive en `ic_assistant.xml`: cambiarlo es sustituir
  * ese fichero.
  */
@@ -42,18 +50,25 @@ fun AssistantButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
     val interaction = remember { MutableInteractionSource() }
     val pressed by interaction.collectIsPressedAsState()
     val label = stringResource(R.string.cd_assistant_button)
+    val feedback = rememberClickFeedback()
 
     Surface(
-        onClick = onClick,
+        onClick = { feedback(); onClick() },
         modifier = modifier
-            .size(DoadoDimens.AssistantButtonSize)
+            .size(DoadoDimens.AssistantButtonSize + DoadoDimens.AssistantRingWidth * 2)
             .semantics { contentDescription = label },
         shape = CircleShape,
-        color = if (pressed) colors.surfaceContainerHigh else colors.primary,
-        border = BorderStroke(DoadoDimens.BorderWidth, colors.primary),
+        color = colors.background,
         interactionSource = interaction,
     ) {
-        Box(contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(DoadoDimens.AssistantRingWidth)
+                .background(if (pressed) colors.surfaceContainerHigh else colors.primary, CircleShape)
+                .border(DoadoDimens.BorderWidth, colors.primary, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
             Icon(
                 painter = painterResource(R.drawable.ic_assistant),
                 contentDescription = null,

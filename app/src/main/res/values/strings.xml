@@ -11,8 +11,10 @@
 
     <!-- Pantalla de inicio -->
     <string name="home_admin_banner">Modo administrador activo hasta las %1$s</string>
+    <string name="home_contacts_section">Tus contactos</string>
     <string name="contact_action_call">Llamada</string>
     <string name="contact_action_whatsapp">WhatsApp</string>
+    <string name="contact_whatsapp_missing_short">Falta WhatsApp</string>
 
     <!-- Accesibilidad -->
     <string name="cd_open_app">Abrir %1$s</string>
@@ -101,7 +103,6 @@
 
     <!-- Ajustes -->
     <string name="settings_title">Ajustes</string>
-    <string name="settings_subtitle">Para el familiar o la persona cuidadora</string>
     <string name="settings_section_personalize">Personalizar</string>
     <string name="settings_section_advanced">Avanzado</string>
     <string name="settings_interface">Interfaz</string>
@@ -186,7 +187,8 @@
     <!-- Pasos fijos al guiar hacia algo de Doado (GuideSteps). -->
     <string name="guide_side_left">izquierda</string>
     <string name="guide_side_right">derecha</string>
-    <string name="guide_contact_where">Mira arriba: tienes un botón con el nombre de %1$s, a la %2$s.</string>
+    <string name="guide_contact_where_two">Mira en «Tus contactos», debajo de las apps: el botón de %1$s está en la fila %2$d, a la %3$s.</string>
+    <string name="guide_contact_where_one">Mira en «Tus contactos», debajo de las apps: el botón de %1$s es el número %2$d.</string>
     <string name="guide_contact_press_call">Púlsalo y el móvil le llamará.</string>
     <string name="guide_contact_press_whatsapp">Púlsalo y se abrirá su conversación de WhatsApp.</string>
     <string name="guide_tile_where_two">Busca la casilla «%1$s». Está en la fila %2$d, a la %3$s.</string>
@@ -214,19 +216,24 @@
     <string name="interface_note">El tamaño de letra se suma al que tenga puesto Android en sus ajustes de accesibilidad.</string>
 
     <!-- Ajustes → Contactos -->
-    <string name="contacts_subtitle">Salen arriba del inicio. Caben %1$d.</string>
+    <string name="contacts_subtitle">Salen en el inicio, debajo de las apps, en «Tus contactos».</string>
     <string name="contacts_empty">Todavía no hay contactos. Añade a las personas a las que más se llama.</string>
     <string name="contacts_add">Añadir contacto</string>
-    <string name="contacts_on_home">En la pantalla de inicio</string>
-    <string name="contacts_home_full">El inicio ya está completo</string>
+    <string name="contacts_button_call">Botón para llamar</string>
+    <string name="contacts_button_whatsapp">Botón de WhatsApp</string>
+    <string name="contacts_already_added">%1$s ya está en la lista. Enciende sus botones en su tarjeta.</string>
+    <string name="contacts_button_whatsapp_missing">Sale apagado: falta WhatsApp</string>
+    <string name="cd_contacts_button_call">Botón para llamar a %1$s en el inicio</string>
+    <string name="cd_contacts_button_whatsapp">Botón de WhatsApp de %1$s en el inicio</string>
+    <string name="cd_contacts_remove">Quitar a %1$s</string>
     <string name="contacts_remove">Quitar</string>
-    <string name="contacts_whatsapp_missing">WhatsApp no está instalada: esos contactos saldrán apagados hasta que se instale desde Aplicaciones.</string>
+    <string name="contacts_whatsapp_missing">WhatsApp no está instalada, así que sus botones salen apagados en el inicio. Para instalarla, abre Modo administrador y luego la tienda de apps.</string>
 
     <!-- Ajustes → Aplicaciones -->
     <string name="apps_subtitle">Qué casillas salen en el inicio</string>
     <string name="apps_section_basic">Básicas</string>
     <string name="apps_section_others">Otras apps de este móvil</string>
-    <string name="apps_note">Para instalar una app, abre la tienda desde Modo administrador. Cuando termina de instalarse, aparece en esta lista y se puede poner en el inicio.</string>
+    <string name="apps_note">Las apps nuevas se instalan desde la tienda, en Modo administrador. Cuando terminan de instalarse, aparecen en esta lista.</string>
 
     <!-- Ajustes → Modo administrador -->
     <string name="admin_locked">Doado está al mando</string>
@@ -239,5 +246,5 @@
     <string name="admin_open_store">Abrir la tienda de apps</string>
     <string name="admin_open_android_settings">Ajustes de Android</string>
     <string name="admin_choose_home">Elegir otra pantalla de inicio</string>
-    <string name="admin_note">Mientras está desbloqueado puedes instalar WhatsApp, Sofascore o lo que se necesite. A los %1$d minutos se vuelve a cerrar sin tocar nada.</string>
+    <string name="admin_note">Mientras está desbloqueado puedes salir de Doado para instalar o cambiar lo que haga falta. A los %1$d minutos se vuelve a cerrar solo.</string>
 </resources>

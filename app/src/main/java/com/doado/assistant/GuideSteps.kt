@@ -31,13 +31,13 @@ object GuideSteps {
         }
 
     private fun call(res: Resources, contact: ContactShortcut, catalog: ActionCatalog): Plan {
-        if (contact.onHome && contact.action == ContactAction.CALL) {
+        catalog.homeButton(contact, ContactAction.CALL)?.let { button ->
             return Plan(
                 steps = listOf(
-                    contactWhere(res, contact, catalog),
+                    contactWhere(res, button, catalog),
                     res.getString(R.string.guide_contact_press_call),
                 ),
-                highlightId = contact.id,
+                highlightId = button.id,
             )
         }
         val phone = catalog.homeApps.firstOrNull { it.id == PHONE_FAVORITE_ID && it.isAvailable }
@@ -52,13 +52,13 @@ object GuideSteps {
     }
 
     private fun whatsApp(res: Resources, contact: ContactShortcut, catalog: ActionCatalog): Plan {
-        if (contact.onHome && contact.action == ContactAction.WHATSAPP) {
+        catalog.homeButton(contact, ContactAction.WHATSAPP)?.let { button ->
             return Plan(
                 steps = listOf(
-                    contactWhere(res, contact, catalog),
+                    contactWhere(res, button, catalog),
                     res.getString(R.string.guide_contact_press_whatsapp),
                 ),
-                highlightId = contact.id,
+                highlightId = button.id,
             )
         }
         val whatsApp = catalog.homeApps.firstOrNull {
@@ -73,10 +73,17 @@ object GuideSteps {
         )
     }
 
-    /** Los accesos directos van de dos en dos, arriba del todo. */
+    /**
+     * Los accesos directos van en la rejilla, debajo de las apps y tras el rótulo
+     * «Tus contactos», que empieza fila (D-38): se cuentan desde ahí.
+     */
     private fun contactWhere(res: Resources, contact: ContactShortcut, catalog: ActionCatalog): String {
         val index = catalog.homeContacts.indexOfFirst { it.id == contact.id }.coerceAtLeast(0)
-        return res.getString(R.string.guide_contact_where, contact.name, side(res, index))
+        return if (catalog.columns == 1) {
+            res.getString(R.string.guide_contact_where_one, contact.name, index + 1)
+        } else {
+            res.getString(R.string.guide_contact_where_two, contact.name, index / 2 + 1, side(res, index))
+        }
     }
 
     /** Dónde está una casilla, contado como lo contaría alguien que la señala con el dedo. */

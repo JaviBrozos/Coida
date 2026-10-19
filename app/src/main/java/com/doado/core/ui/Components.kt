@@ -59,6 +59,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -182,6 +183,7 @@ fun InitialBadge(
     color: Color = MaterialTheme.colorScheme.primary,
     plate: Color = MaterialTheme.colorScheme.surfaceContainerLowest,
     shape: Shape = RoundedCornerShape(DoadoDimens.ControlCornerRadius),
+    textStyle: TextStyle = MaterialTheme.typography.titleSmall,
 ) {
     Box(
         modifier = modifier
@@ -192,7 +194,7 @@ fun InitialBadge(
     ) {
         Text(
             text = name.trim().take(1).uppercase(),
-            style = MaterialTheme.typography.titleSmall,
+            style = textStyle,
             color = color,
         )
     }
