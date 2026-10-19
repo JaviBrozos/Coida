@@ -56,7 +56,10 @@ algo desde cero, ábrelas tú:
 Para auditar accesibilidad hay un subagente: `.claude/agents/accesibilidad.md`.
 Toda UI nueva pasa por él antes de darse por hecha.
 
-Para la marca (logo, icono, color de marca, logotipo) hay otro subagente,
+La marca está en la skill `.claude/skills/doado-brand/`: logo, icono de la app,
+colores, iconos, letra, tono y movimiento, con los ficheros de la marca en
+`assets/`. Úsala en cualquier pieza que se vea, dentro o fuera de la app. Para
+auditar la marca hay otro subagente,
 `.claude/agents/auditor-marca.md`, que trabaja con la skill
 `.claude/skills/brand-identity/`. La propuesta de letra, pendiente, está en
 `docs/propuestas/marca.md`, con la fuente en `design/propuestas-marca/fuente/`.

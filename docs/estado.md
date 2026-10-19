@@ -52,6 +52,7 @@ capturas viejas.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 19/10 | Javier | Skill `doado-brand` en el proyecto: la marca (logo, colores, iconos, letra, tono y movimiento), con los SVG de la marca y `tokens.json`; enlazada en `CLAUDE.md` y en `recursos.md` |
 | 19/10 | Javier | Asistente: oye mejor (D-37). Graba sin supresor ni ganancia, cuenta voz con 2,5× el ruido y sigue con 1,6×, corrige el ruido si se habla nada más pitar y solo envía el tramo con voz. Sin probar con voz real |
 | 19/10 | Javier | Logo: la D con visto de siempre, con esquinas redondeadas y visto nuevo en hueco (D-36); icono adaptativo sin cuadrado dentro, monocroma con visto y PNG de mdpi a xxxhdpi. Fuera las marcas B y C de la propuesta |
 | 19/10 | Javier | Auditoría de la identidad visual (agente `auditor-marca`, skill `brand-identity`): 19 iconos redibujados (D-34) y sin plato en casillas y filas (D-35); contrastes corregidos en `Color.kt` y la documentación; logo y letra nuevos, pendientes, en `docs/propuestas/marca.md` |

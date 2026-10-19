@@ -285,5 +285,6 @@ Asumido, y escrito para no volver a discutirlo:
 | `design/presentacion/ver-presentacion.html` | Las mismas diez láminas en el navegador. |
 | `design/*.dc.html` | El lienzo donde se diseñó la interfaz antes de escribirla. |
 | `CLAUDE.md` y `.claude/rules/` | El índice del proyecto y las normas de trabajo para quien (o lo que) toque el código. |
+| `.claude/skills/doado-brand/` | La marca: logo, colores, iconos, letra y tono, con los ficheros del logo. |
 
 Si el lienzo de diseño y el código no cuadran, **manda el código**.
