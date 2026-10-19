@@ -173,7 +173,7 @@ el del PIN, a propósito, no:
 | `doado_favorites` | Qué casillas salen en el inicio y en qué orden. |
 | `doado_contacts` | Los accesos directos de personas. |
 | `doado_settings` | Tema, letra, columnas, reloj, el asistente y el fin del modo administrador. |
-| `doado_security` | El PIN, derivado con PBKDF2 y sal (nunca en claro), y la pregunta de recuperación. |
+| `doado_security` | El PIN y la respuesta de recuperación, derivados con PBKDF2 y sal (nunca en claro), y la pregunta. |
 
 ### Visibilidad de paquetes
 
@@ -255,9 +255,6 @@ ni traducciones: la app está solo en español.
 ### Límites conocidos
 
 Lo que hay que arreglar:
-
-- **La respuesta de recuperación se guarda en claro** (normalizada), aunque fuera
-  de la copia de seguridad. Es más débil que el propio PIN, que va derivado.
 
 - **La clave del servicio de voz va dentro del APK** y se puede extraer. Hay que
   resolverlo antes de publicar (CON-06).

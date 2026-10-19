@@ -29,6 +29,9 @@ data class PinLock(val failures: Int, val remainingMs: Long) {
  * seguridad**. Así el móvil nuevo recupera el tema, las casillas y los
  * contactos, pero el PIN no viaja a la nube.
  *
+ * Aquí vive también la respuesta a la pregunta de recuperación (CU-16), con el
+ * mismo tratamiento.
+ *
  * No se guarda en claro: se deriva con PBKDF2 y una sal aleatoria distinta en
  * cada móvil. Conviene ser honestos sobre qué protege eso y qué no. Cuatro
  * cifras son diez mil combinaciones, así que no frena a quien pueda probarlas
@@ -49,6 +52,7 @@ class PinStore(context: Context) {
 
     init {
         migrarPinEnClaro()
+        migratePlainRecoveryAnswer()
     }
 
     /** false mientras no se haya creado ninguno: la primera entrada lo pide. */
@@ -88,16 +92,18 @@ class PinStore(context: Context) {
         prefs.getString(KEY_RECOVERY_QUESTION, "") ?: ""
 
     /**
-     * Guarda la pregunta en claro y la respuesta normalizada (sin mayúsculas ni
-     * espacios extremos) también en claro, dentro de doado_security que ya está
-     * fuera de la copia de seguridad. El objetivo de la pregunta no es seguridad
-     * criptográfica sino un segundo factor de conveniencia para el familiar que
-     * olvida el PIN; la alternativa sin respuesta es borrar los datos de la app.
+     * La pregunta va en claro, porque hay que enseñarla. La respuesta se guarda
+     * derivada, igual que el PIN: para comprobarla basta con derivar lo que
+     * escriba el familiar y comparar, así que no hay motivo para dejarla legible.
+     *
+     * Se normaliza antes (minúsculas, sin espacios extremos) para que no falle
+     * por cómo se escriba.
      */
     fun saveRecoveryQuestion(question: String, answer: String) {
         prefs.edit {
             putString(KEY_RECOVERY_QUESTION, question.trim())
-            putString(KEY_RECOVERY_ANSWER, answer.trim().lowercase())
+            putString(KEY_RECOVERY_ANSWER, deriveWithNewSalt(normalizeAnswer(answer)))
+            remove(KEY_PLAIN_RECOVERY_ANSWER)
         }
     }
 
@@ -105,17 +111,16 @@ class PinStore(context: Context) {
     fun checkRecoveryAnswer(answer: String): Boolean {
         if (lockState().locked) return false
         val guardada = prefs.getString(KEY_RECOVERY_ANSWER, null) ?: return false
-        val ok = constantTimeEquals(answer.trim().lowercase(), guardada)
+        val ok = matchesStored(normalizeAnswer(answer), guardada)
         recordAttempt(ok)
         return ok
     }
 
+    private fun normalizeAnswer(answer: String): String = answer.trim().lowercase()
+
     private fun matchesStoredPin(pin: String): Boolean {
         val guardado = prefs.getString(KEY_PIN, null) ?: return false
-        val partes = guardado.split(SEPARADOR)
-        if (partes.size != 2) return false
-        val sal = decodificar(partes[0]) ?: return false
-        return constantTimeEquals(derivar(pin, sal), partes[1])
+        return matchesStored(pin, guardado)
     }
 
     /**
@@ -203,14 +208,43 @@ class PinStore(context: Context) {
         ajustes.edit { remove(KEY_ANTIGUA) }
     }
 
+    /**
+     * La primera versión de la pregunta de recuperación guardaba la respuesta en
+     * claro (ya normalizada). Al arrancar se deriva y se borra la legible, de modo
+     * que la respuesta que el familiar puso sigue valiendo.
+     */
+    private fun migratePlainRecoveryAnswer() {
+        val enClaro = prefs.getString(KEY_PLAIN_RECOVERY_ANSWER, null) ?: return
+        prefs.edit {
+            if (!prefs.contains(KEY_RECOVERY_ANSWER)) {
+                putString(KEY_RECOVERY_ANSWER, deriveWithNewSalt(enClaro))
+            }
+            remove(KEY_PLAIN_RECOVERY_ANSWER)
+        }
+    }
+
+    /** Deriva [secret] con una sal recién generada y lo devuelve como `sal$derivado`. */
+    private fun deriveWithNewSalt(secret: String): String {
+        val sal = ByteArray(BYTES_DE_SAL).also { SecureRandom().nextBytes(it) }
+        return codificar(sal) + SEPARADOR + derivar(secret, sal)
+    }
+
+    /** true si [secret], derivado con la sal de [stored], da lo mismo que hay guardado. */
+    private fun matchesStored(secret: String, stored: String): Boolean {
+        val partes = stored.split(SEPARADOR)
+        if (partes.size != 2) return false
+        val sal = decodificar(partes[0]) ?: return false
+        return constantTimeEquals(derivar(secret, sal), partes[1])
+    }
+
     private fun derivar(pin: String, sal: ByteArray): String {
         val spec = PBEKeySpec(pin.toCharArray(), sal, ITERACIONES, BITS_DE_CLAVE)
         return try {
             codificar(SecretKeyFactory.getInstance(ALGORITMO).generateSecret(spec).encoded)
         } catch (e: GeneralSecurityException) {
             // Ningún Android sin PBKDF2 llega a minSdk 24, así que esto no debería
-            // pasar; si pasara, es mejor romper aquí que guardar el PIN en claro.
-            throw IllegalStateException("No se puede derivar el PIN", e)
+            // pasar; si pasara, es mejor romper aquí que guardar el secreto en claro.
+            throw IllegalStateException("No se puede derivar el PIN ni la respuesta", e)
         } finally {
             spec.clearPassword()
         }
@@ -248,7 +282,10 @@ class PinStore(context: Context) {
         private const val KEY_ANTIGUA = "settings_pin"
 
         private const val KEY_RECOVERY_QUESTION = "recovery_question"
-        private const val KEY_RECOVERY_ANSWER = "recovery_answer"
+        private const val KEY_RECOVERY_ANSWER = "recovery_answer_derived"
+
+        // Donde la primera versión dejaba la respuesta en claro.
+        private const val KEY_PLAIN_RECOVERY_ANSWER = "recovery_answer"
 
         // Límite de intentos (RNF-SEG-03).
         private const val KEY_FAILURES = "failed_attempts"

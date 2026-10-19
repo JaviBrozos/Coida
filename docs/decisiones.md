@@ -543,3 +543,18 @@ solo, y en la tarjeta la fila de WhatsApp dice «Sale apagado: falta WhatsApp».
 dos casillas desde un solo elemento y a cambiar el formato guardado, y un botón
 de «Añadir también…».
 
+
+### D-41 · La respuesta de recuperación se guarda derivada, como el PIN (05/10/2026)
+
+Gonzalo la escribió como D-24 en su rama, a la vez que el límite de intentos
+ocupaba ese número aquí; al juntar las dos en `main` pasa a D-41.
+**Contexto**: D-23 dejó la respuesta en claro, razonando que no era peor que el
+PIN antiguo. Pero el PIN antiguo en claro es justo lo que D-19 corrigió, y la
+respuesta abre la misma puerta que el PIN.
+**Decisión**: la respuesta se deriva con PBKDF2 y sal, con la misma función que
+el PIN. Comprobarla solo exige derivar lo escrito y comparar, así que no hace
+falta que sea legible. La que hubiera en claro se migra al arrancar.
+**Descartado**: dejarla en claro por ser «solo conveniencia». Sustituye esa parte
+de D-23; el resto de D-23 sigue en pie.
+**Consecuencia**: nadie puede leer la respuesta del fichero. Cuenta en el mismo
+límite de intentos que el PIN (D-24).

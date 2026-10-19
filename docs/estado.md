@@ -36,11 +36,10 @@
    mirilla ya no aplica (D-38).
 4. Al 200 % y dos columnas, «Mensajes» y «Contactos» se parten, ahora por sílabas
    con guion («Men-sajes»). Se leen, pero siguen en dos líneas.
-5. Auditoría de seguridad del 30/09: la respuesta de recuperación en claro.
-6. Sacar el `PackageManager` del hilo principal (riesgo de ANR en Play).
-7. Ver en el emulador los iconos nuevos y sin plato (D-34, D-35), en los dos
+5. Sacar el `PackageManager` del hilo principal (riesgo de ANR en Play).
+6. Ver en el emulador los iconos nuevos y sin plato (D-34, D-35), en los dos
    temas y con una casilla señalada por el asistente.
-8. Ver el icono nuevo (D-36) en el emulador con varias máscaras y como icono
+7. Ver el icono nuevo (D-36) en el emulador con varias máscaras y como icono
    temático. Decidir con Gonzalo la letra Atkinson Hyperlegible Next
    (`docs/propuestas/marca.md`), pendiente.
 
@@ -51,6 +50,7 @@ capturas viejas.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 19/10 | Javier | Fusión con lo de Gonzalo del 05/10 en `main`: su respuesta de recuperación derivada (D-41, era su D-24) convive con el límite de intentos, y su `DoadoTextField` sustituye a los campos de Material en las tres pantallas de recuperación |
 | 19/10 | Javier | Skill `doado-brand` en el proyecto: la marca (logo, colores, iconos, letra, tono y movimiento), con los SVG de la marca y `tokens.json`; enlazada en `CLAUDE.md` y en `recursos.md` |
 | 19/10 | Javier | Contactos con dos interruptores, llamada y WhatsApp, que se pueden encender a la vez (D-40). Fuera el subtítulo de Ajustes; notas de Aplicaciones y Modo administrador más genéricas, sin nombrar apps. TalkBack lee cada interruptor con el nombre de la persona |
 | 19/10 | Javier | El botón de Ajustes del inicio pasa a engranaje (D-39); los deslizadores, ahora `ic_sliders`, quedan para la fila Interfaz |

@@ -202,6 +202,7 @@ apagada, no suena). Las pantallas cambian con un fundido de 180 ms (D-32).
 | `IconBadge` | Icono de acento, sin plato salvo el del asistente |
 | `InitialBadge` | La inicial de un nombre sobre un plato; decorativa para TalkBack |
 | `NoteCard` | Nota explicativa, no pulsable: relleno y contorno |
+| `DoadoTextField` | Campo para escribir, con contorno de 2 dp que pasa a acento al escribir y a error si falla |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
 | `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |
 | `AssistantButton` | El círculo del asistente. Vive en `assistant/ui/`, no en `core/ui/`: solo se usa en el inicio |
