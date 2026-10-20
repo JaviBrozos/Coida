@@ -25,6 +25,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.DoadoCard
+import com.doado.core.ui.TabularFigures
 import com.doado.core.ui.IconBadge
 import com.doado.core.ui.NoteCard
 import com.doado.core.ui.OutlineButton
@@ -117,7 +118,7 @@ fun AdminScreen(
                     Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text(
                             text = "%d:%02d".format(totalSeconds / 60, totalSeconds % 60),
-                            style = MaterialTheme.typography.displayMedium,
+                            style = MaterialTheme.typography.displayMedium.copy(fontFeatureSettings = TabularFigures),
                             color = MaterialTheme.colorScheme.primary,
                         )
                         Text(

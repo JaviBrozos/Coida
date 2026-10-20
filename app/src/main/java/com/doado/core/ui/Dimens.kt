@@ -26,6 +26,9 @@ object DoadoDimens {
     /** Icono de la casilla de una columna, que va en horizontal. */
     val TileIconSizeCompact = 54.dp
 
+    /** Icono de casilla con tres por fila (D-45): menor, para que la casilla sea casi cuadrada. */
+    val TileIconSizeNarrow = 48.dp
+
     /** Radio de casilla y de contacto del inicio. */
     val TileCornerRadius = 28.dp
 
@@ -60,6 +63,12 @@ object DoadoDimens {
      * normal. No es una medida, pero vive con ellas porque decide el reparto.
      */
     const val LargeTextScale = 1.3f
+
+    /**
+     * Techo de escala de la letra de las casillas con tres por fila (D-45): más
+     * grande, un nombre corriente no cabe en un tercio de pantalla.
+     */
+    const val NarrowMaxTextScale = 1.25f
 
     /**
      * Grosor de contorno de casillas, filas y botones. Con el contorno en un tono

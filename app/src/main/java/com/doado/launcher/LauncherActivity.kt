@@ -1,10 +1,12 @@
 package com.doado.launcher
 
 import android.Manifest
+import android.app.role.RoleManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.provider.ContactsContract
 import android.provider.Settings
@@ -17,6 +19,7 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.EnterExitState
@@ -39,6 +42,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
@@ -54,6 +58,7 @@ import com.doado.assistant.cloud.AssistantConfig
 import com.doado.assistant.cloud.OpenAiCompatibleClient
 import com.doado.assistant.ui.AssistantScreen
 import com.doado.core.ui.DoadoTheme
+import com.doado.core.ui.NotHomeNoticeStage
 import com.doado.data.AssistantSettings
 import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
@@ -67,6 +72,7 @@ import com.doado.data.InterfaceSettings
 import com.doado.data.PinStore
 import com.doado.data.SettingsStore
 import com.doado.data.ThemeMode
+import com.doado.data.WallpaperStore
 import com.doado.data.WHATSAPP_PACKAGE
 import com.doado.settings.ADMIN_UNLOCK_MINUTES
 import com.doado.settings.AdminScreen
@@ -104,6 +110,7 @@ class LauncherActivity : ComponentActivity() {
     private lateinit var settingsStore: SettingsStore
     private lateinit var contactsStore: ContactShortcutsStore
     private lateinit var pinStore: PinStore
+    private lateinit var wallpaperStore: WallpaperStore
 
     private var screen by mutableStateOf(Screen.HOME)
     private var interfaceSettings by mutableStateOf(InterfaceSettings())
@@ -114,6 +121,34 @@ class LauncherActivity : ComponentActivity() {
     private var whatsappInstalled by mutableStateOf(false)
     private var installedApps by mutableStateOf(emptyList<InstalledApp>())
     private var defaultPackages by mutableStateOf(emptySet<String>())
+
+    /** La foto de fondo del inicio (D-47), ya leída del disco; null si no hay. */
+    private var wallpaper by mutableStateOf<ImageBitmap?>(null)
+
+    /** Hay foto, aunque aún no se haya leído: el inicio pinta sus franjas desde el principio. */
+    private var hasWallpaper by mutableStateOf(false)
+
+    /** La última foto elegida no se pudo usar: Interfaz lo dice hasta que se elija otra. */
+    private var wallpaperFailed by mutableStateOf(false)
+
+    /**
+     * false si al pulsar Inicio se abre otra pantalla de inicio: el inicio y Ajustes
+     * lo avisan arriba (D-48). De entrada true, para no enseñar el aviso antes de
+     * saberlo.
+     */
+    private var isDefaultHome by mutableStateOf(true)
+
+    /** El familiar cerró el aviso del inicio: solo estaba probando. Se guarda. */
+    private var homeNoticeDismissed by mutableStateOf(false)
+
+    /** Tras cerrarlo, el inicio explica dónde ponerlo más adelante, hasta otra equis. */
+    private var homeNoticeExplaining by mutableStateOf(false)
+
+    /**
+     * El aviso de Ajustes, que vuelve a salir entero cada vez que se entra: allí sí
+     * conviene recordarlo, aunque se cerrara en el inicio. null si ya se cerró.
+     */
+    private var settingsNotice by mutableStateOf<NotHomeNoticeStage?>(NotHomeNoticeStage.OFFER)
 
     /**
      * false hasta la primera carga de las casillas. Mientras, el inicio no se pinta:
@@ -161,6 +196,25 @@ class LauncherActivity : ComponentActivity() {
     private val requestCallPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
 
+    // El selector de fotos de Android no pide permisos: Doado solo recibe la foto
+    // elegida. Sale a pantalla aparte, como el de contactos.
+    private val pickWallpaper =
+        registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            salidaPropia = false
+            if (uri != null) saveWallpaper(uri)
+        }
+
+    // El diálogo de Android para elegir la pantalla de inicio (D-48). Al volver,
+    // onResume ya mira si ahora lo es. Si dijo que no, los avisos pasan a explicar
+    // dónde ponerlo más adelante, como si los hubiera cerrado.
+    private val requestHomeRole =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            salidaPropia = false
+            if (result.resultCode != RESULT_OK) {
+                if (screen == Screen.HOME) closeHomeNotice() else settingsNotice = NotHomeNoticeStage.EXPLAIN
+            }
+        }
+
     // Se pide al encender el asistente, con el familiar delante (CU-15).
     private val requestMicPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -178,6 +232,9 @@ class LauncherActivity : ComponentActivity() {
         settingsStore = SettingsStore(this)
         contactsStore = ContactShortcutsStore(this)
         pinStore = PinStore(this)
+        wallpaperStore = WallpaperStore(this)
+        hasWallpaper = wallpaperStore.exists()
+        loadWallpaper()
         val assistantClient = OpenAiCompatibleClient(assistantConfig)
         assistant = AssistantController(
             context = this,
@@ -343,6 +400,17 @@ class LauncherActivity : ComponentActivity() {
                 showAssistant = assistantSettings.enabled && assistantConfig.isConfigured,
                 highlightedId = highlightedId,
                 scrollResetKey = homeResets,
+                contactsLayout = interfaceSettings.contactsLayout,
+                wallpaper = wallpaper,
+                hasWallpaper = hasWallpaper,
+                notHomeNotice = when {
+                    isDefaultHome -> null
+                    homeNoticeExplaining -> NotHomeNoticeStage.EXPLAIN
+                    homeNoticeDismissed -> null
+                    else -> NotHomeNoticeStage.OFFER
+                },
+                onMakeHome = ::requestDefaultHome,
+                onCloseNotHome = ::closeHomeNotice,
                 onAppClick = {
                     highlightedId = null
                     openApp(it)
@@ -370,9 +438,13 @@ class LauncherActivity : ComponentActivity() {
 
                 Screen.PIN -> PinGate(
                     hasPin = pinStore.hasPin(),
+                    preparePin = pinStore::prepare,
                     checkPin = pinStore::check,
                     savePin = pinStore::save,
-                    onUnlocked = { screen = Screen.SETTINGS },
+                    onUnlocked = {
+                        settingsNotice = NotHomeNoticeStage.OFFER
+                        screen = Screen.SETTINGS
+                    },
                     onBack = { screen = Screen.HOME },
                     hasRecoveryQuestion = pinStore.hasRecoveryQuestion(),
                     recoveryQuestion = pinStore.recoveryQuestion(),
@@ -384,6 +456,7 @@ class LauncherActivity : ComponentActivity() {
 
                 Screen.CHANGE_PIN -> PinGate(
                     hasPin = pinStore.hasPin(),
+                    preparePin = pinStore::prepare,
                     checkPin = pinStore::check,
                     savePin = pinStore::save,
                     onUnlocked = { screen = Screen.SETTINGS },
@@ -412,6 +485,11 @@ class LauncherActivity : ComponentActivity() {
                     onSoundAndDisplay = { startFirst(Intent(Settings.ACTION_SOUND_SETTINGS)) },
                     onAdmin = { screen = Screen.ADMIN },
                     onChangePin = { screen = Screen.CHANGE_PIN },
+                    notHomeNotice = settingsNotice.takeUnless { isDefaultHome },
+                    onMakeHome = ::requestDefaultHome,
+                    onCloseNotHome = {
+                        settingsNotice = if (settingsNotice == NotHomeNoticeStage.OFFER) NotHomeNoticeStage.EXPLAIN else null
+                    },
                 )
 
                 Screen.INTERFACE -> InterfaceScreen(
@@ -421,6 +499,10 @@ class LauncherActivity : ComponentActivity() {
                         settingsStore.saveInterfaceSettings(it)
                     },
                     onBack = { screen = Screen.SETTINGS },
+                    wallpaper = wallpaper,
+                    wallpaperFailed = wallpaperFailed,
+                    onPickWallpaper = ::launchWallpaperPicker,
+                    onRemoveWallpaper = ::removeWallpaper,
                 )
 
                 Screen.CONTACTS -> ContactsScreen(
@@ -506,6 +588,7 @@ class LauncherActivity : ComponentActivity() {
         interfaceSettings = settingsStore.interfaceSettings()
         assistantSettings = settingsStore.assistantSettings()
         adminUnlockedUntil = settingsStore.adminUnlockedUntil()
+        homeNoticeDismissed = settingsStore.homeNoticeDismissed()
         contacts = contactsStore.all()
         homeIds = repository.homeIds()
         loadApps(withInstalled = screen == Screen.APPS)
@@ -532,12 +615,14 @@ class LauncherActivity : ComponentActivity() {
                 LoadedApps(
                     home = repository.homeApps(),
                     whatsappInstalled = repository.isInstalled(WHATSAPP_PACKAGE),
+                    isDefaultHome = resolvesHomeToDoado(),
                     installed = if (withInstalled) repository.installedApps() else null,
                     defaultPackages = if (withInstalled) repository.defaultFavoritePackages() else null,
                 )
             }
             homeApps = loaded.home
             whatsappInstalled = loaded.whatsappInstalled
+            isDefaultHome = loaded.isDefaultHome
             loaded.installed?.let { installedApps = it }
             loaded.defaultPackages?.let { defaultPackages = it }
             appsLoaded = true
@@ -548,6 +633,7 @@ class LauncherActivity : ComponentActivity() {
     private class LoadedApps(
         val home: List<FavoriteApp>,
         val whatsappInstalled: Boolean,
+        val isDefaultHome: Boolean,
         val installed: List<InstalledApp>?,
         val defaultPackages: Set<String>?,
     )
@@ -618,6 +704,7 @@ class LauncherActivity : ComponentActivity() {
                 homeApps = homeApps,
                 columns = interfaceSettings.columns,
                 whatsappInstalled = whatsappInstalled,
+                contactsLayout = interfaceSettings.contactsLayout,
             ),
         )
     }
@@ -767,6 +854,111 @@ class LauncherActivity : ComponentActivity() {
         val store = packageManager.getLaunchIntentForPackage(PLAY_STORE_PACKAGE)
         val web = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps"))
         startFirst(*listOfNotNull(store, web).toTypedArray())
+    }
+
+    // --- Pantalla de inicio y foto de fondo --------------------------------------
+
+    /**
+     * Si al pulsar Inicio se abriría Doado. En Android 9 o antes, sin elegir aún,
+     * Android contesta con su selector, que no es Doado, y se avisa. Si la consulta falla, se da por buena:
+     * mejor sin aviso que con uno falso. Es una consulta al PackageManager, así
+     * que va dentro de [loadApps], fuera del hilo principal.
+     */
+    private fun resolvesHomeToDoado(): Boolean {
+        // Desde Android 10 se le pregunta al sistema quién tiene el papel de inicio.
+        // Preguntar al PackageManager no vale: desde Android 11 Doado no ve los
+        // otros launchers y la respuesta salía falsa.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roles = getSystemService(RoleManager::class.java)
+            if (roles != null && roles.isRoleAvailable(RoleManager.ROLE_HOME)) {
+                return roles.isRoleHeld(RoleManager.ROLE_HOME)
+            }
+        }
+        val home = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_HOME)
+        val resolved = runCatching {
+            packageManager.resolveActivity(home, PackageManager.MATCH_DEFAULT_ONLY)
+        }.getOrNull() ?: return true
+        return resolved.activityInfo?.packageName == packageName
+    }
+
+    /**
+     * Desde Android 10, el diálogo del sistema que pregunta si Doado pasa a ser la
+     * pantalla de inicio: no saca a otra parte del móvil. Antes, o si el móvil no
+     * lo tiene, los ajustes de Android donde se elige, pero solo desde Ajustes.
+     */
+    private fun requestDefaultHome() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val roles = getSystemService(RoleManager::class.java)
+            if (roles != null && roles.isRoleAvailable(RoleManager.ROLE_HOME)) {
+                try {
+                    salidaPropia = true
+                    requestHomeRole.launch(roles.createRequestRoleIntent(RoleManager.ROLE_HOME))
+                    return
+                } catch (_: ActivityNotFoundException) {
+                    salidaPropia = false
+                }
+            }
+        }
+        // Sin el diálogo, el camino son los ajustes de Android, y a esos solo se llega
+        // tras el PIN (invariante 5): desde el inicio, el botón lleva a Ajustes de
+        // Doado, donde el mismo aviso abre los de Android.
+        if (screen == Screen.HOME) {
+            screen = Screen.PIN
+            return
+        }
+        startFirst(Intent(Settings.ACTION_HOME_SETTINGS), Intent(Settings.ACTION_SETTINGS))
+    }
+
+    /** La equis del aviso del inicio: primero explica dónde ponerlo, luego se va. */
+    private fun closeHomeNotice() {
+        if (!homeNoticeDismissed) {
+            homeNoticeDismissed = true
+            homeNoticeExplaining = true
+            settingsStore.saveHomeNoticeDismissed()
+        } else {
+            homeNoticeExplaining = false
+        }
+    }
+
+    private fun loadWallpaper() {
+        lifecycleScope.launch {
+            wallpaper = withContext(Dispatchers.IO) { wallpaperStore.load() }
+            // Si estaba pero no se puede leer, el inicio sale sin foto ni franjas.
+            hasWallpaper = wallpaper != null
+        }
+    }
+
+    private fun launchWallpaperPicker() {
+        wallpaperFailed = false
+        try {
+            salidaPropia = true
+            pickWallpaper.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+        } catch (_: ActivityNotFoundException) {
+            salidaPropia = false
+            wallpaperFailed = true
+        }
+    }
+
+    /** Copia la foto reducida al tamaño de la pantalla, fuera del hilo principal. */
+    private fun saveWallpaper(uri: Uri) {
+        val metrics = resources.displayMetrics
+        lifecycleScope.launch {
+            val loaded = withContext(Dispatchers.IO) {
+                if (wallpaperStore.save(uri, metrics.widthPixels, metrics.heightPixels)) wallpaperStore.load() else null
+            }
+            wallpaperFailed = loaded == null
+            if (loaded != null) {
+                wallpaper = loaded
+                hasWallpaper = true
+            }
+        }
+    }
+
+    private fun removeWallpaper() {
+        wallpaperFailed = false
+        wallpaper = null
+        hasWallpaper = false
+        lifecycleScope.launch(Dispatchers.IO) { wallpaperStore.clear() }
     }
 
     /** Prueba las intenciones en orden y se queda con la primera que funcione. */

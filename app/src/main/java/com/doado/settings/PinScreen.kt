@@ -51,6 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.DoadoCard
+import com.doado.core.ui.TabularFigures
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTextField
 import com.doado.core.ui.NoteCard
@@ -60,7 +61,9 @@ import com.doado.core.ui.ScreenHeader
 import com.doado.core.ui.SettingsColumn
 import com.doado.data.PinLock
 import com.doado.data.PinStore
+import com.doado.data.PreparedPin
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
@@ -76,8 +79,12 @@ private val PIN_KEY_GAP = 12.dp
 private val DELETE_WORD_MARGIN = 16.dp
 private const val ONE_SECOND_MS = 1_000L
 
-/** Lo que se ve el cuarto punto relleno antes de comprobar el PIN. */
-private const val PIN_FILLED_PAUSE_MS = 250L
+/**
+ * Lo que se ve, como mínimo, el cuarto punto relleno antes de comprobar el PIN.
+ * El PIN se va derivando a la vez: se espera lo que tarde lo más lento de los dos,
+ * no la suma.
+ */
+private const val PIN_FILLED_PAUSE_MS = 120L
 
 /** Los pasos por los que puede pasar la pantalla de PIN. */
 private enum class Paso {
@@ -109,6 +116,9 @@ private enum class Paso {
  * Tras crear o cambiar el PIN siempre se ofrece establecer (o actualizar) la
  * pregunta de recuperación; se puede saltar.
  *
+ * Comprobar un PIN va en dos pasos: [preparePin] deriva, que es lo lento, mientras
+ * se ve el cuarto punto, y [checkPin] compara y cuenta el intento.
+ *
  * Límite de intentos (RNF-SEG-03, D-24): [checkPin] y [checkRecoveryAnswer]
  * cuentan los fallos y [lockState] dice cómo va el bloqueo. A partir del cuarto
  * fallo de la misma visita aparece arriba una nota grande para la persona mayor, que puede haber
@@ -119,7 +129,8 @@ private enum class Paso {
 @Composable
 fun PinGate(
     hasPin: Boolean,
-    checkPin: (String) -> Boolean,
+    preparePin: (String) -> PreparedPin,
+    checkPin: (PreparedPin) -> Boolean,
     savePin: (String) -> Unit,
     onUnlocked: () -> Unit,
     onBack: () -> Unit,
@@ -254,12 +265,14 @@ fun PinGate(
         showForgotPin = paso == Paso.COMPROBAR && hasRecoveryQuestion && !lock.locked,
         onForgotPin = { paso = Paso.RECUPERAR },
         onBack = onBack,
-        // Derivar el PIN son 60.000 vueltas de PBKDF2, unos 0,2 s: fuera del hilo
-        // de la pantalla, para que no se congele a mitad del fundido.
-        onComplete = { pin ->
+        // Derivar el PIN son 10.000 vueltas de PBKDF2 (D-49): fuera del hilo
+        // de la pantalla, para que no se congele a mitad del fundido, y a la vez
+        // que la pausa del cuarto punto. Solo donde se comprueba un PIN.
+        prepare = { pin -> if (checksPin) preparePin(pin) else null },
+        onComplete = { pin, prepared ->
             when (paso) {
                 Paso.COMPROBAR -> {
-                    if (withContext(Dispatchers.Default) { checkPin(pin) }) {
+                    if (withContext(Dispatchers.Default) { checkPin(prepared ?: preparePin(pin)) }) {
                         onUnlocked()
                     } else {
                         errorRes = R.string.pin_wrong
@@ -270,7 +283,7 @@ fun PinGate(
                 }
 
                 Paso.ACTUAL -> {
-                    if (withContext(Dispatchers.Default) { checkPin(pin) }) {
+                    if (withContext(Dispatchers.Default) { checkPin(prepared ?: preparePin(pin)) }) {
                         paso = Paso.NUEVO
                         errorRes = null
                     } else {
@@ -322,7 +335,8 @@ private fun PinScreen(
     onExitToHome: () -> Unit,
     showForgotPin: Boolean,
     onForgotPin: () -> Unit,
-    onComplete: suspend (String) -> Unit,
+    prepare: (String) -> PreparedPin?,
+    onComplete: suspend (String, PreparedPin?) -> Unit,
     onBack: () -> Unit,
 ) {
     // Al bloquearse, los puntos a medio escribir se vacían.
@@ -334,13 +348,17 @@ private fun PinScreen(
     // comprobación congelaba la pantalla antes de pintarlo y saltaba a ajustes
     // sin que se viera completo. Durante esa pausa «Borrar» aún corrige la última
     // cifra (y anula la comprobación); ya comprobando, nada escribe ni borra.
+    // Lo ya derivado de un PIN que se borra se tira sin contar.
     var checking by remember(resetKey, lock.locked) { mutableStateOf(false) }
     val complete by rememberUpdatedState(onComplete)
+    val prepareNow by rememberUpdatedState(prepare)
     LaunchedEffect(digits) {
         if (digits.length == PIN_LENGTH) {
+            val prepared = async(Dispatchers.Default) { prepareNow(digits) }
             delay(PIN_FILLED_PAUSE_MS)
+            val ready = prepared.await()
             checking = true
-            complete(digits)
+            complete(digits, ready)
         }
     }
 
@@ -716,7 +734,7 @@ private fun LockNotice(remainingMs: Long) {
         )
         Text(
             text = countdown,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.headlineSmall.copy(fontFeatureSettings = TabularFigures),
             color = MaterialTheme.colorScheme.onSurface,
         )
     }
@@ -747,7 +765,7 @@ private fun PinKey(
 private fun KeyText(text: String, enabled: Boolean = true) {
     Text(
         text = text,
-        style = MaterialTheme.typography.headlineSmall,
+        style = MaterialTheme.typography.headlineSmall.copy(fontFeatureSettings = TabularFigures),
         color = if (enabled) MaterialTheme.colorScheme.onSurface
         else MaterialTheme.colorScheme.outlineVariant,
     )

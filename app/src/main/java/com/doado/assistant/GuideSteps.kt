@@ -4,6 +4,7 @@ import android.content.res.Resources
 import com.doado.R
 import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
+import com.doado.data.ContactsLayout
 import com.doado.data.FavoriteApp
 import com.doado.data.FavoritesStore
 import com.doado.data.PHONE_FAVORITE_ID
@@ -74,28 +75,54 @@ object GuideSteps {
     }
 
     /**
-     * Los accesos directos van en la rejilla, debajo de las apps y tras el rótulo
-     * «Tus contactos», que empieza fila (D-38): se cuentan desde ahí.
+     * Los accesos directos van debajo de las apps y tras el rótulo «Tus contactos»,
+     * que empieza fila (D-38): se cuentan desde ahí. Si van en su propia pantalla
+     * (D-46), el inicio pasa solo a ella al señalarlo, y se cuenta desde arriba de
+     * esa pantalla; se dice también cómo llegar, para la próxima vez.
      */
     private fun contactWhere(res: Resources, contact: ContactShortcut, catalog: ActionCatalog): String {
         val index = catalog.homeContacts.indexOfFirst { it.id == contact.id }.coerceAtLeast(0)
-        return if (catalog.columns == 1) {
-            res.getString(R.string.guide_contact_where_one, contact.name, index + 1)
-        } else {
-            res.getString(R.string.guide_contact_where_two, contact.name, index / 2 + 1, side(res, index))
+        val columns = catalog.columns
+        val paged = catalog.contactsLayout == ContactsLayout.PAGE
+        return when {
+            paged && columns == 1 ->
+                res.getString(R.string.guide_contact_where_page_one, contact.name, index + 1)
+            paged -> res.getString(
+                R.string.guide_contact_where_page_grid,
+                contact.name,
+                index / columns + 1,
+                side(res, index, columns),
+            )
+            columns == 1 -> res.getString(R.string.guide_contact_where_one, contact.name, index + 1)
+            else -> res.getString(
+                R.string.guide_contact_where_grid,
+                contact.name,
+                index / columns + 1,
+                side(res, index, columns),
+            )
         }
     }
 
     /** Dónde está una casilla, contado como lo contaría alguien que la señala con el dedo. */
     private fun tileWhere(res: Resources, app: FavoriteApp, catalog: ActionCatalog): String {
         val index = catalog.homeApps.indexOfFirst { it.id == app.id }.coerceAtLeast(0)
-        return if (catalog.columns == 1) {
+        val columns = catalog.columns
+        return if (columns == 1) {
             res.getString(R.string.guide_tile_where_one, app.label, index + 1)
         } else {
-            res.getString(R.string.guide_tile_where_two, app.label, index / 2 + 1, side(res, index))
+            res.getString(R.string.guide_tile_where_grid, app.label, index / columns + 1, side(res, index, columns))
         }
     }
 
-    private fun side(res: Resources, index: Int): String =
-        res.getString(if (index % 2 == 0) R.string.guide_side_left else R.string.guide_side_right)
+    /** Con dos por fila, izquierda o derecha; con tres, también el centro (D-45). */
+    private fun side(res: Resources, index: Int, columns: Int): String {
+        val column = index % columns
+        return res.getString(
+            when (column) {
+                0 -> R.string.guide_side_left
+                columns - 1 -> R.string.guide_side_right
+                else -> R.string.guide_side_center
+            },
+        )
+    }
 }

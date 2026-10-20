@@ -14,6 +14,11 @@
     <string name="home_contacts_section">Tus contactos</string>
     <string name="contact_action_call">Llamada</string>
     <string name="contact_action_whatsapp">WhatsApp</string>
+    <string name="home_page_apps">Aplicaciones</string>
+    <string name="home_page_contacts">Contactos</string>
+    <string name="home_not_default">Doado aún no es la pantalla de inicio de este móvil. Ponlo para que salga al pulsar Inicio.</string>
+    <string name="not_home_later">Si más adelante quieres que Doado sea la pantalla de inicio, entra en Ajustes, abre Modo administrador, desbloquéalo y pulsa «Elegir pantalla de inicio».</string>
+    <string name="cd_close_notice">Cerrar este aviso</string>
     <string name="contact_whatsapp_missing_short">Falta WhatsApp</string>
 
     <!-- Accesibilidad -->
@@ -106,7 +111,9 @@
     <string name="settings_section_personalize">Personalizar</string>
     <string name="settings_section_advanced">Avanzado</string>
     <string name="settings_interface">Interfaz</string>
-    <string name="settings_interface_subtitle">Letra, casillas, tema y reloj</string>
+    <string name="settings_interface_subtitle">Letra, casillas, fondo, tema y reloj</string>
+    <string name="settings_not_home_note">Doado no es la pantalla de inicio de este móvil: al pulsar Inicio se abre otra.</string>
+    <string name="settings_make_home">Poner Doado como pantalla de inicio</string>
     <string name="settings_contacts">Contactos</string>
     <plurals name="settings_contacts_subtitle">
         <item quantity="one">%1$d acceso directo en el inicio</item>
@@ -185,13 +192,16 @@
     <string name="assistant_failure_microphone">No puedo usar el micrófono. Pide a tu familiar que lo mire.</string>
 
     <!-- Pasos fijos al guiar hacia algo de Doado (GuideSteps). -->
-    <string name="guide_side_left">izquierda</string>
-    <string name="guide_side_right">derecha</string>
-    <string name="guide_contact_where_two">Mira en «Tus contactos», debajo de las apps: el botón de %1$s está en la fila %2$d, a la %3$s.</string>
+    <string name="guide_side_left">a la izquierda</string>
+    <string name="guide_side_center">en el centro</string>
+    <string name="guide_side_right">a la derecha</string>
+    <string name="guide_contact_where_grid">Mira en «Tus contactos», debajo de las apps: el botón de %1$s está en la fila %2$d, %3$s.</string>
+    <string name="guide_contact_where_page_grid">Pulsa «Contactos», arriba, o desliza la pantalla hacia la izquierda: el botón de %1$s está en la fila %2$d, %3$s.</string>
+    <string name="guide_contact_where_page_one">Pulsa «Contactos», arriba, o desliza la pantalla hacia la izquierda: el botón de %1$s es el número %2$d.</string>
     <string name="guide_contact_where_one">Mira en «Tus contactos», debajo de las apps: el botón de %1$s es el número %2$d.</string>
     <string name="guide_contact_press_call">Púlsalo y el móvil le llamará.</string>
     <string name="guide_contact_press_whatsapp">Púlsalo y se abrirá su conversación de WhatsApp.</string>
-    <string name="guide_tile_where_two">Busca la casilla «%1$s». Está en la fila %2$d, a la %3$s.</string>
+    <string name="guide_tile_where_grid">Busca la casilla «%1$s». Está en la fila %2$d, %3$s.</string>
     <string name="guide_tile_where_one">Busca la casilla «%1$s». Es la número %2$d, empezando por arriba.</string>
     <string name="guide_tile_press">Púlsala y se abrirá.</string>
     <string name="guide_call_search">Busca a %1$s en la lista y pulsa su nombre para llamar.</string>
@@ -208,6 +218,19 @@
     <string name="interface_columns">Casillas por fila</string>
     <string name="interface_columns_one">1 por fila</string>
     <string name="interface_columns_two">2 por fila</string>
+    <string name="interface_columns_three">3 por fila</string>
+    <string name="interface_columns_three_big_text">Con esta letra, los nombres se leen mejor con 2 por fila.</string>
+    <string name="interface_columns_three_narrow">En esta pantalla caben como mucho 2 por fila.</string>
+    <string name="interface_contacts">Contactos en el inicio</string>
+    <string name="interface_contacts_grid">Debajo de las apps</string>
+    <string name="interface_contacts_page">En otra pantalla</string>
+    <string name="interface_contacts_page_note">Los contactos van en una segunda pantalla del inicio. Se llega deslizando hacia la izquierda o pulsando «Contactos», arriba.</string>
+    <string name="interface_wallpaper">Fondo del inicio</string>
+    <string name="interface_wallpaper_pick">Elegir una foto</string>
+    <string name="interface_wallpaper_change">Cambiar la foto</string>
+    <string name="interface_wallpaper_remove">Quitar la foto</string>
+    <string name="interface_wallpaper_note">Con foto, la hora y los rótulos van sobre una franja lisa para que se lean bien.</string>
+    <string name="interface_wallpaper_failed">No se ha podido usar esa foto. Prueba con otra.</string>
     <string name="interface_theme">Tema</string>
     <string name="interface_theme_dark">Oscuro</string>
     <string name="interface_theme_light">Claro</string>
@@ -219,11 +242,11 @@
     <string name="contacts_subtitle">Salen en el inicio, debajo de las apps, en «Tus contactos».</string>
     <string name="contacts_empty">Todavía no hay contactos. Añade a las personas a las que más se llama.</string>
     <string name="contacts_add">Añadir contacto</string>
-    <string name="contacts_button_call">Botón para llamar</string>
-    <string name="contacts_button_whatsapp">Botón de WhatsApp</string>
+    <string name="contacts_button_call">Llamadas</string>
+    <string name="contacts_button_whatsapp">WhatsApp</string>
     <string name="contacts_already_added">%1$s ya está en la lista. Enciende sus botones en su tarjeta.</string>
     <string name="contacts_button_whatsapp_missing">Sale apagado: falta WhatsApp</string>
-    <string name="cd_contacts_button_call">Botón para llamar a %1$s en el inicio</string>
+    <string name="cd_contacts_button_call">Botón de llamadas de %1$s en el inicio</string>
     <string name="cd_contacts_button_whatsapp">Botón de WhatsApp de %1$s en el inicio</string>
     <string name="cd_contacts_remove">Quitar a %1$s</string>
     <string name="contacts_remove">Quitar</string>
@@ -245,6 +268,6 @@
     <string name="admin_lock_now">Bloquear ya</string>
     <string name="admin_open_store">Abrir la tienda de apps</string>
     <string name="admin_open_android_settings">Ajustes de Android</string>
-    <string name="admin_choose_home">Elegir otra pantalla de inicio</string>
+    <string name="admin_choose_home">Elegir pantalla de inicio</string>
     <string name="admin_note">Mientras está desbloqueado puedes salir de Doado para instalar o cambiar lo que haga falta. A los %1$d minutos se vuelve a cerrar solo.</string>
 </resources>

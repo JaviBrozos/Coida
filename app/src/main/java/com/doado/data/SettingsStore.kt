@@ -18,8 +18,9 @@ class SettingsStore(context: Context) {
     fun interfaceSettings(): InterfaceSettings = InterfaceSettings(
         theme = enumOrDefault(prefs.getString(KEY_THEME, null), ThemeMode.DARK),
         textSize = enumOrDefault(prefs.getString(KEY_TEXT_SIZE, null), TextSize.NORMAL),
-        columns = prefs.getInt(KEY_COLUMNS, 2).coerceIn(1, 2),
+        columns = prefs.getInt(KEY_COLUMNS, 2).coerceIn(1, MAX_COLUMNS),
         showClock = prefs.getBoolean(KEY_SHOW_CLOCK, true),
+        contactsLayout = enumOrDefault(prefs.getString(KEY_CONTACTS_LAYOUT, null), ContactsLayout.GRID),
     )
 
     fun saveInterfaceSettings(settings: InterfaceSettings) {
@@ -28,6 +29,7 @@ class SettingsStore(context: Context) {
             putString(KEY_TEXT_SIZE, settings.textSize.name)
             putInt(KEY_COLUMNS, settings.columns)
             putBoolean(KEY_SHOW_CLOCK, settings.showClock)
+            putString(KEY_CONTACTS_LAYOUT, settings.contactsLayout.name)
         }
     }
 
@@ -53,18 +55,33 @@ class SettingsStore(context: Context) {
         prefs.edit { putLong(KEY_ADMIN_UNTIL, epochMillis) }
     }
 
+    /**
+     * El familiar cerró con la equis el aviso del inicio de que Doado no es la
+     * pantalla de inicio (D-48): solo estaba probando. El de Ajustes sigue saliendo.
+     */
+    fun homeNoticeDismissed(): Boolean = prefs.getBoolean(KEY_HOME_NOTICE_DISMISSED, false)
+
+    fun saveHomeNoticeDismissed() {
+        prefs.edit { putBoolean(KEY_HOME_NOTICE_DISMISSED, true) }
+    }
+
     private inline fun <reified T : Enum<T>> enumOrDefault(name: String?, default: T): T =
         enumValues<T>().firstOrNull { it.name == name } ?: default
 
     private companion object {
+        // Cuatro por fila dejaba casillas de 68 a 81 dp, donde no cabe un nombre (D-45).
+        const val MAX_COLUMNS = 3
+
         // Coincide con el fichero declarado en res/xml/backup_rules.xml.
         const val PREFS_NAME = "doado_settings"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE = "text_size"
         const val KEY_COLUMNS = "columns"
         const val KEY_SHOW_CLOCK = "show_clock"
+        const val KEY_CONTACTS_LAYOUT = "contacts_layout"
         const val KEY_ADMIN_UNTIL = "admin_unlocked_until"
         const val KEY_ASSISTANT_ENABLED = "assistant_enabled"
         const val KEY_ASSISTANT_MODE = "assistant_mode"
+        const val KEY_HOME_NOTICE_DISMISSED = "home_notice_dismissed"
     }
 }

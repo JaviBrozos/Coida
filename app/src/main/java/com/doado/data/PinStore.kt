@@ -22,6 +22,16 @@ data class PinLock(val failures: Int, val remainingMs: Long) {
 }
 
 /**
+ * Un PIN ya derivado por [PinStore.prepare], a falta de que [PinStore.check] lo
+ * compare y cuente el intento. [derived] es null si no hay PIN guardado.
+ */
+class PreparedPin internal constructor(
+    internal val derived: String?,
+    /** El PIN, solo si está guardado con las vueltas de antes y hay que pasarlo a las nuevas. */
+    internal val pinToUpgrade: String?,
+)
+
+/**
  * El PIN que protege los ajustes (RNF-SEG-01 de la ERS).
  *
  * Vive en su propio fichero de preferencias y no en [SettingsStore] por una
@@ -59,21 +69,41 @@ class PinStore(context: Context) {
     fun hasPin(): Boolean = prefs.getString(KEY_PIN, null) != null
 
     /**
+     * Deriva [pin] con la sal guardada, que es lo caro, sin compararlo ni contar
+     * nada. La pantalla lo lanza a la vez que deja ver el cuarto punto, para no
+     * sumar las dos esperas. Lo que devuelve no abre nada por sí solo: hace falta
+     * [check], que es donde se mira el bloqueo y se cuenta el intento.
+     */
+    fun prepare(pin: String): PreparedPin {
+        val guardado = prefs.getString(KEY_PIN, null)?.let(::parseStored)
+            ?: return PreparedPin(derived = null, pinToUpgrade = null)
+        return PreparedPin(
+            derived = derivar(pin, guardado.salt, guardado.iterations),
+            pinToUpgrade = pin.takeIf { guardado.iterations != ITERACIONES_PIN },
+        )
+    }
+
+    /**
      * Comprueba el PIN y **cuenta el intento**. Con la puerta bloqueada devuelve
      * false sin mirar nada, aunque la pantalla no debería ni dejar escribir: así
      * el límite no depende de que la interfaz lo respete.
+     *
+     * Un PIN guardado con las vueltas de antes (D-49) se vuelve a guardar con las
+     * de ahora al acertarlo: es el único momento en que se tiene el PIN en la mano.
      */
-    fun check(pin: String): Boolean {
+    fun check(prepared: PreparedPin): Boolean {
         if (lockState().locked) return false
-        val ok = matchesStoredPin(pin)
+        val guardado = prefs.getString(KEY_PIN, null)?.let(::parseStored)
+        val ok = prepared.derived != null && guardado != null &&
+            constantTimeEquals(prepared.derived, guardado.hash)
         recordAttempt(ok)
+        if (ok) prepared.pinToUpgrade?.let(::save)
         return ok
     }
 
     fun save(pin: String) {
-        val sal = ByteArray(BYTES_DE_SAL).also { SecureRandom().nextBytes(it) }
         prefs.edit {
-            putString(KEY_PIN, codificar(sal) + SEPARADOR + derivar(pin, sal))
+            putString(KEY_PIN, deriveWithNewSalt(pin, ITERACIONES_PIN))
             // Un PIN recién puesto empieza sin fallos a cuestas.
             putInt(KEY_FAILURES, 0)
             putLong(KEY_LOCK_DURATION, 0L)
@@ -102,7 +132,7 @@ class PinStore(context: Context) {
     fun saveRecoveryQuestion(question: String, answer: String) {
         prefs.edit {
             putString(KEY_RECOVERY_QUESTION, question.trim())
-            putString(KEY_RECOVERY_ANSWER, deriveWithNewSalt(normalizeAnswer(answer)))
+            putString(KEY_RECOVERY_ANSWER, deriveWithNewSalt(normalizeAnswer(answer), ITERACIONES_RESPUESTA))
             remove(KEY_PLAIN_RECOVERY_ANSWER)
         }
     }
@@ -117,11 +147,6 @@ class PinStore(context: Context) {
     }
 
     private fun normalizeAnswer(answer: String): String = answer.trim().lowercase()
-
-    private fun matchesStoredPin(pin: String): Boolean {
-        val guardado = prefs.getString(KEY_PIN, null) ?: return false
-        return matchesStored(pin, guardado)
-    }
 
     /**
      * Un acierto pone el contador a cero. Un fallo suma uno y, si toca según
@@ -217,28 +242,49 @@ class PinStore(context: Context) {
         val enClaro = prefs.getString(KEY_PLAIN_RECOVERY_ANSWER, null) ?: return
         prefs.edit {
             if (!prefs.contains(KEY_RECOVERY_ANSWER)) {
-                putString(KEY_RECOVERY_ANSWER, deriveWithNewSalt(enClaro))
+                putString(KEY_RECOVERY_ANSWER, deriveWithNewSalt(enClaro, ITERACIONES_RESPUESTA))
             }
             remove(KEY_PLAIN_RECOVERY_ANSWER)
         }
     }
 
-    /** Deriva [secret] con una sal recién generada y lo devuelve como `sal$derivado`. */
-    private fun deriveWithNewSalt(secret: String): String {
+    /**
+     * Deriva [secret] con una sal recién generada y lo devuelve como
+     * `vueltas$sal$derivado`: las vueltas van con él para poder cambiarlas sin
+     * dejar inservible lo ya guardado (D-49).
+     */
+    private fun deriveWithNewSalt(secret: String, iterations: Int): String {
         val sal = ByteArray(BYTES_DE_SAL).also { SecureRandom().nextBytes(it) }
-        return codificar(sal) + SEPARADOR + derivar(secret, sal)
+        return iterations.toString() + SEPARADOR + codificar(sal) + SEPARADOR + derivar(secret, sal, iterations)
     }
 
-    /** true si [secret], derivado con la sal de [stored], da lo mismo que hay guardado. */
+    /** true si [secret], derivado como lo que hay en [stored], da lo mismo. */
     private fun matchesStored(secret: String, stored: String): Boolean {
-        val partes = stored.split(SEPARADOR)
-        if (partes.size != 2) return false
-        val sal = decodificar(partes[0]) ?: return false
-        return constantTimeEquals(derivar(secret, sal), partes[1])
+        val guardado = parseStored(stored) ?: return false
+        return constantTimeEquals(derivar(secret, guardado.salt, guardado.iterations), guardado.hash)
     }
 
-    private fun derivar(pin: String, sal: ByteArray): String {
-        val spec = PBEKeySpec(pin.toCharArray(), sal, ITERACIONES, BITS_DE_CLAVE)
+    /** Un secreto guardado, ya separado en sus partes. */
+    private class StoredSecret(val iterations: Int, val salt: ByteArray, val hash: String)
+
+    /**
+     * `vueltas$sal$derivado`, o `sal$derivado` como se guardaba antes de D-49,
+     * que siempre llevaba [ITERACIONES_ANTIGUAS]. null si no se entiende.
+     */
+    private fun parseStored(stored: String): StoredSecret? {
+        val partes = stored.split(SEPARADOR)
+        return when (partes.size) {
+            2 -> decodificar(partes[0])?.let { StoredSecret(ITERACIONES_ANTIGUAS, it, partes[1]) }
+            3 -> {
+                val vueltas = partes[0].toIntOrNull()?.takeIf { it > 0 } ?: return null
+                decodificar(partes[1])?.let { StoredSecret(vueltas, it, partes[2]) }
+            }
+            else -> null
+        }
+    }
+
+    private fun derivar(pin: String, sal: ByteArray, iterations: Int): String {
+        val spec = PBEKeySpec(pin.toCharArray(), sal, iterations, BITS_DE_CLAVE)
         return try {
             codificar(SecretKeyFactory.getInstance(ALGORITMO).generateSecret(spec).encoded)
         } catch (e: GeneralSecurityException) {
@@ -295,7 +341,20 @@ class PinStore(context: Context) {
 
         private const val SEPARADOR = "$"
         private const val ALGORITMO = "PBKDF2WithHmacSHA1"
-        private const val ITERACIONES = 60_000
+
+        /**
+         * Vueltas de PBKDF2 del PIN (D-49). Con cuatro cifras, quien copie el
+         * fichero prueba las diez mil igual de rápido con 10 000 que con 60 000; lo
+         * que frena es el límite de intentos. Con 60 000, el PIN tardaba casi un
+         * segundo en abrir en un móvil lento.
+         */
+        private const val ITERACIONES_PIN = 10_000
+
+        /** La respuesta es texto libre: ahí las vueltas sí cuentan, y se escribe poco. */
+        private const val ITERACIONES_RESPUESTA = 60_000
+
+        /** Las que llevaba todo lo guardado como `sal$derivado`, antes de D-49. */
+        private const val ITERACIONES_ANTIGUAS = 60_000
         private const val BITS_DE_CLAVE = 256
         private const val BYTES_DE_SAL = 16
     }

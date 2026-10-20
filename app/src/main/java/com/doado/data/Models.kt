@@ -107,10 +107,24 @@ data class AssistantSettings(
     val mode: AssistantMode = AssistantMode.GUIDE,
 )
 
-/** Lo que se puede personalizar de la interfaz. */
+/** Dónde van los accesos directos a personas en el inicio (D-46). */
+enum class ContactsLayout {
+    /** En la rejilla, tras «Tus contactos», como una casilla más (D-38). De fábrica. */
+    GRID,
+
+    /** En una segunda pantalla del inicio, deslizando o con su pestaña. */
+    PAGE,
+}
+
+/**
+ * Lo que se puede personalizar de la interfaz.
+ *
+ * @property columns casillas por fila, de 1 a 3 (D-45). Cuatro no caben.
+ */
 data class InterfaceSettings(
     val theme: ThemeMode = ThemeMode.DARK,
     val textSize: TextSize = TextSize.NORMAL,
     val columns: Int = 2,
     val showClock: Boolean = true,
+    val contactsLayout: ContactsLayout = ContactsLayout.GRID,
 )

@@ -4,6 +4,7 @@
         Igual que en backup_rules.xml: lista blanca. El fichero del PIN
         ("doado_security") se queda fuera de las dos, ni a la nube ni al traspaso
         directo entre móviles (RNF-SEG-01); se vuelve a crear en el móvil nuevo.
+        Tampoco la foto de fondo del inicio (files/home_wallpaper.jpg, D-47).
     -->
     <cloud-backup>
         <include domain="sharedpref" path="doado_favorites.xml" />

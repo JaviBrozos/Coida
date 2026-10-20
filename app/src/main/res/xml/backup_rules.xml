@@ -9,6 +9,9 @@
         más claro: con una lista de <include>, excluir algo que no está incluido
         es un error de lint. En un móvil nuevo no habrá PIN, y la primera entrada
         en Ajustes lo crea.
+
+        La foto de fondo del inicio (files/home_wallpaper.jpg) tampoco está: es
+        privada y pesa, y en el móvil nuevo se vuelve a elegir (D-47).
     -->
     <include domain="sharedpref" path="doado_favorites.xml" />
     <include domain="sharedpref" path="doado_contacts.xml" />

@@ -2,6 +2,7 @@ package com.doado.assistant
 
 import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
+import com.doado.data.ContactsLayout
 import com.doado.data.FavoriteApp
 import org.json.JSONObject
 
@@ -27,12 +28,14 @@ sealed interface Interpretation {
  *
  * @param contacts todos los contactos guardados, estén o no en el inicio.
  * @param homeApps las casillas del inicio, en su orden.
+ * @param contactsLayout cómo van los contactos en el inicio, para guiar hasta ellos.
  */
 class ActionCatalog(
     contacts: List<ContactShortcut>,
     val homeApps: List<FavoriteApp>,
     val columns: Int,
     val whatsappInstalled: Boolean,
+    val contactsLayout: ContactsLayout = ContactsLayout.GRID,
 ) {
     /**
      * Una persona puede tener dos accesos directos, llamada y WhatsApp (D-40). Al

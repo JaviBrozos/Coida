@@ -9,6 +9,8 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.doado.R
 import com.doado.core.ui.GroupPosition
+import com.doado.core.ui.NotHomeNotice
+import com.doado.core.ui.NotHomeNoticeStage
 import com.doado.core.ui.SectionLabel
 import com.doado.core.ui.SettingsColumn
 import com.doado.core.ui.SettingsGroup
@@ -20,6 +22,9 @@ import com.doado.data.AssistantSettings
 /**
  * Índice de Ajustes. Está escrito para el familiar o cuidador, no para quien usa
  * el móvil a diario: cada apartado lleva debajo una frase que dice qué hay dentro.
+ *
+ * @param notHomeNotice cómo va el aviso de que Doado no es la pantalla de inicio
+ *   (D-48); null si lo es o si ya se cerró en esta visita.
  */
 @Composable
 fun SettingsScreen(
@@ -34,6 +39,9 @@ fun SettingsScreen(
     onSoundAndDisplay: () -> Unit,
     onAdmin: () -> Unit,
     onChangePin: () -> Unit,
+    notHomeNotice: NotHomeNoticeStage? = null,
+    onMakeHome: () -> Unit = {},
+    onCloseNotHome: () -> Unit = {},
 ) {
     SettingsColumn(
         modifier = Modifier
@@ -45,6 +53,19 @@ fun SettingsScreen(
             backLabel = stringResource(R.string.cd_back_home),
             onBack = onBack,
         )
+
+        // Sin ser la pantalla de inicio, al pulsar Inicio sale otra y nada de esto
+        // sirve: va lo primero (D-48). El botón lleva al diálogo de Android que
+        // ofrece Doado, que no saca a ninguna otra parte del móvil. Vuelve a salir
+        // cada vez que se entra, aunque se cerrara en el inicio.
+        if (notHomeNotice != null) {
+            NotHomeNotice(
+                stage = notHomeNotice,
+                message = stringResource(R.string.settings_not_home_note),
+                onMakeHome = onMakeHome,
+                onClose = onCloseNotHome,
+            )
+        }
 
         SectionLabel(stringResource(R.string.settings_section_personalize))
         SettingsGroup {

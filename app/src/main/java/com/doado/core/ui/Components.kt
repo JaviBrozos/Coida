@@ -37,6 +37,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -66,7 +67,10 @@ import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.style.Hyphens
+import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -806,9 +810,11 @@ private fun ButtonContent(text: String, @DrawableRes icon: Int?, contentColor: C
                 tint = contentColor,
             )
         }
+        // Por sílabas si una palabra no cabe: en un botón de media pantalla, o al
+        // 200 %, se partía a mitad sin guion.
         Text(
             text = text,
-            style = MaterialTheme.typography.titleSmall,
+            style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
             color = contentColor,
             textAlign = TextAlign.Center,
         )
@@ -817,3 +823,17 @@ private fun ButtonContent(text: String, @DrawableRes icon: Int?, contentColor: C
 
 /** Hueco entre el marco de un [ChoiceGroup] y sus opciones. */
 private val SEGMENT_GAP = 6.dp
+
+/**
+ * Con tres casillas por fila, la letra de lo que va dentro crece con la del
+ * sistema solo hasta [DoadoDimens.NarrowMaxTextScale] (D-45). Ajustes → Interfaz
+ * avisa de que, con más letra, se lee mejor con dos por fila: el inicio no cambia
+ * de columnas solo. Sin [enabled], no toca nada.
+ */
+@Composable
+fun NarrowTextScale(enabled: Boolean, content: @Composable () -> Unit) {
+    if (!enabled) return content()
+    val density = LocalDensity.current
+    val capped = Density(density.density, density.fontScale.coerceAtMost(DoadoDimens.NarrowMaxTextScale))
+    CompositionLocalProvider(LocalDensity provides capped) { content() }
+}
