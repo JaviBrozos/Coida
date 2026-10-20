@@ -558,3 +558,21 @@ falta que sea legible. La que hubiera en claro se migra al arrancar.
 de D-23; el resto de D-23 sigue en pie.
 **Consecuencia**: nadie puede leer la respuesta del fichero. Cuenta en el mismo
 límite de intentos que el PIN (D-24).
+
+### D-42 · Al contestar a una pregunta, basta con menos voz (20/10/2026)
+
+**Contexto**: en la prueba con voz real, un «no» seco tras «¿Llamo a …?» no hacía
+nada ni decía nada; «no, no» y «no, déjalo» sí funcionaban. La grabadora solo
+cuenta como dicho lo que pasa de 400 ms de voz (`MIN_SPEECH_MS`), y un «no» o un
+«sí» secos se quedan por debajo: la grabación se tiraba y el asistente se quedaba
+callado en la pregunta, que es justo cuando más importa que entienda un «no».
+**Decisión**: al contestar a una pregunta del asistente (la escucha que se reabre
+sola tras hablar), el mínimo baja a 200 ms (`MIN_REPLY_SPEECH_MS`). La primera
+orden sigue con 400 ms.
+**Descartado**: bajar el mínimo para todo, que dejaría pasar golpes y carraspeos
+como primera orden. Esperar que la persona diga algo más largo, que es justo lo
+que no se le puede pedir.
+**Consecuencia**: un golpe corto puede llegar al servicio y transcribirse como
+algo. No actúa por eso: la respuesta la decide `VoiceReplies` y solo confirma un
+sí limpio (D-31). Queda por probar con una voz mayor y con ruido de fondo.
+
