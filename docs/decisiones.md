@@ -612,3 +612,115 @@ descargables, que puede fallar sin red justo al arrancar.
 confunden (I, l, 1; 0 y O) dejan de confundirse. Falta pasar el texto del logo a
 trazos con esta letra.
 
+### D-45 · Hasta tres casillas por fila, casi cuadradas; cuatro, no (20/10/2026)
+
+**Contexto**: Javier pidió elegir 2, 3 o 4 casillas por fila, según la vista y la
+soltura de cada persona. Hasta ahora eran una o dos, y la norma prohibía un
+tercer valor.
+**Decisión**: 1, 2 o 3 por fila, de fábrica 2. Tres solo se ofrece si cada
+casilla queda en 96 dp de ancho o más (un móvil de 360 dp justo llega); si ya
+estaba puesto, se sigue enseñando. Con tres, por petición de Javier, las
+casillas son **casi cuadradas** y no se estiran a lo alto: miden de alto lo que
+de ancho, o lo que pida el nombre más largo si no cabe (se mide el texto de
+verdad), y todas las de la rejilla igual. El icono baja a 48 dp, el nombre a
+`labelMedium` (20 sp) sin límite de líneas, y la letra de las casillas crece con
+la del sistema solo hasta 1,25. La línea de debajo del nombre («Llamada», «Falta
+WhatsApp») se queda en 18 sp: «WhatsApp» es una marca, no se parte por sílabas, y
+más grande salía «Wh / atsApp». Con una o dos por fila, los nombres tampoco
+tienen ya tope de líneas: un nombre cortado con «…» no se reconoce. Si la letra pasa de ahí, Ajustes → Interfaz
+avisa de que se lee mejor con dos por fila; el inicio no cambia de columnas
+solo. Al guiar, el asistente dice izquierda, centro o derecha.
+**Descartado**: cuatro por fila, que el agente de accesibilidad rechazó con
+cifras: casillas de 68 a 81 dp de ancho y 44 a 57 dp para el nombre, donde no
+cabe ni «Men-» a la letra normal. Mantener los 168 dp de alto con tres, que
+daba casillas el doble de altas que anchas. Y pasar solo a menos columnas con la
+letra grande, que mueve las casillas sin que nadie lo pida (invariante 2).
+**Consecuencia**: con tres por fila, la casilla baja de los 168 dp de alto a unos
+115-140 dp en un móvil de 411 dp; sigue siendo más del doble del mínimo de 48.
+RNF-ACC-02 se reescribe (ERS 0.9). Con la letra al máximo, los nombres no crecen
+tanto como el resto de la app; el aviso de Interfaz lo dice.
+
+### D-46 · Los contactos, también en una segunda pantalla del inicio (20/10/2026)
+
+**Contexto**: Javier quería, como opción, los contactos en otra pantalla del
+inicio a la que se pasa deslizando, como en los móviles normales. El agente de
+accesibilidad prefería dejarlos como estaban (D-38) y rechazaba cualquier cosa
+a la que solo se llegue deslizando: es un gesto como única forma de hacer algo,
+choca con el «Atrás» del borde y con el temblor de manos.
+**Decisión**: de fábrica, como estaban. Con «En otra pantalla», el inicio tiene
+dos: las apps y los contactos, con la misma rejilla y las mismas casillas. Se
+pasa deslizando, pero arriba hay siempre dos pestañas grandes, «Aplicaciones» y
+«Contactos», que dicen en cuál se está y llevan a la otra: deslizar es un atajo.
+La pestaña dice «Contactos» y no «Tus contactos» (D-38) porque con la letra muy
+grande no cabía; la casilla de la agenda está en la otra pantalla. Las pestañas
+llevan el mismo techo de letra que la cabecera (1,5). Pulsar Inicio vuelve a las apps. Al guiar, el inicio pasa solo a la
+pantalla de lo señalado, y el asistente dice cómo llegar la próxima vez.
+**Descartado**: llegar solo deslizando, sin pestañas; una fila lateral de
+contactos con flechas, que se probó y Javier descartó porque no era lo que
+pedía; y una pantalla de contactos fuera del inicio, detrás de un botón, que
+añade un paso a llamar (RNF-USA-01).
+**Consecuencia**: con los contactos aparte, llamar a alguien cuesta un toque más
+(la pestaña). Por eso no es lo de fábrica. Las pestañas se comen una franja de
+la rejilla.
+
+### D-47 · Foto de fondo en el inicio, con franjas lisas (20/10/2026)
+
+**Contexto**: a muchas personas mayores les gusta ver una foto suya de fondo, y
+la mayoría de móviles la tienen. Doado no la dejaba poner.
+**Decisión**: el familiar elige una foto en Ajustes → Interfaz con el selector de
+fotos de Android, que no pide permisos. Se guarda una copia reducida al tamaño
+de la pantalla y girada como la hizo la cámara (`files/home_wallpaper.jpg`). Las
+casillas y las pestañas ya son opacas y con contorno; el reloj y el rótulo «Tus
+contactos» van sobre una franja lisa del color del fondo, con contorno, para que
+el contraste se mida contra ella y no contra la foto. La foto no entra en la
+barra de estado. Las franjas se pintan desde el primer fotograma, aunque la
+foto llegue después, para que nada se mueva bajo el dedo. Si no se puede leer,
+el inicio sale sin foto.
+**Descartado**: sacar los colores de la foto, que es color dinámico (D-02), y
+poner el texto encima con sombra o con un velo, que no garantiza el contraste.
+También guardarla en la copia de seguridad: es privada y pesa.
+**Consecuencia**: no es lo más accesible y por eso no viene puesta. En un móvil
+nuevo se vuelve a elegir.
+
+### D-48 · Avisar si Doado no es la pantalla de inicio (20/10/2026)
+
+**Contexto**: si Doado no es la pantalla de inicio, al pulsar Inicio sale otra y
+todo lo que se configura no sirve de nada. Para elegirla había que ir al modo
+administrador, donde nadie lo busca al estrenar el móvil.
+**Decisión**: si Doado no tiene el papel de pantalla de inicio, lo dicen arriba
+el propio inicio y Ajustes, con un botón «Poner Doado como pantalla de inicio».
+Los dos avisos llevan una equis para quien solo está probando Doado: al cerrarlo,
+o al decir que no en el diálogo, el aviso explica cómo ponerlo más adelante
+(Ajustes → Modo administrador → «Elegir pantalla de inicio»), con su propia equis.
+En el inicio, cerrado se queda cerrado (`home_notice_dismissed`); en Ajustes
+vuelve a salir entero cada vez que se entra.
+Desde Android 10 se pregunta al sistema con `RoleManager` y el botón abre su
+diálogo, que solo pregunta por Doado y no saca a otra parte del móvil; antes,
+se resuelve la intención de inicio y el botón lleva a los ajustes de Android
+donde se elige. Desde el inicio no: ahí el botón lleva a Ajustes de Doado, tras
+el PIN, porque los ajustes de Android son una salida a Android (invariante 5). Se comprueba al volver a Doado, junto a las consultas de D-43.
+El botón del modo administrador pasa a «Elegir pantalla de inicio».
+**Descartado**: dejarlo solo en el modo administrador. Preguntar al
+`PackageManager` desde Android 11, que sin declarar las intenciones de inicio en
+`<queries>` no ve los otros launchers y contestaba que Doado ya lo era.
+**Consecuencia**: el aviso del inicio lo ve casi siempre el familiar: mientras
+Doado no es la pantalla de inicio, la persona mayor, al pulsar Inicio, ve la
+otra. Sin permisos nuevos.
+
+### D-49 · El PIN se deriva con 10 000 vueltas, no 60 000 (20/10/2026)
+
+**Contexto**: tras la cuarta cifra, el PIN tardaba casi un segundo en abrir los
+ajustes. Medido en el emulador: 924 ms solo en las 60 000 vueltas de PBKDF2 de
+D-19; la pausa del cuarto punto y el fundido apenas contaban. Derivar a la vez
+que la pausa no bastaba.
+**Decisión**: el PIN se deriva con 10 000 vueltas (unos 120 ms en el emulador).
+Las vueltas se guardan con él (`vueltas$sal$derivado`): un PIN de antes, guardado
+como `sal$derivado` con 60 000, se sigue aceptando y se vuelve a guardar con las
+nuevas la primera vez que se acierta. La respuesta de recuperación sigue con
+60 000. La derivación arranca a la vez que la pausa del cuarto punto, que baja de
+250 a 120 ms, y solo `check()` compara y cuenta el intento.
+**Descartado**: dejar 60 000, que no protegía más de verdad: con cuatro cifras,
+quien copie el fichero prueba las diez mil igual de rápido con unas vueltas que
+con otras, y lo que frena es el límite de intentos (D-24), que no cambia.
+**Consecuencia**: la respuesta de recuperación, que es texto libre y donde las
+vueltas sí cuentan, conserva las suyas. Lo decidió Javier el 20/10.

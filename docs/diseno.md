@@ -64,12 +64,19 @@ borde, no por sombra ni por elevación**.
 
 ## Tipografía
 
-`core/ui/Type.kt`: **Atkinson Hyperlegible Next** (D-44), dentro del APK en
-`res/font/` con cuatro grosores (Regular, Medium, SemiBold y Bold). La escala es
+`core/ui/Type.kt`: **Inter**, en prueba desde el 20/10 en lugar de la Atkinson
+Hyperlegible Next de D-44, a falta de que lo decidan los dos creadores. Dentro del
+APK en `res/font/`, solo los dos grosores que usa la escala (SemiBold y Bold), y
+con el juego `ss04` (la I con remates y la l con cola, que en Inter son dos palos
+casi iguales). Atkinson sigue en `res/font/` hasta decidirlo. La escala es
 la de Material multiplicada por ~1,5, con más grosor (el trazo fino se pierde a
 tamaño grande): **SemiBold** en cuerpo y etiquetas y **Bold** en titulares.
 Interletrado a 0 (el negativo de Material apelmaza el texto cuando se amplía).
 Todo en `sp`. Un grosor nuevo en la escala necesita su fichero en `res/font/`.
+Titulares y `display` con 1,3 veces su tamaño de interlineado como mínimo, y el
+cuerpo de 22 sp con 32 (1,45). El reloj, las cuentas atrás y
+las teclas del PIN llevan cifras de ancho fijo (`TabularFigures`): si no, la hora
+baila de lado a cada minuto.
 
 | Estilo | Tamaño | Dónde se usa |
 | --- | --- | --- |
@@ -98,7 +105,7 @@ los borres sin mirar.
 | `MinTouchTarget` | 48 dp | Suelo innegociable de cualquier pulsable |
 | `ComfortableTouchTarget` | 72 dp | Lo normal para un botón suelto |
 | `TileMinHeight` | 168 dp | Alto mínimo de una casilla (en el inicio suelen salir ~260) |
-| `TileIconSize` / `TileIconSizeCompact` | 72 / 54 dp | Icono de una casilla, sin plato (D-35), en dos columnas / en una |
+| `TileIconSize` / `TileIconSizeCompact` / `TileIconSizeNarrow` | 72 / 54 / 48 dp | Icono de una casilla, sin plato (D-35), en dos columnas / en una / en tres (D-45) |
 | `TileCornerRadius` | 28 dp | Radio de casilla y de contacto del inicio |
 | `AvatarSize` | 52 dp | Círculo con la inicial de un contacto en Ajustes → Contactos |
 | `CardCornerRadius` | 20 dp | Radio de fila, tarjeta y botón |
@@ -112,7 +119,8 @@ los borres sin mirar.
 | `BackButtonHeight` | 60 dp | Alto del botón «Volver» de las cabeceras |
 | `PinKeyHeight` / `PinPadMaxWidth` | 64 / 320 dp | Tecla del PIN (alto mínimo) y ancho máximo del teclado, centrado |
 | `AssistantBadgeSize` | 64 dp | Círculo hundido con el micrófono en la pantalla del asistente (no pulsable) |
-| `LargeTextScale` | 1,3 | Escala de letra a partir de la que el contacto pierde la inicial y las opciones van en columna |
+| `LargeTextScale` | 1,3 | Escala de letra a partir de la que las opciones de un `ChoiceGroup` van en columna |
+| `NarrowMaxTextScale` | 1,25 | Techo de escala de la letra de las casillas con tres por fila (D-45) |
 | `RowHeight` | 88 dp | Alto de fila de ajustes |
 | `ScreenPadding` | 20 dp | Margen de pantalla |
 | `GridSpacing` | 16 dp | Separación de la rejilla |
@@ -170,7 +178,18 @@ lleva **solo la D**, sin un segundo cuadrado.
 - **Contactos**: casillas como las de las apps, en la misma rejilla y tras el
   rótulo «Tus contactos» (D-38): la inicial en un círculo en el sitio del icono,
   el nombre y debajo la acción escrita. Sin límite de número.
-- **El asistente** es un círculo de 96 dp abajo en el centro, relleno `primary`
+  Si el familiar los pone aparte (D-46), van en una segunda pantalla del inicio,
+  con dos pestañas arriba, «Aplicaciones» y «Contactos»: la elegida en
+  `primary`, la otra con contorno, las dos de 72 dp de alto como mínimo.
+- **Casillas por fila**: una, dos o tres (D-45). Con tres, casi cuadradas y todas
+  iguales: icono de 48 dp, nombre en `labelMedium` y letra con techo de 1,25
+  (`NarrowTextScale`).
+- **Aviso de pantalla de inicio** (D-48): si Doado no lo es, `NotHomeNotice` arriba,
+  con un `PrimaryButton` que lo pone y una equis redonda de 64 dp (`ic_close`).
+- **Foto de fondo** (D-47): detrás de todo y decorativa, dentro del margen seguro
+  (la barra de estado sigue lisa). Lo que no es casilla (reloj, rótulo «Tus
+  contactos») va sobre una franja `background` con contorno, así que el
+  contraste es el de siempre.- **El asistente** es un círculo de 96 dp abajo en el centro, relleno `primary`
   con el icono en `onPrimary` (7,86:1 en oscuro, 17,08:1 en claro). Al pulsarlo
   pasa a `surfaceContainerHigh` con el icono en `onSurface` (11,35:1 y 15,18:1).
   Flota encima de la rejilla, que se ve pasar por sus lados (D-38), con un aro de
@@ -204,6 +223,8 @@ apagada, no suena). Las pantallas cambian con un fundido de 180 ms (D-32).
 | `IconBadge` | Icono de acento, sin plato salvo el del asistente |
 | `InitialBadge` | La inicial de un nombre sobre un plato; decorativa para TalkBack |
 | `NoteCard` | Nota explicativa, no pulsable: relleno y contorno |
+| `NotHomeNotice` | Aviso de que Doado no es la pantalla de inicio (D-48), con su botón y una equis que lo cambia por cómo ponerlo más adelante |
+| `NarrowTextScale` | Techo de letra de 1,25 para lo que va en una casilla de tres por fila (D-45) |
 | `DoadoTextField` | Campo para escribir, con contorno de 2 dp que pasa a acento al escribir y a error si falla |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
 | `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |

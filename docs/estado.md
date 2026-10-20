@@ -4,47 +4,37 @@
 > (obligación de `CLAUDE.md`). Máximo unas 50 líneas: lo antiguo se borra, el
 > historial completo está en git. El estado de cada caso de uso vive en la ERS.
 
-**Última actualización: 20/10/2026 · Gonzalo Gómez Blanco**
+**Última actualización: 20/10/2026 · Javier Brozos**
 
 ## Dónde estamos
 
 - Launcher completo: inicio y siete pantallas de ajustes tras el PIN, con límite
   de intentos (RNF-SEG-03) y recuperación del PIN (D-23).
-- Asistente de voz en pruebas (CU-04, CU-05, CU-15; D-25 a D-31, D-37): Groq, siempre
-  confirma, actúa o guía, y conversa. Groq acierta 5 de 5 órdenes y 3 de 3
-  correcciones desde el PC; en el emulador se vio el bucle entero.
-- Interfaz renovada (D-32): grupos en ajustes, platos de icono, selector
-  segmentado, «Volver» escrito, fundido y vibración al tocar. Vista en el emulador
-  en los dos temas y auditada en tres rondas por el agente de accesibilidad.
+- Asistente de voz en pruebas (CU-04, CU-05, CU-15; D-25 a D-31, D-37, D-42).
+- Inicio personalizable (D-45 a D-48): una, dos o tres casillas por fila,
+  contactos aparte, foto de fondo y aviso si Doado no es la pantalla de inicio.
+- Letra: Inter en prueba, en lugar de Atkinson (D-44); falta decidirlo con Gonzalo.
 
 ## Sin probar
 
-- **El asistente en el móvil con voz real**: los dos modos, aclarar, la casilla
-  marcada, la conversación y las listas de `VoiceReplies`. En el emulador ya se
-  vio el bucle entero con ruido (grabar, Groq, «no te he entendido», reabrir).
-- La petición del micrófono desde Ajustes, los umbrales de `VoiceTuning` con una
-  voz mayor, y TalkBack con la interfaz nueva.
-- El «no» seco al contestar (D-42): cambiado sin compilar, falta verlo en el móvil.
-- El `PackageManager` en segundo plano (D-43): sin compilar. Ver el arranque, volver
-  al inicio tras instalar o quitar una app, y Ajustes → Aplicaciones.
-- La letra nueva (D-44): sin compilar. Verla al 200 % en una y dos columnas, y la
-  maqueta de Ajustes → Interfaz, que corta las etiquetas a una línea.
+- **El asistente con voz real**: los dos modos, aclarar, la casilla marcada, la
+  conversación, el «no» seco (D-42) y TalkBack con la interfaz nueva.
+- TalkBack con tres por fila, las pestañas y el aviso de inicio. Visto al 100 % y
+  al 200 %, en claro y en un móvil de 411 dp; falta uno de 360 dp y el tema oscuro.
+- La guía del asistente con tres por fila y con los contactos aparte.
+- Una foto real de cámara (girada) y el selector de documentos de Android 9 o antes.
 
 ## Siguiente
 
-1. Probar con voz real, también con TalkBack. Cambiar la clave de Groq, que quedó
+1. Decidir con Gonzalo la letra: Inter (prueba de hoy) o Atkinson (D-44). Si se
+   queda Inter, quitar Atkinson de `res/font/` y corregir la marca.
+2. Probar con voz real, también con TalkBack. Cambiar la clave de Groq, que quedó
    expuesta en una sesión de trabajo.
-2. CON-06: decidir con Gonzalo sobre `docs/propuestas/con-06-clave-asistente.md`
-   (intermediario con suscripción). Sin resolverlo no se publica.
-3. Auditoría de accesibilidad del 13/10, por decidir: etiqueta «Hablar» bajo el
-   círculo (afecta a D-28) e icono de Ajustes a 6,71:1 en claro. La rejilla en
-   mirilla ya no aplica (D-38).
-4. Al 200 % y dos columnas, «Mensajes» y «Contactos» se parten, ahora por sílabas
-   con guion («Men-sajes»). Se leen, pero siguen en dos líneas.
-5. Ver en el emulador los iconos nuevos y sin plato (D-34, D-35), en los dos
-   temas y con una casilla señalada por el asistente.
-6. Ver el icono nuevo (D-36) en el emulador con varias máscaras y como icono
-   temático. Pasar el texto del logo a Atkinson Hyperlegible Next en trazos (D-44).
+3. CON-06: decidir con Gonzalo sobre `docs/propuestas/con-06-clave-asistente.md`.
+   Sin resolverlo no se publica.
+4. Auditoría del 13/10, por decidir: etiqueta «Hablar» bajo el círculo (afecta a
+   D-28) e icono de Ajustes a 6,71:1 en claro.
+5. Ver el icono nuevo (D-36) con varias máscaras; pasar el texto del logo a trazos.
 
 Deuda menor: sin pruebas automáticas, solo español, isotipo sin usar (D-28) y
 capturas viejas.
@@ -53,9 +43,10 @@ capturas viejas.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
-| 20/10 | Gonzalo | Letra Atkinson Hyperlegible Next en la app (D-44, sustituye a D-17): cuatro grosores en `res/font/`, cuerpo en SemiBold. Las casillas de app admiten cuatro líneas, porque «Contactos» pedía tres al 200 % en 360 dp |
-| 20/10 | Gonzalo | Las consultas al `PackageManager` de `reload()` pasan a segundo plano (D-43): fuera el riesgo de ANR. El inicio se pinta tras la primera carga, para que las casillas no empujen a los contactos |
-| 20/10 | Gonzalo | Prueba con voz real en el móvil: un «no» seco tras «¿Llamo a …?» se descartaba por corto. Al contestar a una pregunta basta ahora con 200 ms de voz en vez de 400 (D-42) |
-| 19/10 | Javier | Fusión con lo de Gonzalo del 05/10 en `main`: su respuesta de recuperación derivada (D-41, era su D-24) convive con el límite de intentos, y su `DoadoTextField` sustituye a los campos de Material en las tres pantallas de recuperación |
-| 19/10 | Javier | Skill `doado-brand` en el proyecto: la marca (logo, colores, iconos, letra, tono y movimiento), con los SVG de la marca y `tokens.json`; enlazada en `CLAUDE.md` y en `recursos.md` |
-| 19/10 | Javier | Contactos con dos interruptores, llamada y WhatsApp, que se pueden encender a la vez (D-40). Fuera el subtítulo de Ajustes; notas de Aplicaciones y Modo administrador más genéricas, sin nombrar apps. TalkBack lee cada interruptor con el nombre de la persona |
+| 20/10 | Javier | Pestaña «Contactos» (cabe con la letra grande). Los avisos de pantalla de inicio llevan una equis: al cerrarlos explican cómo ponerlo más adelante; el del inicio se queda cerrado y el de Ajustes vuelve en cada visita. Por la auditoría: nombres sin tope de líneas, I y l distintas en Inter (`ss04`), solo dos grosores de Inter, y desde el inicio en Android 9 o antes el botón va a Ajustes, tras el PIN |
+| 20/10 | Javier | Inicio: tres por fila casi cuadradas (D-45), contactos en una segunda pantalla con pestañas (D-46), foto de fondo con franjas lisas (D-47) y aviso con botón si Doado no es la pantalla de inicio, en el inicio y en Ajustes (D-48). PIN: de ~0,9 s a ~0,12 s, con 10 000 vueltas y derivando durante la pausa (D-49). Interruptores «Llamadas» y «WhatsApp»; «Elegir pantalla de inicio». Letra Inter en prueba; titulares a 1,3 de interlineado, cifras de ancho fijo y guiones en español. ERS 0.9. Visto en el emulador |
+| 20/10 | Javier | Fusión en `main` de las ramas de Gonzalo `letra-atkinson` y `package-manager-fondo` |
+| 20/10 | Gonzalo | Letra Atkinson Hyperlegible Next en la app (D-44, sustituye a D-17): cuatro grosores en `res/font/`, cuerpo en SemiBold |
+| 20/10 | Gonzalo | Las consultas al `PackageManager` de `reload()` pasan a segundo plano (D-43): fuera el riesgo de ANR |
+| 20/10 | Gonzalo | Un «no» seco tras «¿Llamo a …?» se descartaba por corto: al contestar basta con 200 ms de voz (D-42) |
+| 20/10 | Javier | Versión 1.2 (`versionCode` 2): primera APK numerada. Las APK van a Descargas, no a git: llevan la clave del asistente |

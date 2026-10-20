@@ -9,7 +9,7 @@ paths:
 
 Mira si ya existe en `core/ui/Components.kt`: `DoadoCard`, `SettingsGroup`,
 `SettingsRow`, `SwitchRow`, `ChoiceGroup`, `PrimaryButton`, `OutlineButton`,
-`ScreenHeader`, `SectionLabel`, `IconBadge`, `InitialBadge`, `NoteCard`, `DoadoTextField`,
+`ScreenHeader`, `SectionLabel`, `IconBadge`, `InitialBadge`, `NoteCard`, `NotHomeNotice`, `NarrowTextScale`, `DoadoTextField`,
 `SettingsColumn`, `DoadoSwitchVisual`.
 Casi toda pantalla de ajustes sale de ahí. La tabla de para qué sirve cada uno
 está en `docs/diseno.md`.
@@ -50,8 +50,10 @@ Los textos del inicio los lee ella; los de ajustes, el familiar.
 
 ## Cosas de este launcher que se olvidan
 
-- La rejilla es de **una o dos columnas**. No metas un tercer valor ni un cálculo
-  automático por ancho de pantalla.
+- La rejilla es de **una, dos o tres columnas**; cuatro, nunca (D-45). Tres solo se
+  ofrece si la casilla queda en 96 dp de ancho, y entonces son casi cuadradas y
+  todas iguales. El inicio nunca cambia de columnas solo, ni por la letra ni por
+  el ancho.
 - Las casillas **conservan su posición** aunque la app no esté: apagadas, nunca
   reordenadas ni ocultas.
 - `HOME` se pinta fuera del `Box` con `safeDrawingPadding()`; el resto de
@@ -60,10 +62,15 @@ Los textos del inicio los lee ella; los de ajustes, el familiar.
   el círculo flotante de abajo, que va encima de la rejilla (D-38). La rejilla
   acaba con un margen del alto del círculo: **toda casilla tiene que poder quedar
   entera a la vista**. Los contactos van en la misma rejilla, tras «Tus contactos».
+  Si el familiar los pone aparte (D-46), van en una segunda pantalla del inicio
+  con dos pestañas siempre a la vista: deslizar es un atajo, nunca la única forma.
 - Para señalar una casilla (el asistente guiando): relleno `primary`, contenido
   `onPrimary`, `borderWidth = DoadoDimens.HighlightBorderWidth` y
   `stateDescription` para TalkBack. Solo el borde no basta: en claro el contorno ya
   es del color del acento. Nunca moverla, agrandarla ni hacerla parpadear.
+- Con foto de fondo (D-47), todo texto del inicio que no vaya dentro de una
+  casilla va sobre una franja lisa con contorno (`PhotoBand`): el contraste se
+  mide contra ella, nunca contra la foto.
 - Si cambias la jerarquía de pantallas (el `enum Screen` o `parentOf`),
   actualiza `docs/arquitectura.md` en el mismo commit.
 
@@ -78,5 +85,6 @@ Está en `.claude/skills/apple-design/` y explica cómo diseña Apple: respuesta
 inmediata, movimiento que se puede interrumpir y coherencia espacial. Está
 pensada para la web y para el estilo de Apple. **Aquí mandan las normas de
 Doado**: nada de translucidez ni sombras (D-04), nada de interletrado negativo
-(D-03), nada de gestos de arrastre ni muelles, y el asistente confirma siempre
+(D-03), nada de gestos de arrastre ni muelles (deslizar entre las dos pantallas de D-46
+es un atajo de sus pestañas, no la forma de usarlas), y el asistente confirma siempre
 (D-26). Qué se tomó de ella y qué no está en D-32.

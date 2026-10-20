@@ -46,12 +46,15 @@ administrador**, que no es un perfil aparte sino un estado que dura 15 minutos.
 - **Reloj y fecha** y, en la esquina, un **botón pequeño de Ajustes**,
   en tono apagado y lejos del pulgar.
 - **Accesos directos de personas**: casillas con su nombre, debajo de las apps y
-  tras el rótulo «Tus contactos», sin límite. Un toque y les llama o les abre
-  WhatsApp; la misma persona puede tener los dos botones.
-- **Casillas de aplicaciones** en una o dos columnas, que se estiran para
-  ocupar la pantalla. Si una app no está instalada, su casilla **se queda en su
+  tras el rótulo «Tus contactos», sin límite, o en una segunda pantalla a la que
+  se pasa deslizando o con su pestaña. Un toque y les llama o les abre WhatsApp; la misma persona puede tener
+  los dos botones.
+- **Casillas de aplicaciones** en una, dos o tres columnas: con una o dos se estiran
+  para ocupar la pantalla, y con tres son casi cuadradas. Si una app no está instalada, su casilla **se queda en su
   sitio pero apagada**: la posición de cada icono es memoria muscular.
 - **El círculo del asistente**, abajo en el centro, si el familiar lo enciende.
+- **Una foto de fondo**, si el familiar la pone, con el reloj y los rótulos sobre
+  una franja lisa para que se sigan leyendo.
   No se mueve con la rejilla ni tapa ninguna casilla.
 
 ### Asistente de voz
@@ -75,12 +78,14 @@ le llegan la voz y los nombres, nunca los números de teléfono.
 ### Ajustes, para el familiar
 
 Detrás de un **PIN de cuatro cifras**, que se crea la primera vez que se entra.
+Si Doado aún no es la pantalla de inicio del móvil, el inicio y Ajustes lo avisan
+arriba, con un botón para ponerlo.
 
 | Apartado | Qué permite |
 | --- | --- |
 | **Asistente de voz** | Encender el círculo del inicio (pide el permiso del micrófono) y elegir si lo hace o explica cómo. |
-| **Interfaz** | Tamaño de letra (tres niveles, encima del que ya tenga Android), una o dos casillas por fila, tema claro u oscuro, y mostrar o no el reloj. Con una maqueta en pequeño que va cambiando. |
-| **Contactos** | Elegir personas del listín del móvil, decidir si cada una llama o abre WhatsApp, y cuáles salen en el inicio (caben cuatro). |
+| **Interfaz** | Tamaño de letra (tres niveles, encima del que ya tenga Android), una, dos o tres casillas por fila, contactos debajo de las apps o en otra pantalla, foto de fondo, tema claro u oscuro, y mostrar o no el reloj. Con una maqueta en pequeño que va cambiando. |
+| **Contactos** | Elegir personas del listín del móvil y encender, para cada una, su botón de llamadas, el de WhatsApp o los dos. |
 | **Aplicaciones** | Encender y apagar las casillas básicas y subir al inicio cualquier otra app del móvil. Para instalar, la tienda del modo administrador. |
 | **Sonido y pantalla** | Atajo a los ajustes de Android de volumen, brillo y vibración. |
 | **Modo administrador** | Ver más abajo. |
@@ -173,7 +178,7 @@ el del PIN, a propósito, no:
 | --- | --- |
 | `doado_favorites` | Qué casillas salen en el inicio y en qué orden. |
 | `doado_contacts` | Los accesos directos de personas. |
-| `doado_settings` | Tema, letra, columnas, reloj, el asistente y el fin del modo administrador. |
+| `doado_settings` | Tema, letra, columnas, dónde van los contactos, reloj, el asistente y el fin del modo administrador. |
 | `doado_security` | El PIN y la respuesta de recuperación, derivados con PBKDF2 y sal (nunca en claro), y la pregunta. |
 
 ### Visibilidad de paquetes

@@ -77,7 +77,7 @@ Dos cosas se aplican envolviendo toda la app:
 
 ## Qué se guarda
 
-Cuatro ficheros de `SharedPreferences`. **Una clave ya publicada no se renombra
+Cuatro ficheros de `SharedPreferences` y, si hay, la foto de fondo. **Una clave ya publicada no se renombra
 ni cambia de tipo**: se añade otra y se migra leyendo la antigua.
 
 ### `doado_settings` — `SettingsStore`
@@ -86,8 +86,10 @@ ni cambia de tipo**: se añade otra y se migra leyendo la antigua.
 | --- | --- | --- |
 | `theme` | String (`DARK` \| `LIGHT`) | `DARK` |
 | `text_size` | String (`NORMAL` \| `LARGE` \| `EXTRA_LARGE`) | `NORMAL` |
-| `columns` | Int, acotado a 1–2 | `2` |
+| `columns` | Int, acotado a 1–3 (D-45) | `2` |
 | `show_clock` | Boolean | `true` |
+| `contacts_layout` | String (`GRID` | `PAGE`, D-46) | `GRID` |
+| `home_notice_dismissed` | Boolean: el familiar cerró el aviso del inicio de D-48 | `false` |
 | `admin_unlocked_until` | Long (epoch ms) | `0` |
 | `assistant_enabled` | Boolean | `false` |
 | `assistant_mode` | String (`ACT` \| `GUIDE`) | `GUIDE` |
@@ -116,8 +118,13 @@ Al encender una casilla se añade **al final**: nada de lo que ya estaba se muev
 ### `doado_security` — `PinStore`
 
 Una clave, `settings_pin`, con el PIN **derivado**, nunca en claro: PBKDF2
-(`PBKDF2WithHmacSHA1`, 60 000 iteraciones, clave de 256 bits) sobre una sal
-aleatoria de 16 bytes distinta en cada móvil, guardado como `sal$hash` en Base64.
+(`PBKDF2WithHmacSHA1`, 10 000 iteraciones, clave de 256 bits) sobre una sal
+aleatoria de 16 bytes distinta en cada móvil, guardado como `vueltas$sal$hash`
+(sal y hash en Base64). Lo guardado antes de D-49 es `sal$hash` con 60 000
+vueltas: se acepta y se pasa al formato nuevo la primera vez que se acierta.
+Comprobarlo va en dos pasos: `prepare()` deriva (lo lento, unos 120 ms en el
+emulador) mientras se ve el cuarto punto, y `check()` mira el bloqueo, compara y cuenta el intento. Lo
+derivado solo no abre nada.
 
 Está en un fichero aparte por una razón concreta: **es el único que se queda
 fuera de la copia de seguridad**. Así el móvil nuevo recupera tema, casillas y
@@ -128,7 +135,8 @@ Al arrancar, `PinStore` mira si queda un PIN en claro de las versiones anteriore
 
 La pregunta de recuperación (CU-16, D-23) vive en el mismo fichero: la pregunta
 en `recovery_question`, en claro porque hay que enseñarla, y la respuesta en
-`recovery_answer_derived`, **derivada igual que el PIN** (D-41) tras pasarla a
+`recovery_answer_derived`, **derivada igual que el PIN** (D-41), pero con 60 000
+vueltas, porque es texto libre (D-49), tras pasarla a
 minúsculas y sin espacios extremos para que no falle por cómo se escriba.
 Responderla bien permite poner un PIN nuevo; no devuelve el antiguo.
 
@@ -160,6 +168,14 @@ todas fuera del móvil en poco tiempo.
 `<exclude>` explícito no vale, porque lint lo rechaza al no estar incluido.
 **Preferencia nueva ⇒ añadirla a los dos ficheros**, y pensar en qué lado va.
 
+### La foto de fondo — `WallpaperStore`
+
+No es una preferencia: un fichero, `files/home_wallpaper.jpg`, con la foto que
+eligió el familiar reducida al tamaño de la pantalla y ya girada (D-47). Si está,
+hay foto; si no se puede leer, el inicio sale sin ella. Se escribe en un fichero
+aparte y luego se cambia por el bueno. Queda fuera de las dos reglas de copia
+por no estar en la lista. Se lee y se escribe en `Dispatchers.IO`.
+
 ## `InstalledAppsRepository`
 
 Única puerta al `PackageManager`. Resuelve las casillas (`homeApps()`), dice si
@@ -172,6 +188,10 @@ Detalles que conviene saber:
   en cada `reload()`, sin caché. Se hace fuera del hilo principal, en
   `loadApps()` de `LauncherActivity` (D-43); el inicio no se pinta hasta la
   primera carga.
+- `loadApps()` también mira si Doado es la pantalla de inicio, para el aviso del
+  inicio y de Ajustes (D-48): desde Android 10 con `RoleManager.isRoleHeld`; antes,
+  resolviendo `ACTION_MAIN` + `CATEGORY_HOME`. Desde Android 11 el `PackageManager`
+  no ve los otros launchers, así que esa segunda vía allí daría siempre «sí».
 - `installedApps()` descarta launchers secundarios con `distinctBy { packageName }`.
 - `InstalledApp.activityName` se rellena pero no se usa: se lanza siempre por
   `getLaunchIntentForPackage`.
@@ -192,6 +212,8 @@ llano. **Ningún intent hacia fuera se lanza a pelo.**
 | Abrir la tienda | Launcher de `com.android.vending` | `play.google.com/store/apps` |
 | Ajustes de Android | `Settings.ACTION_SETTINGS` | — |
 | Elegir pantalla de inicio | `Settings.ACTION_HOME_SETTINGS` | `Settings.ACTION_SETTINGS` |
+| Poner Doado de inicio (aviso del inicio y de Ajustes, D-48) | Desde Android 10, `RoleManager.createRequestRoleIntent(ROLE_HOME)` | Los de «Elegir pantalla de inicio» |
+| Elegir foto de fondo | `PickVisualMedia(ImageOnly)`, sin permisos; en Android antiguo, el selector de documentos | Aviso fijo en Interfaz |
 | Sonido y pantalla | `Settings.ACTION_SOUND_SETTINGS` | — |
 | Elegir contacto | `ACTION_PICK` sobre `Phone.CONTENT_URI` | Aviso |
 | Acción confirmada del asistente | La misma que el toque equivalente: llamar, WhatsApp o abrir casilla. Puede llamar a un contacto cuyo acceso directo abre WhatsApp, y al revés | La misma |

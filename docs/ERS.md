@@ -5,8 +5,8 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.8 (borrador) |
-| Fecha | 18/10/2026 |
+| Versión | 0.9 (borrador) |
+| Fecha | 20/10/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
 
@@ -22,6 +22,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.6 | 13/10/2026 | Se cierran CON-01 a CON-04 (D-25 a D-27) y se abre CON-06. CU-04, CU-05 y CU-15 pasan a «En pruebas» y se detallan. RNF-PRI-02 y RNF-DIS-01 se concretan; RNF-USA-03 nuevo. CU-05 pasa a conversación, con «sí» dicho (D-31) | Javier Brozos Martínez |
 | 0.7 | 18/10/2026 | Se retira CU-13 (instalar una app recomendada): Ajustes deja de proponer apps; se instalan desde la tienda del modo administrador (CU-14, D-33). Los identificadores no se renumeran | Javier Brozos Martínez |
 | 0.8 | 19/10/2026 | CU-02: los accesos directos van en la rejilla del inicio, tras «Tus contactos», y sin límite (D-38). Una persona puede tener botón de llamada y de WhatsApp a la vez (D-40). En CU-05 el asistente los sitúa ahí | Javier Brozos Martínez |
+| 0.9 | 20/10/2026 | RNF-ACC-02: con tres por fila las casillas son casi cuadradas, de 96 dp de lado como mínimo, y cuatro por fila nunca (D-45). CU-02: los accesos directos pueden ir en una segunda pantalla del inicio, con pestañas (D-46). CU-08 añade la foto de fondo (D-47). CU-14: el inicio y Ajustes avisan si Doado no es la pantalla de inicio y ofrecen ponerlo (D-48) | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -123,7 +124,7 @@ Se detallan los casos que más condicionan el diseño. El resto se describirá c
 | --- | --- |
 | Actor | ACT-01 Persona mayor |
 | Descripción | La persona mayor pulsa el acceso directo de un contacto en el inicio y el móvil le llama o abre su chat de WhatsApp, según lo configurado. |
-| Precondición | El familiar ha añadido el contacto y lo ha marcado para el inicio (CU-09). No hay límite: salen en la rejilla del inicio, tras el rótulo «Tus contactos» (D-38). Una persona puede tener dos accesos directos, uno para llamar y otro para WhatsApp (D-40). |
+| Precondición | El familiar ha añadido el contacto y lo ha marcado para el inicio (CU-09). No hay límite: salen en la rejilla del inicio, tras el rótulo «Tus contactos» (D-38). Si el familiar lo elige, van en una segunda pantalla del inicio, a la que se llega deslizando o con la pestaña «Tus contactos» (D-46). Una persona puede tener dos accesos directos, uno para llamar y otro para WhatsApp (D-40). |
 | Postcondición | Se inicia la llamada o se abre el chat de WhatsApp de ese contacto. |
 | Importancia | Alta |
 
@@ -286,13 +287,13 @@ En DOADO los no funcionales son el núcleo del producto, no un añadido: la acce
 | ID | Categoría | Requisito | Criterio de aceptación | Fuente |
 | --- | --- | --- | --- | --- |
 | RNF-ACC-01 | Accesibilidad | Contraste suficiente entre texto y fondo | Mínimo 4,5:1; 7:1 para texto y bordes. El cian de marca no se usa para texto ni iconos sobre fondo claro | CLAUDE.md |
-| RNF-ACC-02 | Accesibilidad | Objetivos táctiles grandes | Ningún elemento pulsable por debajo de 48 dp; casillas del inicio de más de 168 dp | CLAUDE.md |
-| RNF-ACC-03 | Accesibilidad | El texto respeta el tamaño de letra del sistema | Todo texto en sp desde la escala del tema (≈1,5× Material), con 3 niveles extra configurables | CLAUDE.md |
+| RNF-ACC-02 | Accesibilidad | Objetivos táctiles grandes | Ningún elemento pulsable por debajo de 48 dp. Casillas del inicio de 168 dp de alto como mínimo con dos por fila y 112 dp con una. Con tres por fila, casi cuadradas: nunca menos de 96 dp de lado, y cuatro por fila nunca (D-45). El nombre se lee entero, sin límite de líneas. Excepción: si el ancho baja después de elegir tres (otro móvil, otro tamaño de pantalla), no se cambia solo de columnas; Interfaz lo avisa | CLAUDE.md |
+| RNF-ACC-03 | Accesibilidad | El texto respeta el tamaño de letra del sistema | Todo texto en sp desde la escala del tema (≈1,5× Material), con 3 niveles extra configurables. Con techo en tres sitios, para que no se coman la pantalla: 2,0 en total, 1,5 en la cabecera y las pestañas del inicio, y 1,25 dentro de las casillas de tres por fila (D-22, D-38, D-45) | CLAUDE.md |
 | RNF-ACC-04 | Accesibilidad | Separación visual por borde, no por sombra | Ningún componente se distingue solo por sombra | CLAUDE.md |
 | RNF-ACC-05 | Accesibilidad | Colores fijos, sin color dinámico | Material You desactivado en el tema | CLAUDE.md |
 | RNF-ACC-06 | Accesibilidad | Posiciones estables | Una app no disponible se muestra apagada en su sitio, nunca se quita | CLAUDE.md |
 | RNF-ACC-07 | Accesibilidad | Compatible con lector de pantalla | Todo lo pulsable tiene etiqueta de TalkBack; los iconos con texto al lado son decorativos | CLAUDE.md |
-| RNF-USA-01 | Usabilidad | Tareas básicas sin aprendizaje | Cualquier tarea básica (abrir una app, llamar a un contacto) se hace con un solo toque desde el inicio | Código |
+| RNF-USA-01 | Usabilidad | Tareas básicas sin aprendizaje | Cualquier tarea básica (abrir una app, llamar a un contacto) se hace con un solo toque desde el inicio. Excepción elegida por el familiar: con los contactos en otra pantalla, llamar son dos toques (la pestaña y el contacto), D-46 | Código |
 | RNF-USA-02 | Usabilidad | La persona mayor no puede desconfigurar el móvil sin querer | Los ajustes y las salidas a Android solo son accesibles tras el PIN o el modo administrador | README |
 | RNF-USA-03 | Usabilidad | El asistente no corta a quien habla despacio | Espera hasta 10 s a que empiece a hablar, da la frase por acabada tras 2,5 s de silencio y corta a los 30 s. Siempre hay un botón «Ya he terminado». Todo lo que dice en voz alta se ve escrito, con «Repetir». Valores de partida en `VoiceTuning.kt`, a ajustar con personas reales | Propuesta |
 | RNF-SEG-01 | Seguridad | El PIN se guarda protegido | PIN derivado con PBKDF2 y sal aleatoria, en un fichero de preferencias propio que queda fuera de las reglas de copia de seguridad. Cumplido desde el 29/09/2026 | README (límite conocido) |
