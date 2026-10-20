@@ -64,10 +64,12 @@ borde, no por sombra ni por elevación**.
 
 ## Tipografía
 
-`core/ui/Type.kt`: la escala de Material multiplicada por ~1,5, con más grosor
-(el trazo fino se pierde a tamaño grande) e interletrado a 0 (el negativo de
-Material apelmaza el texto cuando se amplía). Todo en `sp`. Hay una propuesta
-pendiente de cambiar la letra en `docs/propuestas/marca.md`.
+`core/ui/Type.kt`: **Atkinson Hyperlegible Next** (D-44), dentro del APK en
+`res/font/` con cuatro grosores (Regular, Medium, SemiBold y Bold). La escala es
+la de Material multiplicada por ~1,5, con más grosor (el trazo fino se pierde a
+tamaño grande): **SemiBold** en cuerpo y etiquetas y **Bold** en titulares.
+Interletrado a 0 (el negativo de Material apelmaza el texto cuando se amplía).
+Todo en `sp`. Un grosor nuevo en la escala necesita su fichero en `res/font/`.
 
 | Estilo | Tamaño | Dónde se usa |
 | --- | --- | --- |
@@ -134,8 +136,8 @@ lleva **solo la D**, sin un segundo cuadrado.
   lienzo de 108, 2,2 dp a la derecha del centro geométrico (centrado a ojo), y
   queda dentro de la zona segura de 66. La capa monocroma es la misma figura.
   Para API 24-25, PNG de mdpi a xxxhdpi (48 a 192 px).
-- **Logotipo** (`doado_logo.svg`): el texto sigue en Baloo 2 y Quicksand mientras
-  la letra esté pendiente (`docs/propuestas/marca.md`).
+- **Logotipo** (`doado_logo.svg`): el texto sigue en Baloo 2 y Quicksand. Falta
+  pasarlo a Atkinson Hyperlegible Next Bold convertida a trazos (D-44).
 
 ## Iconografía
 

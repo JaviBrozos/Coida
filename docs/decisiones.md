@@ -576,3 +576,23 @@ que no se le puede pedir.
 algo. No actúa por eso: la respuesta la decide `VoiceReplies` y solo confirma un
 sí limpio (D-31). Queda por probar con una voz mayor y con ruido de fondo.
 
+### D-44 · La letra pasa a ser Atkinson Hyperlegible Next (20/10/2026)
+
+Propuesta de Javier en `docs/propuestas/marca.md`, aceptada por Gonzalo el 20/10.
+Sustituye a D-17.
+**Contexto**: la app usaba la letra del sistema (D-17), así que se veía distinta
+en cada marca, y la marca iba con cuatro letras sueltas (Baloo 2 y Quicksand en
+el logo, IBM Plex Sans en `design/`, Segoe UI en la presentación).
+**Decisión**: Atkinson Hyperlegible Next, del Braille Institute (licencia OFL,
+que va dentro de cada fichero), para la app y la marca. Va en el APK, en
+`res/font/`, con cuatro grosores recortados al alfabeto latino (unos 150 KB).
+SemiBold en cuerpo y etiquetas (el cuerpo iba en Medium) y Bold en titulares.
+Es más ancha que Roboto: al 200 % y dos columnas en un móvil de 360 dp,
+«Contactos» pide tres líneas, así que las casillas de app admiten cuatro, como
+las de contacto.
+**Descartado**: seguir con la del sistema, y descargarla con Google Fonts
+descargables, que puede fallar sin red justo al arrancar.
+**Consecuencia**: la app se ve igual en todos los móviles y las letras que se
+confunden (I, l, 1; 0 y O) dejan de confundirse. Falta pasar el texto del logo a
+trazos con esta letra.
+

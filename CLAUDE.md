@@ -37,7 +37,7 @@ Ningún cambio está terminado sin esto, lo haga una persona o Claude:
 | Paleta, tipografía, medidas, iconos y componentes | [`docs/diseno.md`](docs/diseno.md) |
 | Por qué algo es como es y qué se descartó | [`docs/decisiones.md`](docs/decisiones.md) |
 | Qué hay hecho, qué falta y quién hizo qué | [`docs/estado.md`](docs/estado.md) |
-| Propuestas en discusión, antes de decidirlas (hoy, CON-06 y la marca) | [`docs/propuestas/`](docs/propuestas) |
+| Propuestas en discusión, antes de decidirlas (hoy, CON-06) | [`docs/propuestas/`](docs/propuestas) |
 | Presentación en diez láminas, con PDF | [`design/presentacion/`](design/presentacion) |
 | Vista para alguien de fuera | [`README.md`](README.md) |
 
@@ -61,8 +61,8 @@ colores, iconos, letra, tono y movimiento, con los ficheros de la marca en
 `assets/`. Úsala en cualquier pieza que se vea, dentro o fuera de la app. Para
 auditar la marca hay otro subagente,
 `.claude/agents/auditor-marca.md`, que trabaja con la skill
-`.claude/skills/brand-identity/`. La propuesta de letra, pendiente, está en
-`docs/propuestas/marca.md`, con la fuente en `design/propuestas-marca/fuente/`.
+`.claude/skills/brand-identity/`. La letra es Atkinson Hyperlegible Next (D-44),
+en `res/font/`.
 
 Hay una skill de diseño en el proyecto, `.claude/skills/apple-design/` (de Emil
 Kowalski, licencia MIT): los principios de Apple para interfaces. Sirve de

@@ -62,7 +62,7 @@ Una **D con un visto dentro** (D-36): la D dice el nombre y el visto dice
   - otro dibujo dentro del icono de la app;
   - los colores antiguos del logo (`#0B1F33`, `#29B6F6`).
 - **Logotipo** (`doado_logo.svg`): la D y «Doado». El texto va hoy en Baloo 2 y
-  Quicksand; la letra de marca está **pendiente** (ver «Letra»).
+  Quicksand; falta pasarlo a Atkinson Hyperlegible Next Bold en trazos (ver «Letra»).
 
 ## Color
 
@@ -104,14 +104,15 @@ De trazo y dibujados a medida (D-11, D-34). Están en `res/drawable/ic_*.xml`.
 
 ## Letra
 
-- **App**: la letra del sistema (D-17), con la escala de `Type.kt`. Va en `sp`,
-  con interletrado 0, Medium o SemiBold en cuerpo y etiquetas, y nada por debajo
-  de 18 sp.
-- **Pendiente**: Atkinson Hyperlegible Next para la marca y la app
-  (`docs/propuestas/marca.md`; la fuente está en `design/propuestas-marca/fuente/`).
-  **No la apliques** hasta que la decidan los dos creadores.
-- **Fuera de la app** (presentación, web, imágenes): de momento, una pila que
-  exista en todas partes: `Roboto, system-ui, sans-serif`. Nada de Segoe UI ni
+- **Atkinson Hyperlegible Next** (D-44), del Braille Institute, licencia OFL:
+  hecha para quien ve poco, con letras que no se confunden (I, l, 1; 0 y O).
+- **App**: en `res/font/`, con la escala de `Type.kt`. Va en `sp`, con
+  interletrado 0, **SemiBold** en cuerpo y etiquetas y **Bold** en titulares, y
+  nada por debajo de 18 sp.
+- **Logotipo**: Bold convertida a trazos. Pendiente de rehacer `doado_logo.svg`.
+- **Fuera de la app** (presentación, web, imágenes): Atkinson Hyperlegible Next
+  donde se pueda incrustar (los `.ttf` están en `design/propuestas-marca/fuente/`,
+  y está en Google Fonts); si no, `Roboto, system-ui, sans-serif`. Nada de Segoe UI ni
   de letras redondeadas o infantiles (D-10, «no infantiliza»).
 
 ## Tono
@@ -144,6 +145,6 @@ De trazo y dibujados a medida (D-11, D-34). Están en `res/drawable/ic_*.xml`.
 - [ ] Ningún cian sobre fondo claro para texto o iconos.
 - [ ] Contrastes medidos sobre el fondo real.
 - [ ] Iconos nuevos con las reglas de la rejilla de 24, y sin plato.
-- [ ] Sin letra pendiente aplicada por la puerta de atrás.
+- [ ] Letra Atkinson Hyperlegible Next, o la pila de reserva fuera de la app.
 - [ ] Si cambió la marca: `docs/diseno.md`, `docs/decisiones.md`,
       `docs/estado.md` y esta skill, en el mismo commit.
