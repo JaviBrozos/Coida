@@ -155,6 +155,9 @@ private fun TileLabels(
     ) {
         // Con la letra al máximo «Mensajes» no cabe en media pantalla y se partía
         // en «Mensaje/s»: con guion por sílabas sale «Men-sajes», que se lee.
+        // Hasta cuatro líneas, como los contactos: con Atkinson (D-44), más ancha,
+        // «Contactos» pide tres en un móvil de 360 dp y con dos se cortaba en «…».
+        // La casilla crece.
         Text(
             text = app.label,
             style = MaterialTheme.typography.labelLarge.copy(
@@ -163,7 +166,7 @@ private fun TileLabels(
             ),
             color = color,
             textAlign = align,
-            maxLines = 2,
+            maxLines = 4,
             overflow = TextOverflow.Ellipsis,
         )
         if (!app.isAvailable) {
