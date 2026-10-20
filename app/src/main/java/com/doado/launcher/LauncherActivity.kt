@@ -80,6 +80,10 @@ import com.doado.settings.PinGate
 import com.doado.settings.SettingsScreen
 import java.util.Locale
 import java.util.UUID
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 /** Pantallas de Doado. Son pocas y planas: no hace falta una librería de navegación. */
 private enum class Screen {
@@ -110,6 +114,16 @@ class LauncherActivity : ComponentActivity() {
     private var whatsappInstalled by mutableStateOf(false)
     private var installedApps by mutableStateOf(emptyList<InstalledApp>())
     private var defaultPackages by mutableStateOf(emptySet<String>())
+
+    /**
+     * false hasta la primera carga de las casillas. Mientras, el inicio no se pinta:
+     * si se pintara vacío, las casillas aparecerían de golpe y empujarían a los
+     * contactos hacia abajo (D-43).
+     */
+    private var appsLoaded by mutableStateOf(false)
+
+    /** La consulta al PackageManager en curso; una nueva cancela la anterior. */
+    private var appsJob: Job? = null
 
     private val assistantConfig = AssistantConfig.fromBuildConfig()
     private lateinit var assistant: AssistantController
@@ -212,7 +226,7 @@ class LauncherActivity : ComponentActivity() {
                         modifier = Modifier.fillMaxSize(),
                         color = MaterialTheme.colorScheme.background,
                     ) {
-                        CurrentScreen()
+                        if (appsLoaded) CurrentScreen()
                     }
                 }
             }
@@ -493,22 +507,50 @@ class LauncherActivity : ComponentActivity() {
         assistantSettings = settingsStore.assistantSettings()
         adminUnlockedUntil = settingsStore.adminUnlockedUntil()
         contacts = contactsStore.all()
-        whatsappInstalled = repository.isInstalled(WHATSAPP_PACKAGE)
-
         homeIds = repository.homeIds()
-        homeApps = repository.homeApps()
-        if (screen == Screen.APPS) loadInstalledApps()
+        loadApps(withInstalled = screen == Screen.APPS)
     }
 
     private fun openAppsScreen() {
-        loadInstalledApps()
+        loadApps(withInstalled = true)
         screen = Screen.APPS
     }
 
-    private fun loadInstalledApps() {
-        defaultPackages = repository.defaultFavoritePackages()
-        installedApps = repository.installedApps()
+    /**
+     * Lo que pregunta al PackageManager, fuera del hilo principal: es IPC con el
+     * sistema y carga un icono por casilla, y en el hilo principal arriesgaba un
+     * «la aplicación no responde» (ANR) al volver al inicio. Lo que ya se ve se
+     * queda hasta que llega lo nuevo, así que al volver nada parpadea.
+     *
+     * @param withInstalled también la lista de todas las apps, que solo hace falta
+     *   en Ajustes → Aplicaciones.
+     */
+    private fun loadApps(withInstalled: Boolean) {
+        appsJob?.cancel()
+        appsJob = lifecycleScope.launch {
+            val loaded = withContext(Dispatchers.IO) {
+                LoadedApps(
+                    home = repository.homeApps(),
+                    whatsappInstalled = repository.isInstalled(WHATSAPP_PACKAGE),
+                    installed = if (withInstalled) repository.installedApps() else null,
+                    defaultPackages = if (withInstalled) repository.defaultFavoritePackages() else null,
+                )
+            }
+            homeApps = loaded.home
+            whatsappInstalled = loaded.whatsappInstalled
+            loaded.installed?.let { installedApps = it }
+            loaded.defaultPackages?.let { defaultPackages = it }
+            appsLoaded = true
+        }
     }
+
+    /** Resultado de una consulta de [loadApps], para aplicarlo de una vez. */
+    private class LoadedApps(
+        val home: List<FavoriteApp>,
+        val whatsappInstalled: Boolean,
+        val installed: List<InstalledApp>?,
+        val defaultPackages: Set<String>?,
+    )
 
     private fun isAdminActive() = adminUnlockedUntil > System.currentTimeMillis()
 
