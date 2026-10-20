@@ -25,6 +25,8 @@
 - La petición del micrófono desde Ajustes, los umbrales de `VoiceTuning` con una
   voz mayor, y TalkBack con la interfaz nueva.
 - El «no» seco al contestar (D-42): cambiado sin compilar, falta verlo en el móvil.
+- El `PackageManager` en segundo plano (D-43): sin compilar. Ver el arranque, volver
+  al inicio tras instalar o quitar una app, y Ajustes → Aplicaciones.
 - La letra nueva (D-44): sin compilar. Verla al 200 % en una y dos columnas, y la
   maqueta de Ajustes → Interfaz, que corta las etiquetas a una línea.
 
@@ -39,10 +41,9 @@
    mirilla ya no aplica (D-38).
 4. Al 200 % y dos columnas, «Mensajes» y «Contactos» se parten, ahora por sílabas
    con guion («Men-sajes»). Se leen, pero siguen en dos líneas.
-5. Sacar el `PackageManager` del hilo principal (riesgo de ANR en Play).
-6. Ver en el emulador los iconos nuevos y sin plato (D-34, D-35), en los dos
+5. Ver en el emulador los iconos nuevos y sin plato (D-34, D-35), en los dos
    temas y con una casilla señalada por el asistente.
-7. Ver el icono nuevo (D-36) en el emulador con varias máscaras y como icono
+6. Ver el icono nuevo (D-36) en el emulador con varias máscaras y como icono
    temático. Pasar el texto del logo a Atkinson Hyperlegible Next en trazos (D-44).
 
 Deuda menor: sin pruebas automáticas, solo español, isotipo sin usar (D-28) y
@@ -53,6 +54,7 @@ capturas viejas.
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
 | 20/10 | Gonzalo | Letra Atkinson Hyperlegible Next en la app (D-44, sustituye a D-17): cuatro grosores en `res/font/`, cuerpo en SemiBold. Las casillas de app admiten cuatro líneas, porque «Contactos» pedía tres al 200 % en 360 dp |
+| 20/10 | Gonzalo | Las consultas al `PackageManager` de `reload()` pasan a segundo plano (D-43): fuera el riesgo de ANR. El inicio se pinta tras la primera carga, para que las casillas no empujen a los contactos |
 | 20/10 | Gonzalo | Prueba con voz real en el móvil: un «no» seco tras «¿Llamo a …?» se descartaba por corto. Al contestar a una pregunta basta ahora con 200 ms de voz en vez de 400 (D-42) |
 | 19/10 | Javier | Fusión con lo de Gonzalo del 05/10 en `main`: su respuesta de recuperación derivada (D-41, era su D-24) convive con el límite de intentos, y su `DoadoTextField` sustituye a los campos de Material en las tres pantallas de recuperación |
 | 19/10 | Javier | Skill `doado-brand` en el proyecto: la marca (logo, colores, iconos, letra, tono y movimiento), con los SVG de la marca y `tokens.json`; enlazada en `CLAUDE.md` y en `recursos.md` |
