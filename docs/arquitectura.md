@@ -169,8 +169,9 @@ apps del móvil para la pantalla de Aplicaciones.
 Detalles que conviene saber:
 
 - Los iconos reales de las apps se cargan a 192 px y se convierten a `ImageBitmap`
-  en cada `reload()`, **sin caché y en el hilo principal**. Con muchas casillas
-  de paquete eso es trabajo repetido en cada `onResume`.
+  en cada `reload()`, sin caché. Se hace fuera del hilo principal, en
+  `loadApps()` de `LauncherActivity` (D-43); el inicio no se pinta hasta la
+  primera carga.
 - `installedApps()` descarta launchers secundarios con `distinctBy { packageName }`.
 - `InstalledApp.activityName` se rellena pero no se usa: se lanza siempre por
   `getLaunchIntentForPackage`.

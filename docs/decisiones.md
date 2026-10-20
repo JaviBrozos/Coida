@@ -576,3 +576,19 @@ que no se le puede pedir.
 algo. No actúa por eso: la respuesta la decide `VoiceReplies` y solo confirma un
 sí limpio (D-31). Queda por probar con una voz mayor y con ruido de fondo.
 
+### D-43 · El PackageManager, fuera del hilo principal (20/10/2026)
+
+**Contexto**: `reload()` preguntaba al `PackageManager` en el hilo principal al
+arrancar y en cada `onResume`, cargando un icono por casilla. Es IPC con el
+sistema: con muchas apps o un móvil lento arriesga un «la aplicación no
+responde» (ANR), que Google Play cuenta en contra.
+**Decisión**: esas consultas van en `loadApps()`, en `Dispatchers.IO`, y una
+nueva cancela la anterior. Al volver al inicio se queda lo que ya se veía hasta
+que llega lo nuevo. En el arranque, el inicio no se pinta hasta la primera carga:
+se ve el fondo del tema unas décimas.
+**Descartado**: pintar el inicio vacío y rellenarlo al llegar, porque las
+casillas aparecerían de golpe y empujarían a los contactos (invariante 2);
+y una pantalla de bienvenida, que pedía una dependencia nueva.
+**Consecuencia**: abrir una casilla sigue resolviendo su intención en el hilo
+principal, pero es una sola consulta y la dispara un toque.
+

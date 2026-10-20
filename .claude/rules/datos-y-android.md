@@ -54,9 +54,11 @@ paths:
 
 ## Hilo principal
 
-`PackageManager` hace IPC: **no lo llames desde una recomposición**. Hoy se
-resuelve en `onCreate` y en cada `onResume`, y ya es trabajo de más (está
-anotado como deuda en `docs/estado.md`). No añadas más consultas por ahí.
+`PackageManager` hace IPC: **no lo llames desde una recomposición ni en el hilo
+principal**. Las consultas de `onCreate` y `onResume` van por `loadApps()` en
+`LauncherActivity`, en `Dispatchers.IO` (D-43). Una consulta nueva va ahí dentro,
+no suelta. Solo se queda en el hilo principal la que dispara un toque (abrir una
+casilla), que es una sola.
 
 ## Secretos
 
