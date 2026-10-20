@@ -47,10 +47,16 @@ class VoiceRecorder {
      * no ha llegado a hablar.
      *
      * @param stopRequested se pone a true con «Ya he terminado».
+     * @param minSpeechMs voz mínima para que cuente como dicho: más corta al
+     *   contestar a una pregunta que en la primera orden (D-42).
      * @param onLevel volumen entre 0 y 1, cada trozo, para la barra de la pantalla.
      */
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
-    suspend fun record(stopRequested: AtomicBoolean, onLevel: (Float) -> Unit): ByteArray? =
+    suspend fun record(
+        stopRequested: AtomicBoolean,
+        minSpeechMs: Long = VoiceTuning.MIN_SPEECH_MS,
+        onLevel: (Float) -> Unit,
+    ): ByteArray? =
         withContext(Dispatchers.IO) {
             val rate = VoiceTuning.SAMPLE_RATE
             val frameSamples = rate * VoiceTuning.FRAME_MS / 1000
@@ -140,7 +146,7 @@ class VoiceRecorder {
                     }
                     onLevel(level(rms))
 
-                    val hasSpoken = speechMs >= VoiceTuning.MIN_SPEECH_MS
+                    val hasSpoken = speechMs >= minSpeechMs
                     val done = stopRequested.get() ||
                         elapsedMs >= VoiceTuning.MAX_RECORDING_MS ||
                         (!hasSpoken && elapsedMs >= VoiceTuning.WAIT_FOR_SPEECH_MS) ||
@@ -164,7 +170,7 @@ class VoiceRecorder {
                         "pico ${peakRms.toInt()}, se envían ${(to - from).coerceAtLeast(0) / bytesPerMs} ms",
                 )
             }
-            if (speechMs < VoiceTuning.MIN_SPEECH_MS) null else wav(audio.copyOfRange(from, to), rate)
+            if (speechMs < minSpeechMs) null else wav(audio.copyOfRange(from, to), rate)
         }
 
     /**

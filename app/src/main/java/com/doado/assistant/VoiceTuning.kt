@@ -31,6 +31,15 @@ object VoiceTuning {
     const val MIN_SPEECH_MS = 400L
 
     /**
+     * Lo mismo, pero al contestar a una pregunta del asistente (D-42). Un «no» o un
+     * «sí» secos duran menos de [MIN_SPEECH_MS] y se tiraban: el asistente se
+     * quedaba callado en la pregunta. Aquí basta con dos trozos de voz. Un golpe que
+     * pase el corte no actúa solo: la respuesta la decide [VoiceReplies], y lo que
+     * no sea un sí limpio no confirma nada.
+     */
+    const val MIN_REPLY_SPEECH_MS = 200L
+
+    /**
      * Volumen (RMS sobre 32 767) por debajo del cual nunca se considera voz. Bajo a
      * propósito: hay voces muy flojas, el móvil puede estar en la mesa y ya no hay
      * ganancia automática que las suba (D-37).

@@ -213,7 +213,7 @@ class AssistantController(
 
         job = scope.launch {
             guard {
-                val wav = recordOrder()
+                val wav = recordOrder(VoiceTuning.MIN_REPLY_SPEECH_MS)
                 followUpListening = false
                 level = 0f
                 if (wav != null) understand(wav, previous)
@@ -305,8 +305,11 @@ class AssistantController(
         return true
     }
 
-    /** Graba con un pitido delante, y solo si hay permiso. */
-    private suspend fun recordOrder(): ByteArray? {
+    /**
+     * Graba con un pitido delante, y solo si hay permiso. [minSpeechMs] baja al
+     * contestar a una pregunta, para que un «no» seco cuente (D-42).
+     */
+    private suspend fun recordOrder(minSpeechMs: Long = VoiceTuning.MIN_SPEECH_MS): ByteArray? {
         if (ContextCompat.checkSelfPermission(appContext, Manifest.permission.RECORD_AUDIO) !=
             PackageManager.PERMISSION_GRANTED
         ) {
@@ -316,7 +319,7 @@ class AssistantController(
         if (speaker.screenReaderOn) delay(screenReaderGrace())
         readyBeep()
         return try {
-            recorder.record(stopRequested.also { it.set(false) }) { value -> scope.launch { level = value } }
+            recorder.record(stopRequested.also { it.set(false) }, minSpeechMs) { value -> scope.launch { level = value } }
         } catch (e: SecurityException) {
             throw AssistantError(AssistantFailure.MICROPHONE, e)
         }
