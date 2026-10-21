@@ -94,7 +94,7 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 
 ### 4.1.2 Casos de uso del sistema
 
-15 casos de uso: 11 ya funcionan en el launcher y 4 están «En pruebas»: los 3 del asistente, programados y compilados y pendientes de probar con voz real, y la casilla de emergencias (CU-17), programada y pendiente de compilar y probar. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: los huecos de CU-03 y CU-13 son casos retirados del alcance.
+15 casos de uso: 11 ya funcionan en el launcher y 4 están «En pruebas»: los 3 del asistente, programados y compilados y pendientes de probar con voz real, y la casilla de emergencias (CU-17), compilada y pendiente de probar con el asistente. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: los huecos de CU-03 y CU-13 son casos retirados del alcance.
 
 | ID | Caso de uso | Actor | Importancia | Estado | Fuente |
 | --- | --- | --- | --- | --- | --- |

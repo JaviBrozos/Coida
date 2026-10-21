@@ -24,8 +24,8 @@
   al 200 %, en claro y en un móvil de 411 dp; falta uno de 360 dp y el tema oscuro.
 - La guía del asistente con tres por fila y con los contactos aparte.
 - Una foto real de cámara (girada) y el selector de documentos de Android 9 o antes.
-- La casilla de emergencias (D-51): sin compilar. Encenderla, ver que abre el
-  teléfono con el 112 sin llamar, en los dos temas, y pedírselo al asistente.
+- La casilla de emergencias (D-51): compila. Verla en los dos temas y pedírsela al
+  asistente con voz real (el APK de prueba del 21/10 iba sin clave).
 
 ## Siguiente
 
