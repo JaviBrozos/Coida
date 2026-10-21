@@ -8,6 +8,7 @@
     <string name="app_messages">Mensajes</string>
     <string name="app_camera">Cámara</string>
     <string name="app_contacts">Contactos</string>
+    <string name="app_emergency">Emergencias 112</string>
 
     <!-- Pantalla de inicio -->
     <string name="home_admin_banner">Modo administrador activo hasta las %1$s</string>
@@ -204,6 +205,7 @@
     <string name="guide_tile_where_grid">Busca la casilla «%1$s». Está en la fila %2$d, %3$s.</string>
     <string name="guide_tile_where_one">Busca la casilla «%1$s». Es la número %2$d, empezando por arriba.</string>
     <string name="guide_tile_press">Púlsala y se abrirá.</string>
+    <string name="guide_emergency_press">Púlsala y se abrirá el teléfono con el 112 marcado. Después pulsa el botón verde de llamar.</string>
     <string name="guide_call_search">Busca a %1$s en la lista y pulsa su nombre para llamar.</string>
     <string name="guide_whatsapp_search">Busca la conversación de %1$s y púlsala.</string>
     <string name="guide_ask_family_call">Ahora mismo no tienes un botón para llamar a %1$s. Pide a tu familiar que lo ponga en el inicio.</string>
@@ -256,6 +258,7 @@
     <string name="apps_subtitle">Qué casillas salen en el inicio</string>
     <string name="apps_section_basic">Básicas</string>
     <string name="apps_section_others">Otras apps de este móvil</string>
+    <string name="apps_emergency_note">Abre el teléfono con el 112 ya marcado. Para llamar hay que pulsar el botón verde: así no se llama sin querer.</string>
     <string name="apps_note">Las apps nuevas se instalan desde la tienda, en Modo administrador. Cuando terminan de instalarse, aparecen en esta lista.</string>
 
     <!-- Ajustes → Modo administrador -->

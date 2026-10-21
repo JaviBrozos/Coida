@@ -37,7 +37,14 @@ import com.doado.core.ui.SwitchRow
 import com.doado.data.InstalledApp
 
 /** Una de las casillas básicas de fábrica, con su interruptor. */
-data class BasicAppRow(val id: String, val label: String, val icon: Int, val onHome: Boolean)
+data class BasicAppRow(
+    val id: String,
+    val label: String,
+    val icon: Int,
+    val onHome: Boolean,
+    /** Qué hace, cuando no es obvio por el nombre (Emergencias, D-51). */
+    val note: String? = null,
+)
 
 /** Cualquier otra app instalada que se puede añadir al inicio. */
 data class OtherAppRow(val app: InstalledApp, val onHome: Boolean)
@@ -75,6 +82,7 @@ fun AppsScreen(
         itemsIndexed(basics, key = { _, row -> "basic-" + row.id }) { index, row ->
             SwitchRow(
                 title = row.label,
+                subtitle = row.note,
                 checked = row.onHome,
                 onCheckedChange = { onToggle(row.id, it) },
                 leading = { IconBadge(row.icon) },

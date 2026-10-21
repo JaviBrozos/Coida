@@ -37,6 +37,11 @@
         <intent>
             <action android:name="android.intent.action.DIAL" />
         </intent>
+        <!-- Emergencias: el teléfono con el 112 ya marcado (D-51). -->
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
         <!-- Mensajes -->
         <intent>
             <action android:name="android.intent.action.MAIN" />

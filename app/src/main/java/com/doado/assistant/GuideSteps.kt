@@ -5,6 +5,7 @@ import com.doado.R
 import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
 import com.doado.data.ContactsLayout
+import com.doado.data.EMERGENCY_FAVORITE_ID
 import com.doado.data.FavoriteApp
 import com.doado.data.FavoritesStore
 import com.doado.data.PHONE_FAVORITE_ID
@@ -26,7 +27,15 @@ object GuideSteps {
             is AssistantAction.CallContact -> call(res, action.contact, catalog)
             is AssistantAction.WhatsAppContact -> whatsApp(res, action.contact, catalog)
             is AssistantAction.OpenApp -> Plan(
-                steps = listOf(tileWhere(res, action.app, catalog), res.getString(R.string.guide_tile_press)),
+                steps = listOf(
+                    tileWhere(res, action.app, catalog),
+                    // En Emergencias, la casilla no llama sola: hay que decirle que
+                    // después pulse llamar (D-51).
+                    res.getString(
+                        if (action.app.id == EMERGENCY_FAVORITE_ID) R.string.guide_emergency_press
+                        else R.string.guide_tile_press,
+                    ),
+                ),
                 highlightId = action.app.id,
             )
         }

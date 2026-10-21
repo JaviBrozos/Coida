@@ -24,7 +24,7 @@ class FavoritesStore(context: Context) {
     /** Ids guardados; si no hay nada guardado todavía, los favoritos de fábrica. */
     fun favoriteIds(): List<String> {
         val stored = prefs.getString(KEY_FAVORITES, null)
-            ?: return DefaultFavorites.map { it.id }
+            ?: return DefaultFavorites.filter { it.onHomeByDefault }.map { it.id }
         return stored.split(SEPARATOR).filter { it.isNotBlank() }
     }
 

@@ -3,6 +3,7 @@ package com.doado.assistant
 import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
 import com.doado.data.ContactsLayout
+import com.doado.data.EMERGENCY_FAVORITE_ID
 import com.doado.data.FavoriteApp
 import org.json.JSONObject
 
@@ -91,7 +92,8 @@ class ActionCatalog(
         if (appsById.isEmpty()) appendLine("- (ninguna)")
         appsById.forEach { (id, app) ->
             val missing = if (app.isAvailable) "" else " (no está instalada)"
-            appendLine("- $id: ${JSONObject.quote(app.label)}$missing")
+            val emergency = if (app.id == EMERGENCY_FAVORITE_ID) " (emergencias: abre el teléfono con el 112 marcado)" else ""
+            appendLine("- $id: ${JSONObject.quote(app.label)}$emergency$missing")
         }
         append("WhatsApp: ").append(if (whatsappInstalled) "instalado" else "no instalado")
     }

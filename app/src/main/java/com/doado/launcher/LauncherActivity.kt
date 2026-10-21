@@ -64,6 +64,7 @@ import com.doado.data.ContactAction
 import com.doado.data.ContactShortcut
 import com.doado.data.ContactShortcutsStore
 import com.doado.data.DefaultFavorites
+import com.doado.data.EMERGENCY_FAVORITE_ID
 import com.doado.data.FavoriteApp
 import com.doado.data.FavoritesStore
 import com.doado.data.InstalledApp
@@ -523,7 +524,13 @@ class LauncherActivity : ComponentActivity() {
 
                 Screen.APPS -> AppsScreen(
                     basics = DefaultFavorites.map {
-                        BasicAppRow(it.id, getString(it.labelRes), it.iconRes, it.id in homeIds)
+                        BasicAppRow(
+                            id = it.id,
+                            label = getString(it.labelRes),
+                            icon = it.iconRes,
+                            onHome = it.id in homeIds,
+                            note = if (it.id == EMERGENCY_FAVORITE_ID) getString(R.string.apps_emergency_note) else null,
+                        )
                     },
                     others = installedApps
                         .filter { it.packageName !in defaultPackages }

@@ -1,6 +1,7 @@
 package com.doado.data
 
 import android.content.Intent
+import android.net.Uri
 import android.provider.MediaStore
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -19,10 +20,15 @@ internal data class FavoriteTemplate(
     @param:StringRes val labelRes: Int,
     @param:DrawableRes val iconRes: Int,
     val intent: Intent,
+    /** Si sale en el inicio de un móvil recién estrenado, o solo si la pone el familiar. */
+    val onHomeByDefault: Boolean = true,
 )
 
 /** Id de la casilla «Llamar»: el asistente la señala al guiar una llamada. */
 const val PHONE_FAVORITE_ID = "phone"
+
+/** Id de la casilla «Emergencias 112» (D-51). */
+const val EMERGENCY_FAVORITE_ID = "emergency"
 
 /**
  * Los favoritos de fábrica del MVP.
@@ -54,5 +60,16 @@ internal val DefaultFavorites: List<FavoriteTemplate> = listOf(
         labelRes = R.string.app_contacts,
         iconRes = R.drawable.ic_contacts,
         intent = Intent(Intent.ACTION_MAIN).addCategory(Intent.CATEGORY_APP_CONTACTS),
+    ),
+    // ACTION_DIAL y no ACTION_CALL: Android no deja a una app llamar sola a un
+    // número de emergencias, y así un toque sin querer no llama al 112. Abre el
+    // teléfono con el número puesto y la llamada la hace ella con el botón verde.
+    // Apagada de fábrica: la pone el familiar si le viene bien (D-51).
+    FavoriteTemplate(
+        id = EMERGENCY_FAVORITE_ID,
+        labelRes = R.string.app_emergency,
+        iconRes = R.drawable.ic_emergency,
+        intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:112")),
+        onHomeByDefault = false,
     ),
 )

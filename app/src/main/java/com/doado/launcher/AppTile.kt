@@ -37,6 +37,7 @@ import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
 import com.doado.data.AppIcon
+import com.doado.data.EMERGENCY_FAVORITE_ID
 import com.doado.data.FavoriteApp
 
 /**
@@ -82,6 +83,10 @@ fun AppTile(
     val iconTint = when {
         !app.isAvailable -> colors.outlineVariant
         highlighted -> colors.onPrimary
+        // Emergencias, con el icono en rojo: 6,54:1 en claro y 8,67:1 en oscuro sobre
+        // la casilla. El nombre va en el color de siempre: se reconoce por el icono
+        // y por el texto, no solo por el color (D-51).
+        app.id == EMERGENCY_FAVORITE_ID -> colors.error
         else -> colors.primary
     }
 
