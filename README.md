@@ -86,7 +86,7 @@ arriba, con un botón para ponerlo.
 | **Asistente de voz** | Encender el círculo del inicio (pide el permiso del micrófono) y elegir si lo hace o explica cómo. |
 | **Interfaz** | Tamaño de letra (tres niveles, encima del que ya tenga Android), una, dos o tres casillas por fila, contactos debajo de las apps o en otra pantalla, foto de fondo, tema claro u oscuro, y mostrar o no el reloj. Con una maqueta en pequeño que va cambiando. |
 | **Contactos** | Elegir personas del listín del móvil y encender, para cada una, su botón de llamadas, el de WhatsApp o los dos. |
-| **Aplicaciones** | Encender y apagar las casillas básicas y subir al inicio cualquier otra app del móvil. Para instalar, la tienda del modo administrador. |
+| **Aplicaciones** | Encender y apagar las casillas básicas y subir al inicio cualquier otra app del móvil. Entre las básicas está «Emergencias 112», apagada de fábrica, que abre el teléfono con el 112 marcado. Para instalar, la tienda del modo administrador. |
 | **Sonido y pantalla** | Atajo a los ajustes de Android de volumen, brillo y vibración. |
 | **Modo administrador** | Ver más abajo. |
 | **PIN de ajustes** | Cambiar las cuatro cifras, pidiendo antes las actuales, y fijar una pregunta de recuperación por si se olvidan. |

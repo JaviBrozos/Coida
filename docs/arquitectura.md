@@ -110,7 +110,9 @@ Una clave, `favorite_ids`, con los ids separados por comas. **El orden importa**
 es la posición de cada casilla, y por eso no se usa un `StringSet`. Dos formas de
 id:
 
-- Los favoritos de fábrica: `phone`, `messages`, `camera`, `contacts`.
+- Los favoritos de fábrica: `phone`, `messages`, `camera`, `contacts` y
+  `emergency` (D-51). Este último no sale en un inicio recién estrenado
+  (`onHomeByDefault = false`): lo enciende el familiar.
 - Cualquier otra app: `pkg:` + su paquete (`pkg:com.whatsapp`).
 
 Al encender una casilla se añade **al final**: nada de lo que ya estaba se mueve.

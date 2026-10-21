@@ -155,7 +155,8 @@ lleva **solo la D**, sin un segundo cuadrado.
   ángulo suelto.
   Rellenos escalados a 100 px se ven hinchados; el trazo aguanta cualquier
   tamaño y se recolorea con el tint.
-- Se tiñen con un rol del tema, nunca con un color escrito.
+- Se tiñen con un rol del tema, nunca con un color escrito. El de las casillas es
+  `primary`, salvo la sirena de «Emergencias 112», que va en `error` (D-51).
 - **Nunca emoji ni dingbats.**
 - El **isotipo** tiene dos versiones porque el cian no llega a 3:1 sobre blanco:
   `ic_doado_mark` (D cian) para fondo oscuro y `ic_doado_mark_light` (D marina)
@@ -179,6 +180,9 @@ lleva **solo la D**, sin un segundo cuadrado.
   Si el familiar los pone aparte (D-46), van en una segunda pantalla del inicio,
   con dos pestañas arriba, «Aplicaciones» y «Contactos»: la elegida en
   `primary`, la otra con contorno, las dos de 72 dp de alto como mínimo.
+- **Emergencias 112** (D-51): una casilla como las demás, con la sirena
+  (`ic_emergency`) en `error` y el nombre en `onSurface`. Se distingue por el
+  icono y el texto, no solo por el color. Apagada de fábrica.
 - **Casillas por fila**: una, dos o tres (D-45). Con tres, casi cuadradas y todas
   iguales: icono de 48 dp, nombre en `labelMedium` y letra con techo de 1,25
   (`NarrowTextScale`).

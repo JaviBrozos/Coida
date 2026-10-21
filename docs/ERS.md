@@ -5,8 +5,8 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.9 (borrador) |
-| Fecha | 20/10/2026 |
+| Versión | 0.10 (borrador) |
+| Fecha | 21/10/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
 
@@ -23,6 +23,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.7 | 18/10/2026 | Se retira CU-13 (instalar una app recomendada): Ajustes deja de proponer apps; se instalan desde la tienda del modo administrador (CU-14, D-33). Los identificadores no se renumeran | Javier Brozos Martínez |
 | 0.8 | 19/10/2026 | CU-02: los accesos directos van en la rejilla del inicio, tras «Tus contactos», y sin límite (D-38). Una persona puede tener botón de llamada y de WhatsApp a la vez (D-40). En CU-05 el asistente los sitúa ahí | Javier Brozos Martínez |
 | 0.9 | 20/10/2026 | RNF-ACC-02: con tres por fila las casillas son casi cuadradas, de 96 dp de lado como mínimo, y cuatro por fila nunca (D-45). CU-02: los accesos directos pueden ir en una segunda pantalla del inicio, con pestañas (D-46). CU-08 añade la foto de fondo (D-47). CU-14: el inicio y Ajustes avisan si Doado no es la pantalla de inicio y ofrecen ponerlo (D-48) | Javier Brozos Martínez |
+| 0.10 | 21/10/2026 | CU-17 nuevo: la casilla «Emergencias 112», que abre el teléfono con el 112 marcado y la pone el familiar (D-51). CU-04: ante una emergencia, el asistente lleva a esa casilla si está | Gonzalo Gómez Blanco |
 
 ## 1. Introducción
 
@@ -73,7 +74,7 @@ Hoy una persona mayor con un Android tiene soluciones sueltas: launchers simplif
 4. **Accesibilidad como requisito medible**: no solo iconos grandes, sino contraste mínimo 7:1 en texto, objetivos de 48 dp o más, sin color dinámico y sin iconos que cambien de sitio (sección 4.2).
 5. **Bloqueado de verdad para la persona mayor**: PIN para los ajustes y modo administrador temporal para las salidas a Android, que se cierra solo a los 15 minutos. Se evita que el móvil quede abierto porque alguien olvidó volver a bloquearlo.
 
-**Lo que otros tienen y DOADO todavía no**: botón SOS con ubicación (BIG Launcher, Doro), configuración a distancia por el familiar (Doro) y recordatorios de medicación (algunos launchers, ElliQ). Son candidatos a nuevos casos de uso.
+**Lo que otros tienen y DOADO todavía no**: botón SOS que manda la ubicación (BIG Launcher, Doro; DOADO tiene desde la 0.10 una casilla para llamar al 112, CU-17, pero sin ubicación), configuración a distancia por el familiar (Doro) y recordatorios de medicación (algunos launchers, ElliQ). Son candidatos a nuevos casos de uso.
 
 Fuentes consultadas el 29/09/2026. La lista de launchers de Google Play procede de un artículo de diciembre de 2021, así que precios y funciones pueden haber cambiado.
 
@@ -93,7 +94,7 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 
 ### 4.1.2 Casos de uso del sistema
 
-14 casos de uso: 11 ya funcionan en el launcher y los 3 del asistente están «En pruebas»: programados y compilados, pendientes de probar con voz real. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: los huecos de CU-03 y CU-13 son casos retirados del alcance.
+15 casos de uso: 11 ya funcionan en el launcher y 4 están «En pruebas»: los 3 del asistente, programados y compilados y pendientes de probar con voz real, y la casilla de emergencias (CU-17), programada y pendiente de compilar y probar. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: los huecos de CU-03 y CU-13 son casos retirados del alcance.
 
 | ID | Caso de uso | Actor | Importancia | Estado | Fuente |
 | --- | --- | --- | --- | --- | --- |
@@ -111,6 +112,7 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 | CU-14 | Abrir la tienda, los ajustes de Android o cambiar el inicio | ACT-02 | Media | Implementado | Código |
 | CU-15 | Configurar el asistente | ACT-02 | Media | En pruebas | Propuesta |
 | CU-16 | Recuperar un PIN olvidado | ACT-02 | Media | Implementado | Código |
+| CU-17 | Llamar a emergencias desde el inicio | ACT-01 | Alta | En pruebas | Propuesta |
 
 CU-07 figuraba como parcial en la versión 0.1 y se completó el 29/09/2026: pide ahora el PIN anterior antes de cambiarlo.
 
@@ -252,7 +254,7 @@ Comentario: la confirmación es obligatoria en todas las acciones (D-26), pulsad
 
 - Las de CU-05.
 - 3: Pregunta médica, legal o de dinero: el sistema no responde y sugiere hablarlo con la familia o el médico.
-- 3: Emergencia: el sistema indica cómo llamar al 112, pero no marca él ningún número.
+- 3: Emergencia: si el inicio tiene la casilla «Emergencias 112» (CU-17), el sistema la abre tras confirmarlo o guía hasta ella, según el modo; si no, indica cómo llamar al 112. Nunca marca él ningún número.
 
 Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se sigue CU-05 en modo «Explica cómo», con pasos fijos y la casilla marcada. Si es sobre el móvil en general, los pasos los redacta el modelo y pueden no cuadrar con cada marca.
 
@@ -279,6 +281,29 @@ Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se 
 
 - 4: Se deniega el permiso: el interruptor se queda apagado y una nota explica cómo darlo.
 - 1: Sin servicio configurado: el sistema lo indica y no deja encenderlo.
+
+##### CU-17. Llamar a emergencias desde el inicio
+
+| Campo | Valor |
+| --- | --- |
+| Actor | ACT-01 Persona mayor |
+| Descripción | La persona mayor pulsa la casilla «Emergencias 112» y el móvil abre el teléfono con el 112 ya marcado. La llamada la hace ella con el botón verde. |
+| Precondición | El familiar ha encendido la casilla en Ajustes → Aplicaciones (CU-10). Viene apagada de fábrica. |
+| Postcondición | El teléfono del móvil está abierto con el 112 marcado. |
+| Importancia | Alta |
+
+**Secuencia normal**
+
+1. El usuario pulsa la casilla «Emergencias 112», con el icono de una sirena en rojo.
+2. El sistema abre la app de teléfono del móvil con el 112 marcado.
+3. El usuario pulsa el botón de llamar.
+
+**Excepciones**
+
+- 1: El móvil no tiene app de teléfono: la casilla sale apagada, en su sitio, como cualquier otra (D-05).
+- 2: El usuario no pulsa llamar: no se llama a nadie. Así un toque sin querer no llega al 112.
+
+Comentario: Android no deja a una app llamar sola a un número de emergencias; el paso por el teléfono es obligado, y además evita llamadas por error (D-51). El asistente puede abrir esta casilla tras un «Sí» o guiar hasta ella (CU-04), pero no marca nunca. Mandar la ubicación por SMS queda fuera: pediría permisos nuevos.
 
 ### 4.2 Requisitos no funcionales
 
@@ -325,6 +350,7 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | CU-14. Abrir la tienda, los ajustes de Android o cambiar el inicio | X | X |  |
 | CU-15. Configurar el asistente |  |  | X |
 | CU-16. Recuperar un PIN olvidado | X | X |  |
+| CU-17. Llamar a emergencias desde el inicio |  |  | X |
 
 ## 6. Glosario de términos
 

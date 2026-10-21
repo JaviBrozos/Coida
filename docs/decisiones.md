@@ -742,3 +742,31 @@ más ligera (unos 150 KB frente a unos 840 KB), pero que no convenció al verla.
 pieza fuera de la app (presentación, web, Google Play) tiene que activarlo.
 Falta pasar el texto del logo a Inter Bold en trazos.
 
+### D-51 · Una casilla «Emergencias 112», que abre el teléfono con el número puesto (21/10/2026)
+
+Acordado entre Gonzalo y Javier el 21/10. CU-17 en la ERS.
+**Contexto**: el público de Doado es el que más puede necesitar llamar al 112
+(una caída, un mareo, estar solo en casa), y otros launchers para mayores
+tienen un botón de emergencia. Doado solo tenía al asistente explicando cómo
+marcar el 112.
+**Decisión**: una casilla básica más, «Emergencias 112», con una sirena en el
+rojo de error del tema (`error`: 6,54:1 en claro y 8,67:1 en oscuro sobre la
+casilla) y el nombre en el color de siempre. Abre el teléfono con
+`ACTION_DIAL` y `tel:112`: el número queda puesto y la llamada la hace la
+persona con el botón verde. Viene apagada de fábrica (`onHomeByDefault = false`)
+y la enciende el familiar en Ajustes → Aplicaciones, donde una nota explica
+qué hace. Como toda casilla, al encenderla va al final. El asistente la ve con
+la marca «emergencias»: si alguien habla de una emergencia o pide el 112, la
+abre tras un «Sí» o guía hasta ella; si no está, explica cómo marcar.
+**Descartado**: llamar sin pasar por el teléfono, que Android no permite a una
+app (`ACTION_CALL` no vale para números de emergencia) y que con una persona
+mayor llevaría a llamadas por error. Un botón fijo fuera de la rejilla, que
+quita sitio a todos aunque no lo usen. Encendida de fábrica, porque a quien
+pulsa sin querer le haría más mal que bien. Mandar la ubicación por SMS, como
+BIG Launcher y Doro, que pide permisos nuevos (ubicación y SMS) y falla sin cobertura o
+sin GPS. Elegir otro número, como el de la teleasistencia, que queda como idea.
+**Consecuencia**: en una emergencia es un toque más que una llamada directa.
+Los móviles con Android 12 o más tienen además «Emergencia SOS» (cinco pulsaciones
+del botón de encendido), que sí llama sola; se puede activar en los ajustes de
+Android.
+
