@@ -19,10 +19,9 @@ import androidx.compose.ui.unit.sp
  * poca visión, y dejamos el interletrado a 0: el espaciado negativo de Material
  * apelmaza el texto cuando se amplía.
  *
- * La letra está en prueba: Inter, en lugar de la Atkinson Hyperlegible Next de
- * D-44, a falta de que lo decidan los dos creadores. Con su juego `ss04` (la I con
- * remates y la l con cola), para que «Isabel» no se lea «lsabel». Va dentro del
- * APK, así que se ve igual en todas las marcas y no depende de ninguna descarga.
+ * La letra es Inter (D-50), con su juego `ss04` (la I con remates y la l con
+ * cola), para que «Isabel» no se lea «lsabel». Va dentro del APK, así que se ve
+ * igual en todas las marcas y no depende de ninguna descarga.
  *
  * Todo va en sp, así que además respeta el tamaño de fuente que el usuario haya
  * configurado en los ajustes de accesibilidad del sistema.
