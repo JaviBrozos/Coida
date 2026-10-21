@@ -122,7 +122,7 @@ se volverá a cerrar.
   casillas del inicio pasan de 168 dp.
 - **Texto** siempre en `sp` y desde la escala del tema (≈1,5 veces la de
   Material), para que respete el tamaño de letra del sistema. La letra es
-  Atkinson Hyperlegible Next, hecha para quien ve poco, y va dentro de la app.
+  Inter, con la I y la l bien distintas, y va dentro de la app.
 - **Separación por borde, no por sombra**: una sombra suave desaparece para
   quien tiene poca sensibilidad al contraste.
 - **Nada de color dinámico** (Material You): tomar los colores del fondo de

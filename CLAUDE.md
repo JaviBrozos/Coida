@@ -61,8 +61,7 @@ colores, iconos, letra, tono y movimiento, con los ficheros de la marca en
 `assets/`. Úsala en cualquier pieza que se vea, dentro o fuera de la app. Para
 auditar la marca hay otro subagente,
 `.claude/agents/auditor-marca.md`, que trabaja con la skill
-`.claude/skills/brand-identity/`. La letra es Atkinson Hyperlegible Next (D-44),
-en `res/font/`.
+`.claude/skills/brand-identity/`. La letra es Inter (D-50), en `res/font/`.
 
 Hay una skill de diseño en el proyecto, `.claude/skills/apple-design/` (de Emil
 Kowalski, licencia MIT): los principios de Apple para interfaces. Sirve de

@@ -2,10 +2,10 @@
 
 > Estado: **decidida.** El logo sigue siendo la D con visto, con las esquinas
 > redondeadas y un visto nuevo (D-36). Ya están aplicados también los iconos
-> (D-34 y D-35) y las cifras de contraste corregidas. La letra, Atkinson
-> Hyperlegible Next, la propuso Javier y la aceptó Gonzalo el 20/10/2026 (D-44):
-> ya está en la app. Este fichero se queda como contexto; lo que falta está en
-> «Pendiente».
+> (D-34 y D-35) y las cifras de contraste corregidas. La letra de esta
+> propuesta, Atkinson Hyperlegible Next, se aplicó el 20/10/2026 (D-44), pero al
+> final se quedó Inter (D-50, 21/10/2026). La sección «Letra» de abajo es
+> historia. Este fichero se queda como contexto; lo que falta está en «Pendiente».
 >
 > Auditoría del 18/10/2026, hecha con el agente `.claude/agents/auditor-marca.md`
 > y la skill `.claude/skills/brand-identity/`. La fuente lista para aplicar está en
@@ -75,8 +75,8 @@ orden del asistente.
 
 ## Pendiente, sea cual sea la elección
 
-- Pasar el texto de `doado_logo.svg` a Atkinson Hyperlegible Next Bold,
-  convertido a trazos, y regenerar lo que salga de él.
+- Pasar el texto de `doado_logo.svg` a Inter Bold (D-50), convertido a trazos,
+  y regenerar lo que salga de él.
 
 - Rehacer el isotipo de las ocho láminas de `design/presentacion/` y pasar la
   presentación de Segoe UI a una pila que exista en todas partes.

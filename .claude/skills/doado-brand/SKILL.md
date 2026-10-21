@@ -62,7 +62,7 @@ Una **D con un visto dentro** (D-36): la D dice el nombre y el visto dice
   - otro dibujo dentro del icono de la app;
   - los colores antiguos del logo (`#0B1F33`, `#29B6F6`).
 - **Logotipo** (`doado_logo.svg`): la D y «Doado». El texto va hoy en Baloo 2 y
-  Quicksand; falta pasarlo a Atkinson Hyperlegible Next Bold en trazos (ver «Letra»).
+  Quicksand; falta pasarlo a Inter Bold en trazos (ver «Letra»).
 
 ## Color
 
@@ -104,15 +104,17 @@ De trazo y dibujados a medida (D-11, D-34). Están en `res/drawable/ic_*.xml`.
 
 ## Letra
 
-- **Atkinson Hyperlegible Next** (D-44), del Braille Institute, licencia OFL:
-  hecha para quien ve poco, con letras que no se confunden (I, l, 1; 0 y O).
+- **Inter** (D-50), licencia OFL (`design/propuestas-marca/fuente/inter-OFL.txt`),
+  siempre con el juego `ss04`: la I con remates y la l con cola, que sin él son
+  dos palos casi iguales («lsabel»).
 - **App**: en `res/font/`, con la escala de `Type.kt`. Va en `sp`, con
   interletrado 0, **SemiBold** en cuerpo y etiquetas y **Bold** en titulares, y
-  nada por debajo de 18 sp.
+  nada por debajo de 18 sp. Solo esos dos grosores: un tercero necesita su
+  fichero.
 - **Logotipo**: Bold convertida a trazos. Pendiente de rehacer `doado_logo.svg`.
-- **Fuera de la app** (presentación, web, imágenes): Atkinson Hyperlegible Next
-  donde se pueda incrustar (los `.ttf` están en `design/propuestas-marca/fuente/`,
-  y está en Google Fonts); si no, `Roboto, system-ui, sans-serif`. Nada de Segoe UI ni
+- **Fuera de la app** (presentación, web, imágenes): Inter con `ss04` donde se
+  pueda incrustar (los `.ttf` de la app están en `res/font/`, y está en Google
+  Fonts); si no, `Roboto, system-ui, sans-serif`. Nada de Segoe UI ni
   de letras redondeadas o infantiles (D-10, «no infantiliza»).
 
 ## Tono
@@ -145,6 +147,6 @@ De trazo y dibujados a medida (D-11, D-34). Están en `res/drawable/ic_*.xml`.
 - [ ] Ningún cian sobre fondo claro para texto o iconos.
 - [ ] Contrastes medidos sobre el fondo real.
 - [ ] Iconos nuevos con las reglas de la rejilla de 24, y sin plato.
-- [ ] Letra Atkinson Hyperlegible Next, o la pila de reserva fuera de la app.
+- [ ] Letra Inter con `ss04`, o la pila de reserva fuera de la app.
 - [ ] Si cambió la marca: `docs/diseno.md`, `docs/decisiones.md`,
       `docs/estado.md` y esta skill, en el mismo commit.

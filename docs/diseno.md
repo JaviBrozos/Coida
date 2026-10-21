@@ -64,11 +64,9 @@ borde, no por sombra ni por elevación**.
 
 ## Tipografía
 
-`core/ui/Type.kt`: **Inter**, en prueba desde el 20/10 en lugar de la Atkinson
-Hyperlegible Next de D-44, a falta de que lo decidan los dos creadores. Dentro del
-APK en `res/font/`, solo los dos grosores que usa la escala (SemiBold y Bold), y
-con el juego `ss04` (la I con remates y la l con cola, que en Inter son dos palos
-casi iguales). Atkinson sigue en `res/font/` hasta decidirlo. La escala es
+`core/ui/Type.kt`: **Inter** (D-50). Dentro del APK en `res/font/`, solo los dos
+grosores que usa la escala (SemiBold y Bold), y con el juego `ss04` (la I con
+remates y la l con cola, que en Inter son dos palos casi iguales). La escala es
 la de Material multiplicada por ~1,5, con más grosor (el trazo fino se pierde a
 tamaño grande): **SemiBold** en cuerpo y etiquetas y **Bold** en titulares.
 Interletrado a 0 (el negativo de Material apelmaza el texto cuando se amplía).
@@ -145,7 +143,7 @@ lleva **solo la D**, sin un segundo cuadrado.
   queda dentro de la zona segura de 66. La capa monocroma es la misma figura.
   Para API 24-25, PNG de mdpi a xxxhdpi (48 a 192 px).
 - **Logotipo** (`doado_logo.svg`): el texto sigue en Baloo 2 y Quicksand. Falta
-  pasarlo a Atkinson Hyperlegible Next Bold convertida a trazos (D-44).
+  pasarlo a Inter Bold convertida a trazos (D-50).
 
 ## Iconografía
 

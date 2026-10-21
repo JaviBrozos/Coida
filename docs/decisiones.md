@@ -724,3 +724,21 @@ quien copie el fichero prueba las diez mil igual de rápido con unas vueltas que
 con otras, y lo que frena es el límite de intentos (D-24), que no cambia.
 **Consecuencia**: la respuesta de recuperación, que es texto libre y donde las
 vueltas sí cuentan, conserva las suyas. Lo decidió Javier el 20/10.
+
+### D-50 · La letra se queda en Inter (21/10/2026)
+
+Sustituye a D-44. Javier puso Inter en prueba el 20/10, en lugar de Atkinson, y
+Gonzalo eligió quedarse con ella el 21/10.
+**Contexto**: D-44 metió Atkinson Hyperlegible Next en la app y en la marca. Al
+verla en el emulador, Javier la cambió por Inter para probar, y quedó por decidir
+entre los dos.
+**Decisión**: Inter, solo en SemiBold y Bold, y siempre con el juego `ss04` para
+que la I mayúscula y la l minúscula no se confundan («Isabel» y no «lsabel»).
+Para la app y para la marca. Atkinson sale de `res/font/`; sus ficheros se quedan
+en `design/propuestas-marca/fuente/` como parte de la propuesta.
+**Descartado**: Atkinson Hyperlegible Next (D-44), hecha para quien ve poco y
+más ligera (unos 150 KB frente a unos 840 KB), pero que no convenció al verla.
+**Consecuencia**: sin `ss04`, Inter vuelve a confundir la I y la l: cualquier
+pieza fuera de la app (presentación, web, Google Play) tiene que activarlo.
+Falta pasar el texto del logo a Inter Bold en trazos.
+
