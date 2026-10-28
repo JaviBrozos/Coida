@@ -17,15 +17,18 @@ RNF-ACC-07). Los valores concretos —paleta, escala, medidas— en `docs/diseno
 - **Contraste**: 4,5:1 como mínimo; 7:1 es lo que se busca para texto y bordes.
   Se mide contra el fondo real sobre el que cae el texto, no contra el de la
   pantalla.
-- **Nada pulsable por debajo de 48 dp**, y en el inicio bastante más: las
-  casillas pasan de 168 dp. Se mide la pieza entera, no el icono.
-- **Ningún texto por debajo de 18 sp**, y siempre desde
+- **Nada pulsable por debajo de 48 dp**, y en el inicio más: casillas cuadradas,
+  que con cuatro por fila quedan en unos 70 dp (D-54). Se mide la pieza entera.
+- **Texto de 18 sp como mínimo**, salvo dos excepciones decididas tras probar con
+  personas mayores: el tamaño «Normal» (0,85, D-55) y el nombre de una casilla, que
+  se encoge para caber entero sin partir palabras (D-54). Siempre desde
   `MaterialTheme.typography`, nunca un `.sp` a pelo en un composable.
 - **Separa por borde, nunca por sombra ni por elevación sola.**
 - **Prohibido el color dinámico** de Material You y cualquier tema que dependa
   del fondo de pantalla del usuario.
 - **Las casillas no se mueven**: una app que no está se pinta apagada, en su
-  sitio, con su aviso. Nunca reordenes ni compactes la rejilla.
+  sitio, con su aviso y el contorno a trazos. Nunca reordenes ni compactes la
+  rejilla: solo el familiar cambia el orden, en «Colocar las casillas» (D-59).
 - **TalkBack**: todo lo pulsable lleva etiqueta en español y en lenguaje llano;
   los iconos que van acompañados de texto son decorativos
   (`contentDescription = null`) para no oírlo dos veces.

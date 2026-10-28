@@ -9,7 +9,7 @@ paths:
 
 Mira si ya existe en `core/ui/Components.kt`: `DoadoCard`, `SettingsGroup`,
 `SettingsRow`, `SwitchRow`, `ChoiceGroup`, `PrimaryButton`, `OutlineButton`,
-`ScreenHeader`, `SectionLabel`, `IconBadge`, `InitialBadge`, `NoteCard`, `NotHomeNotice`, `NarrowTextScale`, `DoadoTextField`,
+`ScreenHeader`, `SectionLabel`, `IconBadge`, `InitialBadge`, `ContactAvatar`, `NoteCard`, `NotHomeNotice`, `FitText`, `DoadoTextField`,
 `SettingsColumn`, `DoadoSwitchVisual`.
 Casi toda pantalla de ajustes sale de ahí. La tabla de para qué sirve cada uno
 está en `docs/diseno.md`.
@@ -50,18 +50,20 @@ Los textos del inicio los lee ella; los de ajustes, el familiar.
 
 ## Cosas de este launcher que se olvidan
 
-- La rejilla es de **una, dos o tres columnas**; cuatro, nunca (D-45). Tres solo se
-  ofrece si la casilla queda en 96 dp de ancho, y entonces son casi cuadradas y
-  todas iguales. El inicio nunca cambia de columnas solo, ni por la letra ni por
-  el ancho.
-- Las casillas **conservan su posición** aunque la app no esté: apagadas, nunca
-  reordenadas ni ocultas.
+- La rejilla es de **una a cuatro columnas**, todas ofrecidas en cualquier pantalla
+  (D-54). Con dos o más, las casillas son **cuadradas** y nunca se estiran; con una,
+  filas. El nombre nunca se parte: baja de tamaño (`FitText`, y la letra común de
+  `rememberTileLabelScale`). El inicio nunca cambia de columnas solo, ni por la
+  letra ni por el ancho.
+- Las casillas **conservan su posición** aunque la app no esté: apagadas (contorno
+  a trazos), nunca reordenadas ni ocultas. Solo el familiar las cambia de sitio,
+  en «Colocar las casillas» (D-59).
 - `HOME` se pinta fuera del `Box` con `safeDrawingPadding()`; el resto de
   pantallas van dentro.
 - En el inicio, Ajustes es el botón pequeño de arriba a la derecha y el asistente,
   el círculo flotante de abajo, que va encima de la rejilla (D-38). La rejilla
   acaba con un margen del alto del círculo: **toda casilla tiene que poder quedar
-  entera a la vista**. Los contactos van en la misma rejilla, tras «Tus contactos».
+  entera a la vista**. Los contactos van en la misma rejilla, tras «Contactos favoritos».
   Si el familiar los pone aparte (D-46), van en una segunda pantalla del inicio
   con dos pestañas siempre a la vista: deslizar es un atajo, nunca la única forma.
 - Para señalar una casilla (el asistente guiando): relleno `primary`, contenido
@@ -85,6 +87,8 @@ Está en `.claude/skills/apple-design/` y explica cómo diseña Apple: respuesta
 inmediata, movimiento que se puede interrumpir y coherencia espacial. Está
 pensada para la web y para el estilo de Apple. **Aquí mandan las normas de
 Doado**: nada de translucidez ni sombras (D-04), nada de interletrado negativo
-(D-03), nada de gestos de arrastre ni muelles (deslizar entre las dos pantallas de D-46
-es un atajo de sus pestañas, no la forma de usarlas), y el asistente confirma siempre
-(D-26). Qué se tomó de ella y qué no está en D-32.
+(D-03), nada de gestos de arrastre ni muelles en lo que usa la persona mayor
+(deslizar entre las dos pantallas de D-46 es un atajo de sus pestañas, no la forma
+de usarlas; arrastrar solo se permite en pantallas del familiar, y siempre con otra
+forma de hacerlo, D-59), y el asistente dice siempre lo que va a hacer antes de
+hacerlo (D-56). Qué se tomó de ella y qué no está en D-32.

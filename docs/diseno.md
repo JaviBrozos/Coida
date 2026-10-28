@@ -4,7 +4,7 @@
 > compartidos. Enlaza desde otros documentos; no copies las cifras. Quien manda
 > de verdad es `core/ui/`: si esto no cuadra con el código, **gana el código**.
 >
-> Última revisión: 18/10/2026.
+> Última revisión: 28/10/2026.
 
 El principio está en la ERS como requisitos medibles (RNF-ACC-01 a RNF-ACC-07).
 Aquí está el cómo.
@@ -87,12 +87,24 @@ baila de lado a cada minuto.
 | `bodyMedium` | 22 sp | Textos de cuerpo |
 | `bodySmall` | 20 sp | Subtítulos, notas y la fecha del inicio |
 | `labelLarge` | 24 sp | **La etiqueta de una casilla** y los títulos de fila |
-| `labelMedium` | 20 sp | Rótulos de grupo y opciones |
-| `labelSmall` | 18 sp | El «No disponible» de una casilla apagada. **Suelo: nada por debajo** |
+| `labelMedium` | 20 sp | Rótulos de grupo, opciones y pestañas del inicio |
+| `labelSmall` | 18 sp | El «No disponible» de una casilla apagada |
 
-Hay estilos declarados que hoy no usa nadie (`displayLarge`, `headlineLarge`,
-`headlineMedium`, `titleMedium`, `bodyLarge`). Están para cuando hagan falta; no
-los borres sin mirar.
+Estos tamaños son los de «Grande». La persona elige en Interfaz entre cuatro
+niveles: «Normal» (0,85), «Grande» (1), «Muy grande» (1,15) y «Enorme» (1,3), que se
+multiplican por la escala de Android, con la escala total entre 0,85 y 2 (D-55).
+Con «Normal», `labelSmall` queda en unos 15 sp: el suelo de 18 sp ya no es
+absoluto.
+
+**Texto que no se parte** (D-54, `core/ui/FitText.kt`): en las casillas, las
+pestañas del inicio y la frase del asistente, la letra baja de tamaño hasta que
+cada palabra cabe en su línea, sin bajar de unos 8 dp en pantalla. Nunca se parte
+una palabra ni se ponen guiones. En la rejilla, todas las casillas de un apartado
+llevan la misma letra: la del nombre que menos cabe. En las apps no cuenta el «No
+disponible», para que desinstalar una no encoja todo el inicio.
+
+Hay estilos declarados que hoy no usa nadie (`displayLarge`, `bodyLarge`). Están
+para cuando hagan falta; no los borres sin mirar.
 
 ## Medidas
 
@@ -102,10 +114,11 @@ los borres sin mirar.
 | --- | --- | --- |
 | `MinTouchTarget` | 48 dp | Suelo innegociable de cualquier pulsable |
 | `ComfortableTouchTarget` | 72 dp | Lo normal para un botón suelto |
-| `TileMinHeight` | 168 dp | Alto mínimo de una casilla (en el inicio suelen salir ~260) |
-| `TileIconSize` / `TileIconSizeCompact` / `TileIconSizeNarrow` | 72 / 54 / 48 dp | Icono de una casilla, sin plato (D-35), en dos columnas / en una / en tres (D-45) |
-| `TileCornerRadius` | 28 dp | Radio de casilla y de contacto del inicio |
-| `AvatarSize` | 52 dp | Círculo con la inicial de un contacto en Ajustes → Contactos |
+| `TileIconRatio` · `TileIconMin` / `TileIconMax` | 0,4 · 24 / 96 dp | Icono de la casilla cuadrada, sin plato (D-35), en proporción al lado (D-54) |
+| `TilePaddingRatio` · `TilePaddingMin` / `TilePaddingMax` | 0,08 · 4 / 16 dp | Margen interior de la casilla cuadrada; entre icono y nombre, la mitad |
+| `TileCornerRatio` · `TileCornerRadius` | 0,18 · 28 dp | Radio de casilla y de contacto: proporcional al lado, como mucho 28 dp |
+| `TileRowHeight` / `TileIconSizeCompact` | 112 / 54 dp | Casilla de una por fila, en horizontal y de alto fijo, y su icono |
+| `AvatarSize` | 52 dp | Foto o inicial de un contacto en Ajustes → Contactos |
 | `CardCornerRadius` | 20 dp | Radio de fila, tarjeta y botón |
 | `ControlCornerRadius` | 14 dp | Radio de control pequeño |
 | `BorderWidth` | 2 dp | Grosor de contorno |
@@ -117,11 +130,11 @@ los borres sin mirar.
 | `BackButtonHeight` | 60 dp | Alto del botón «Volver» de las cabeceras |
 | `PinKeyHeight` / `PinPadMaxWidth` | 64 / 320 dp | Tecla del PIN (alto mínimo) y ancho máximo del teclado, centrado |
 | `AssistantBadgeSize` | 64 dp | Círculo hundido con el micrófono en la pantalla del asistente (no pulsable) |
+| `ListeningPulseHeight` | 200 dp | Sitio del micrófono que late mientras el asistente escucha (`ListeningPulse`) |
 | `LargeTextScale` | 1,3 | Escala de letra a partir de la que las opciones de un `ChoiceGroup` van en columna |
-| `NarrowMaxTextScale` | 1,25 | Techo de escala de la letra de las casillas con tres por fila (D-45) |
 | `RowHeight` | 88 dp | Alto de fila de ajustes |
 | `ScreenPadding` | 20 dp | Margen de pantalla |
-| `GridSpacing` | 16 dp | Separación de la rejilla |
+| `GridSpacing` / `GridSpacingDense` | 16 / 10 dp | Separación de la rejilla; la segunda, con cuatro por fila |
 
 **Deuda conocida**: `MinTouchTarget` está declarado y no se usa, y hay medidas de
 layout sueltas en `HomeScreen` y en los componentes. Si tocas esas zonas, pásalas
@@ -172,31 +185,48 @@ lleva **solo la D**, sin un segundo cuadrado.
   y tono apagado (`onSurfaceVariant`). Es del familiar: lejos del pulgar. Redondo
   como el del asistente: lo que flota fuera de la rejilla no parece una casilla.
 - **Casillas**: el icono va directamente sobre la casilla, sin plato (D-35): solo
-  su silueta dentro del contorno. Vale igual para los iconos de trazo y para los
+  su silueta dentro del contorno. La de una app que no está lleva el contorno **a
+  trazos** en `outlineVariant`: con cuatro por fila el «No disponible» es pequeño,
+  y en gris el color solo no la distinguía. Vale igual para los iconos de trazo y para los
   de las apps. En la casilla que señala el asistente, el icono va en `onPrimary`.
 - **Contactos**: casillas como las de las apps, en la misma rejilla y tras el
-  rótulo «Tus contactos» (D-38): la inicial en un círculo en el sitio del icono,
-  el nombre y debajo la acción escrita. Sin límite de número.
+  rótulo «Contactos favoritos» (D-38). En el sitio del icono va la foto de la
+  agenda recortada en círculo y con el contorno de siempre (D-57) o, si no hay,
+  la inicial en su círculo. Debajo, el nombre y la acción escrita. Sin límite de
+  número.
   Si el familiar los pone aparte (D-46), van en una segunda pantalla del inicio,
-  con dos pestañas arriba, «Aplicaciones» y «Contactos»: la elegida en
-  `primary`, la otra con contorno, las dos de 72 dp de alto como mínimo.
+  con dos pestañas arriba, «Aplicaciones» y «Contactos favoritos»: la elegida en
+  `primary`, la otra con contorno. Las dos miden 72 dp de alto y llevan la misma
+  letra, en una línea.
 - **Emergencias 112** (D-51): una casilla como las demás, con la sirena
   (`ic_emergency`) en `error` y el nombre en `onSurface`. Se distingue por el
   icono y el texto, no solo por el color. Apagada de fábrica.
-- **Casillas por fila**: una, dos o tres (D-45). Con tres, casi cuadradas y todas
-  iguales: icono de 48 dp, nombre en `labelMedium` y letra con techo de 1,25
-  (`NarrowTextScale`).
+- **Casillas por fila**: de una a cuatro, siempre ofrecidas (D-54). Con dos o
+  más, **cuadradas**, todas iguales y sin estirarse nunca: el icono, los márgenes
+  y el radio van en proporción al lado, y el nombre (`labelLarge`) baja lo que
+  haga falta para caber entero. Con una por fila, filas de 112 dp con el icono a
+  la izquierda.
+- **Orden**: el que elija el familiar en «Colocar las casillas» (D-59). La casilla
+  que se arrastra va rellena de `primary`, como la señalada.
 - **Aviso de pantalla de inicio** (D-48): si Doado no lo es, `NotHomeNotice` arriba,
   con un `PrimaryButton` que lo pone y una equis redonda de 64 dp (`ic_close`).
 - **Foto de fondo** (D-47): detrás de todo y decorativa, dentro del margen seguro
-  (la barra de estado sigue lisa). Lo que no es casilla (reloj, rótulo «Tus
-  contactos») va sobre una franja `background` con contorno, así que el
-  contraste es el de siempre.- **El asistente** es un círculo de 96 dp abajo en el centro, relleno `primary`
+  (la barra de estado sigue lisa). Lo que no es casilla (reloj, rótulo «Contactos
+  favoritos») va sobre una franja `background` con contorno, así que el
+  contraste es el de siempre.
+- **El asistente** es un círculo de 96 dp abajo en el centro, relleno `primary`
   con el icono en `onPrimary` (7,86:1 en oscuro, 17,08:1 en claro). Al pulsarlo
   pasa a `surfaceContainerHigh` con el icono en `onSurface` (11,35:1 y 15,18:1).
   Flota encima de la rejilla, que se ve pasar por sus lados (D-38), con un aro de
   8 dp del color del fondo. La rejilla acaba con un margen de su alto: cualquier
   casilla se puede subir hasta dejarla entera a la vista.
+- **Mientras escucha**, la pantalla del asistente enseña arriba, en el centro, ese
+  mismo círculo de 96 dp (`ListeningPulse`). Lleva un degradado de `primary` a
+  `secondary` (en claro, del marino al cian profundo; en oscuro, del cian al azul
+  claro), con el micrófono en `onPrimary` a más de 6,7:1. Crece hasta un 22 % con
+  la voz y suelta anillos de `primary` que se abren y se apagan en 1,4 s: seguidos
+  al hablar y uno tenue cada 1,6 s en silencio. Sin rebotes. Con «Quitar
+  animaciones», sin anillos. Sustituye a la barra de volumen.
 - **Señalar sin mover**: al guiar, la casilla o el contacto se **rellena de
   `primary`** con el contenido en `onPrimary` y el contorno a
   `HighlightBorderWidth`, y TalkBack lo anuncia («El asistente te lo señala»). Solo
@@ -213,20 +243,21 @@ apagada, no suena). Las pantallas cambian con un fundido de 180 ms (D-32).
 
 | Componente | Cuándo |
 | --- | --- |
-| `DoadoCard` | Base de todo: casilla, fila, botón, tarjeta. `onClick = null` si no es pulsable. `borderWidth` solo cambia para señalar algo |
+| `DoadoCard` | Base de todo: casilla, fila, botón, tarjeta. `onClick = null` si no es pulsable. `borderWidth` solo cambia para señalar algo; `dashed`, contorno a trazos para lo que no está |
 | `SettingsGroup` + `GroupPosition` | Filas de un mismo apartado en un bloque, con una raya entre ellas. Cada fila recibe su posición (`GroupPosition.of`) |
 | `SettingsRow` | Fila que lleva a otra pantalla (icono, título, subtítulo, chevron) |
 | `SwitchRow` | Fila con interruptor. **Toda la fila** es el control, no la bolita |
-| `ChoiceGroup` | Opciones excluyentes como selector segmentado; en columna con tres opciones o con letra por encima de 1,3 |
+| `ChoiceGroup` | Opciones excluyentes como selector segmentado; en columna con tres opciones o más, o con letra por encima de 1,3 |
 | `PrimaryButton` | Acción principal, rellena de acento. Una por pantalla |
 | `OutlineButton` | Acción secundaria, solo contorno |
 | `ScreenHeader` | Cabecera de ajustes: «Volver» escrito, y debajo título y subtítulo a todo lo ancho |
 | `SectionLabel` | Rótulo de un grupo de filas |
 | `IconBadge` | Icono de acento, sin plato salvo el del asistente |
 | `InitialBadge` | La inicial de un nombre sobre un plato; decorativa para TalkBack |
+| `ContactAvatar` | La foto de un contacto en círculo con contorno, o su inicial si no hay (D-57) |
+| `FitText` · `rememberFitScale` · `rememberCommonFitScale` | Texto que baja de tamaño para caber sin partir palabras (D-54); el último, el tamaño común de varios |
 | `NoteCard` | Nota explicativa, no pulsable: relleno y contorno |
 | `NotHomeNotice` | Aviso de que Doado no es la pantalla de inicio (D-48), con su botón y una equis que lo cambia por cómo ponerlo más adelante |
-| `NarrowTextScale` | Techo de letra de 1,25 para lo que va en una casilla de tres por fila (D-45) |
 | `DoadoTextField` | Campo para escribir, con contorno de 2 dp que pasa a acento al escribir y a error si falla |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
 | `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |

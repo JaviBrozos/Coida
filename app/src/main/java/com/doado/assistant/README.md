@@ -1,5 +1,5 @@
-El asistente de voz: escucha una orden hablada y, según elija el familiar, la hace
-tras confirmarla o explica cómo hacerla. Cómo está montado, en
+El asistente de voz: escucha una orden hablada y, según elija el familiar, dice lo
+que va a hacer y lo hace (con «Cancelar» mientras lo dice) o explica cómo hacerla. Cómo está montado, en
 `docs/arquitectura.md` («Asistente de voz»); sus normas, en
 `.claude/rules/asistente.md`.
 

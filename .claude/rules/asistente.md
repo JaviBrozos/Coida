@@ -8,16 +8,18 @@ paths:
 
 El asistente oye a una persona mayor y le hace caso, así que un error aquí no es
 un fallo de interfaz: es una llamada a quien no era. Las decisiones están en
-`docs/decisiones.md` (D-25 a D-31 y D-37) y los casos de uso en la ERS (CU-04, CU-05 y
-CU-15).
+`docs/decisiones.md` (D-25 a D-30, D-37, D-56 y D-58) y los casos de uso en la ERS
+(CU-04, CU-05 y CU-15).
 
 ## Lo que no se negocia
 
-1. **Nunca actúa sin confirmación** (D-26, D-31): toda acción pasa por el estado
-   `Confirm` y por un «Sí» pulsado o dicho. La pregunta la redacta el código, no
-   el modelo. **El sí dicho lo decide `VoiceReplies`, nunca la IA**, y solo
-   cuenta si todas sus palabras son de sí o de relleno. Si ensanchas sus listas,
-   que sea con palabras que no puedan llevar otra orden dentro.
+1. **Dice lo que va a hacer antes de hacerlo, y se puede cancelar** (D-56): en
+   «Lo hace», toda acción pasa por el estado `Acting`, que dice «Llamo a María»
+   con un botón «Cancelar» y actúa al acabar la frase, nunca antes de
+   `VoiceTuning.ACT_MIN_WINDOW_MS` (y con TalkBack, más). La frase la redacta el
+   código, no el modelo. Ya no se pide un «Sí»: la pregunta liaba a las personas
+   mayores. Por eso el prompt pide **no adivinar nunca**: ante la duda, aclarar o
+   «no entendido».
 2. **Lista blanca**: solo llama o escribe a contactos guardados en Doado y solo
    abre casillas del inicio. El número sale de `ContactShortcutsStore`, **nunca de
    lo que diga el modelo**. Un id que no está en `ActionCatalog` es «no te he
@@ -38,17 +40,21 @@ CU-15).
 
 ## Hablarle a una persona mayor
 
-- **No se corta a quien habla despacio** (RNF-USA-03). Los tiempos viven en
-  `VoiceTuning.kt`; no los bajes sin haber probado con una voz mayor de verdad.
+- **No se corta a quien habla despacio, ni se oye la casa entera** (RNF-USA-03,
+  D-58): la frase acaba tras 1,2 s de silencio, y lo que suena bastante más flojo
+  que quien habla cuenta como silencio. Los tiempos viven en `VoiceTuning.kt`; no
+  los cambies sin haber probado con una voz mayor de verdad y ruido de casa.
+- **Una orden, una escucha** (D-56): el micrófono solo se vuelve a abrir solo para
+  pedir que le repitan una orden que no ha entendido u oído, y una sola vez. Lo
+  demás se hace con botones y con «Hablar otra vez».
 - **Lo que se oye, se ve**: toda frase que dice el móvil sale también escrita, en
   grande, con un botón «Repetir». Con TalkBack encendido, el móvil no habla por
   encima: lee TalkBack.
 - **Mientras escucha, no habla**: la voz del móvil se grabaría con la orden. El
-  micrófono se reabre solo cuando `Speaker` avisa de que ha terminado, y un
-  pitido marca el momento de hablar. Con TalkBack, la espera crece con lo que
-  acaba de leer (`VoiceTuning.SCREEN_READER_*`).
-- **Un silencio no es un error**: si en la conversación no contesta, se apaga el
-  micrófono y se queda la pantalla con «Hablar otra vez».
+  micrófono se reabre cuando `Speaker` avisa de que ha terminado, y un pitido
+  marca el momento de hablar. Callado (`Speaker.isSilent`: TalkBack o sin motor
+  de voz), la espera crece con lo que acaba de enseñar
+  (`VoiceTuning.SCREEN_READER_*`), para que dé tiempo a leerlo.
 - **Nada caduca solo**: con el asistente abierto la pantalla no se apaga, y la
   casilla señalada se queda hasta que se toca algo o se pulsa Inicio.
 - **Todo error dice qué hacer ahora** («Pulsa y prueba otra vez»), tuteando y sin
@@ -63,7 +69,6 @@ CU-15).
 | Prompt del modelo y formato de respuesta | `Prompts.kt`, en español. Ningún prompt fuera de ahí |
 | Tiempos y umbrales de la voz | `VoiceTuning.kt` |
 | Validar lo que devuelve el modelo | `ActionCatalog.kt` |
-| Respuestas cortas sin IA («sí», «siguiente», «gracias») | `VoiceReplies.kt` |
 | Pasos fijos al guiar hacia algo de Doado | `GuideSteps.kt` |
 | Proveedor y formato HTTP | `cloud/` |
 | Ejecutar la acción (Intents) | `LauncherActivity`, nunca el asistente |

@@ -5,7 +5,7 @@
 > constantes, tamaños) los manda el código: si esto no cuadra con él, **gana el
 > código** y hay que corregir esta página.
 >
-> Última revisión: 13/10/2026.
+> Última revisión: 28/10/2026.
 
 ## Las cuatro capas
 
@@ -24,14 +24,15 @@ Las pantallas no tocan Android: no conocen `Context`, `PackageManager` ni
 
 ## Navegación
 
-No hay librería de navegación: son diez pantallas y planas.
+No hay librería de navegación: son once pantallas y planas.
 
-- Un `enum Screen { HOME, PIN, SETTINGS, INTERFACE, CONTACTS, APPS, ADMIN,
+- Un `enum Screen { HOME, PIN, SETTINGS, INTERFACE, CONTACTS, APPS, ARRANGE, ADMIN,
   CHANGE_PIN, ASSISTANT, ASSISTANT_SETTINGS }` y un `when` en `CurrentScreen()`,
   dentro de `LauncherActivity`.
 - `parentOf()` define la vuelta: `HOME`, `PIN` y `SETTINGS` vuelven a `HOME`;
   `ASSISTANT` vuelve a donde se abrió (el inicio, o sus ajustes con «Probar el
-  asistente»); todo lo demás vuelve a `SETTINGS`.
+  asistente»); `ARRANGE` («Colocar las casillas», D-59) vuelve a donde se abrió
+  (Ajustes o Aplicaciones); todo lo demás vuelve a `SETTINGS`.
 - `BackHandler` está activo en todas menos en `HOME`. En `ASSISTANT`, además,
   cancela la escucha.
 
@@ -69,7 +70,8 @@ desinstaló una app, las casillas se actualizan solas al volver.
 Dos cosas se aplican envolviendo toda la app:
 
 - **Tamaño de letra**: `CompositionLocalProvider(LocalDensity ...)` multiplica el
-  `fontScale` del sistema por el factor elegido (1 / 1,15 / 1,3).
+  `fontScale` del sistema por el factor elegido (0,85 / 1 / 1,15 / 1,3, D-55), con
+  la escala total entre 0,85 y 2.
 - **Barras del sistema**: `enableEdgeToEdge()` se vuelve a aplicar con
   `SystemBarStyle.dark` o `.light` según el tema elegido, porque el tema lo
   decide el familiar y no el sistema; si no, los iconos de la barra saldrían
@@ -85,14 +87,15 @@ ni cambia de tipo**: se añade otra y se migra leyendo la antigua.
 | Clave | Tipo | Por defecto |
 | --- | --- | --- |
 | `theme` | String (`DARK` \| `LIGHT`) | `DARK` |
-| `text_size` | String (`NORMAL` \| `LARGE` \| `EXTRA_LARGE`) | `NORMAL` |
-| `columns` | Int, acotado a 1–3 (D-45) | `2` |
+| `text_size_v2` | String (`NORMAL` \| `LARGE` \| `EXTRA_LARGE` \| `HUGE`, D-55) | `NORMAL` (0,85) |
+| `text_size` | La de antes de D-55. Solo se lee si no hay `text_size_v2`, un escalón más arriba: su `NORMAL` es el `LARGE` de ahora | — |
+| `columns` | Int, acotado a 1–4 (D-54) | `2` |
 | `show_clock` | Boolean | `true` |
 | `contacts_layout` | String (`GRID` | `PAGE`, D-46) | `GRID` |
 | `home_notice_dismissed` | Boolean: el familiar cerró el aviso del inicio de D-48 | `false` |
 | `admin_unlocked_until` | Long (epoch ms) | `0` |
 | `assistant_enabled` | Boolean | `false` |
-| `assistant_mode` | String (`ACT` \| `GUIDE`) | `GUIDE` |
+| `assistant_mode` | String (`ACT` \| `GUIDE`) | `ACT` (D-56) |
 
 Los enums se leen con un ayudante que devuelve el valor por defecto si el
 guardado no existe: ante datos corruptos, la app arranca, no peta.
@@ -102,7 +105,7 @@ guardado no existe: ante datos corruptos, la app arranca, no peta.
 Una sola clave, `contacts`, con un `JSONArray`. Cada elemento: `id`, `name`,
 `number`, `action` (`CALL` \| `WHATSAPP`) y `onHome`. La lectura entera va en un
 `runCatching`: si el JSON se corrompe, la lista queda vacía en vez de romper el
-arranque. Sin límite de accesos directos en el inicio (D-38). Cada casilla es un elemento; la misma persona (el mismo número, comparando sus 9 últimas cifras) puede tener uno `CALL` y otro `WHATSAPP` (D-40), y Ajustes y el asistente los juntan por persona.
+arranque. Sin límite de accesos directos en el inicio (D-38). El orden del array es el del inicio; «Colocar las casillas» lo reescribe con `saveHomeOrder`, que solo reparte los huecos de los que están en el inicio (D-59). Cada casilla es un elemento; la misma persona (el mismo número, comparando sus 9 últimas cifras) puede tener uno `CALL` y otro `WHATSAPP` (D-40), y Ajustes y el asistente los juntan por persona.
 
 ### `doado_favorites` — `FavoritesStore`
 
@@ -116,6 +119,14 @@ id:
 - Cualquier otra app: `pkg:` + su paquete (`pkg:com.whatsapp`).
 
 Al encender una casilla se añade **al final**: nada de lo que ya estaba se mueve.
+Solo el familiar cambia el orden, en «Colocar las casillas» (`saveHomeOrder`,
+D-59).
+
+### Fotos de los contactos — `ContactPhotos`
+
+No se guardan: con `READ_CONTACTS` (D-57), `loadApps` busca en `Dispatchers.IO`
+la foto de cada número guardado con `PhoneLookup` y la tiene en memoria. Se
+vuelve a leer en cada `onResume`. Sin permiso, un mapa vacío y la inicial.
 
 ### `doado_security` — `PinStore`
 
@@ -218,7 +229,7 @@ llano. **Ningún intent hacia fuera se lanza a pelo.**
 | Elegir foto de fondo | `PickVisualMedia(ImageOnly)`, sin permisos; en Android antiguo, el selector de documentos | Aviso fijo en Interfaz |
 | Sonido y pantalla | `Settings.ACTION_SOUND_SETTINGS` | — |
 | Elegir contacto | `ACTION_PICK` sobre `Phone.CONTENT_URI` | Aviso |
-| Acción confirmada del asistente | La misma que el toque equivalente: llamar, WhatsApp o abrir casilla. Puede llamar a un contacto cuyo acceso directo abre WhatsApp, y al revés | La misma |
+| Acción del asistente en «Lo hace» | La misma que el toque equivalente: llamar, WhatsApp o abrir casilla. Puede llamar a un contacto cuyo acceso directo abre WhatsApp, y al revés | La misma |
 
 El número se pasa a formato internacional con `PhoneNumberUtils.formatNumberToE164`
 usando el país de la SIM, luego el de la red y luego el del idioma. Si no hay
@@ -226,9 +237,11 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
 
 ## Permisos y manifiesto
 
-- **`CALL_PHONE`** es peligroso y se pide **al añadir un contacto**, con el
-  familiar delante, no en el inicio con la persona mayor. Si se deniega, las
-  llamadas caen al marcador y no se vuelve a pedir.
+- **`CALL_PHONE`** y **`READ_CONTACTS`** son peligrosos y se piden juntos **al
+  añadir un contacto**, con el familiar delante, no en el inicio con la persona
+  mayor. Sin el primero, las llamadas caen al marcador; sin el segundo, los
+  contactos salen con su inicial, y Ajustes → Contactos ofrece pedirlo otra vez.
+  `READ_CONTACTS` solo se usa para la foto de los números guardados (D-57).
 - **`RECORD_AUDIO`** también es peligroso y se pide **al encender el asistente**
   en sus ajustes. Si se deniega, el interruptor se queda apagado con una nota. Si
   alguien lo quita después, el asistente lo dice en lenguaje llano en vez de
@@ -241,37 +254,36 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
   `TextToSpeech` no encuentra el motor de voz.
 - `<uses-feature android:name="android.hardware.telephony" android:required="false" />`
   para no dejar fuera tablets en Google Play.
-- **No hay `READ_CONTACTS`**: el selector de contactos concede permiso solo sobre
-  la fila elegida. Tampoco `QUERY_ALL_PACKAGES`: el bloque `<queries>` declara
-  únicamente lo que Doado necesita resolver.
+- El nombre y el número salen del selector de contactos, que concede permiso
+  solo sobre la fila elegida. No hay `QUERY_ALL_PACKAGES`: el bloque `<queries>`
+  declara únicamente lo que Doado necesita resolver.
 - La actividad: `singleTask`, `excludeFromRecents`, `stateNotNeeded`, y el
   intent-filter con `HOME` + `DEFAULT` + `LAUNCHER`.
 
 ## Asistente de voz
 
-Casos de uso CU-04, CU-05 y CU-15; decisiones D-25 a D-31; normas en
-`.claude/rules/asistente.md`.
+Casos de uso CU-04, CU-05 y CU-15; decisiones D-25 a D-30, D-37, D-56 y D-58;
+normas en `.claude/rules/asistente.md`.
 
 ```
 toque en el círculo → LauncherActivity.openAssistant() → AssistantController.start()
-  VoiceRecorder      graba hasta 2,5 s de silencio, 30 s o «Ya he terminado»
+  VoiceRecorder      graba hasta 1,2 s de silencio, 10 s o «Ya he terminado»
   SpeechToText       Whisper, con los nombres como pista
-  IntentInterpreter  modelo de lenguaje, respuesta en JSON (Prompts)
+  IntentInterpreter  modelo de lenguaje, respuesta en JSON (Prompts), con los
+                     últimos 6 turnos de lo hablado
   ActionCatalog      valida contra la lista blanca; lo dudoso es «no entendido»
-  → Confirm (modo «Lo hace») o Guide (modo «Explica cómo», pasos de GuideSteps)
-  → Speaker termina de hablar → pitido → vuelve a escuchar con la pantalla igual
-       VoiceReplies   «sí», «no», «siguiente», «repite», «gracias»: sin IA
-       el resto       al modelo, con los últimos 6 turnos de la conversación
-  → «Sí» (pulsado o dicho): onExecute → LauncherActivity lanza el Intent
-  → «Entendido»: onFinish → inicio con la casilla marcada (highlightedId)
+  → Acting (modo «Lo hace»): dice «Llamo a María», con «Cancelar», y al acabar
+       la frase (2,5 s como poco) onExecute → LauncherActivity lanza el Intent
+  → Guide (modo «Explica cómo», pasos de GuideSteps): se avanza con botones;
+       «Entendido»: onFinish → inicio con la casilla marcada (highlightedId)
+  → no entendido u oído: «repítemelo» → vuelve a escuchar, una sola vez
 ```
 
 | Pieza | Qué hace |
 | --- | --- |
-| `AssistantController` | Máquina de estados (`AssistantState`) y la conversación: reabre el micrófono al acabar de hablar (`followUpListening`) y guarda en memoria los últimos turnos. Corre en el `lifecycleScope`; `onStop` lo cancela y olvida la conversación |
-| `VoiceReplies` | Reconoce respuestas cortas sin IA. Solo cuentan si todas sus palabras son de esa respuesta o de relleno (D-31) |
-| `audio/VoiceRecorder` | `AudioRecord` a 16 kHz, fuente `VOICE_RECOGNITION`, sin supresor de ruido ni ganancia (D-37). Decide qué es voz comparando con el ruido de fondo, con un umbral para empezar y otro más bajo para seguir, y solo envía el tramo con voz. El WAV vive en memoria |
-| `audio/Speaker` | `TextToSpeech` en español a 0,85. Calla con TalkBack encendido, salvo en «Repetir». Avisa al acabar de hablar (`UtteranceProgressListener`), que es cuando se reabre el micrófono. Con TalkBack, el controlador espera lo que tarda en leer la pantalla (de 2,5 a 10 s) antes del pitido |
+| `AssistantController` | Máquina de estados (`AssistantState`). Solo vuelve a abrir el micrófono para que le repitan una orden (D-56) y guarda en memoria los últimos turnos. Corre en el `lifecycleScope`; `onStop` lo cancela, también si iba a actuar, y olvida la conversación |
+| `audio/VoiceRecorder` | `AudioRecord` a 16 kHz, fuente `VOICE_RECOGNITION`, sin supresor de ruido ni ganancia (D-37). Decide qué es voz comparando con el ruido de fondo y, para seguir contándola, con el nivel de la propia voz (D-58): con un umbral para empezar y otro más bajo para seguir. Solo envía el tramo con voz. El pitido de «habla ahora» suena con el micrófono ya abierto, para no hacer esperar, y lo que coincide con él se tira (`ignoreFirstMs`). El WAV vive en memoria |
+| `audio/Speaker` | `TextToSpeech` en español a 0,85. Calla con TalkBack encendido, salvo en «Repetir». Avisa al acabar de hablar (`UtteranceProgressListener`), que es cuando se actúa o se vuelve a escuchar. Callado (`isSilent`), el controlador espera lo que se tarda en leer la pantalla (de 2,5 a 10 s) |
 | `cloud/OpenAiCompatibleClient` | `/audio/transcriptions` y `/chat/completions` con `HttpURLConnection`. Conexión 10 s, lectura 20 s. Traduce cada fallo a un `AssistantFailure` |
 | `ActionCatalog` | Da a cada contacto y casilla un id corto (`c1`, `a1`). Al modelo solo le llegan ids y nombres |
 | `GuideSteps` | Pasos fijos para guiar hacia algo de Doado, con su posición en pantalla |

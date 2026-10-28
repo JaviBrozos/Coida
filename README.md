@@ -31,7 +31,7 @@ encarga de dejarlo a punto.
 | --- | --- | --- |
 | **La persona mayor** | Llama, escribe, hace fotos. Todos los días, y siempre igual. | La pantalla de inicio. No llega nunca a los ajustes. |
 | **El familiar o cuidador** | Deja el móvil configurado: qué apps se ven, a quién se llama de un toque, cómo de grande es la letra. | Ajustes, detrás del PIN. |
-| **El asistente de voz** (en pruebas) | Recibe órdenes habladas y las hace tras confirmarlas, o guía paso a paso para hacerlas. | Un círculo fijo en el inicio. |
+| **El asistente de voz** (en pruebas) | Recibe órdenes habladas y las hace diciendo antes qué va a hacer, o guía paso a paso para hacerlas. | Un círculo fijo en el inicio. |
 
 Cuando el familiar necesita tocar Android por debajo —instalar apps, entrar en
 los ajustes del sistema o cambiar la pantalla de inicio— activa el **modo
@@ -45,13 +45,16 @@ administrador**, que no es un perfil aparte sino un estado que dura 15 minutos.
 
 - **Reloj y fecha** y, en la esquina, un **botón pequeño de Ajustes**,
   en tono apagado y lejos del pulgar.
-- **Accesos directos de personas**: casillas con su nombre, debajo de las apps y
-  tras el rótulo «Tus contactos», sin límite, o en una segunda pantalla a la que
-  se pasa deslizando o con su pestaña. Un toque y les llama o les abre WhatsApp; la misma persona puede tener
-  los dos botones.
-- **Casillas de aplicaciones** en una, dos o tres columnas: con una o dos se estiran
-  para ocupar la pantalla, y con tres son casi cuadradas. Si una app no está instalada, su casilla **se queda en su
-  sitio pero apagada**: la posición de cada icono es memoria muscular.
+- **Accesos directos de personas**: casillas con su nombre y la foto que tienen en
+  la agenda, debajo de las apps y tras el rótulo «Contactos favoritos», sin
+  límite, o en una segunda pantalla a la que se pasa deslizando o con su pestaña.
+  Un toque y les llama o les abre WhatsApp; la misma persona puede tener los dos
+  botones.
+- **Casillas de aplicaciones** de una a cuatro por fila, siempre cuadradas (con
+  una, filas): nunca se estiran, y el nombre se encoge lo justo para caber
+  entero, sin partir palabras. El familiar decide dónde va cada una. Si una app no
+  está instalada, su casilla **se queda en su sitio pero apagada**: la posición
+  de cada icono es memoria muscular.
 - **El círculo del asistente**, abajo en el centro, si el familiar lo enciende.
 - **Una foto de fondo**, si el familiar la pone, con el reloj y los rótulos sobre
   una franja lisa para que se sigan leyendo.
@@ -64,13 +67,15 @@ aguanta pausas largas y tiene un botón «Ya he terminado». Puede llamar o abri
 WhatsApp de un contacto guardado y abrir una casilla del inicio, o explicar cómo
 hacer algo con el móvil. Lo que dice en voz alta también se ve escrito.
 
-Es una conversación: cuando el móvil acaba de hablar, suena un pitido y vuelve a
-escuchar solo, así que se le puede contestar «sí», «no, mejor a Luis»,
-«siguiente» o «gracias» sin tocar nada. Lo hablado se olvida al cerrarlo.
+Una orden, una escucha: deja de oír en cuanto acaba la frase, y lo que suena más
+flojo que quien habla (la tele, alguien al fondo) no cuenta. Si no lo ha
+entendido, pide que se lo repitan y vuelve a escuchar una vez. Lo hablado se
+recuerda mientras está abierto y se olvida al cerrarlo.
 
-El familiar elige el modo: **«Lo hace»**, que siempre pregunta antes («¿Llamo a
-María?») y espera un «Sí», pulsado o dicho, o **«Explica cómo»**, que da los pasos de uno en uno y
-al acabar marca en el inicio el botón que hay que pulsar.
+El familiar elige el modo: **«Lo hace»**, el de fábrica, que dice lo que va a
+hacer («Llamo a María») y lo hace al acabar la frase, con un botón «Cancelar»
+mientras tanto, o **«Explica cómo»**, que da los pasos de uno en uno y al acabar
+marca en el inicio el botón que hay que pulsar.
 
 La voz se entiende en la nube (hoy Groq, gratis para pruebas). Al servicio solo
 le llegan la voz y los nombres, nunca los números de teléfono.
@@ -84,8 +89,9 @@ arriba, con un botón para ponerlo.
 | Apartado | Qué permite |
 | --- | --- |
 | **Asistente de voz** | Encender el círculo del inicio (pide el permiso del micrófono) y elegir si lo hace o explica cómo. |
-| **Interfaz** | Tamaño de letra (tres niveles, encima del que ya tenga Android), una, dos o tres casillas por fila, contactos debajo de las apps o en otra pantalla, foto de fondo, tema claro u oscuro, y mostrar o no el reloj. Con una maqueta en pequeño que va cambiando. |
+| **Interfaz** | Tamaño de letra (cuatro niveles, combinados con el que ya tenga Android), de una a cuatro casillas por fila, contactos debajo de las apps o en otra pantalla, foto de fondo, tema claro u oscuro, y mostrar o no el reloj. Con una maqueta en pequeño que va cambiando. |
 | **Contactos** | Elegir personas del listín del móvil y encender, para cada una, su botón de llamadas, el de WhatsApp o los dos. |
+| **Colocar las casillas** | Decidir dónde va cada casilla y cada contacto en el inicio, arrastrándolos o con botones. |
 | **Aplicaciones** | Encender y apagar las casillas básicas y subir al inicio cualquier otra app del móvil. Entre las básicas está «Emergencias 112», apagada de fábrica, que abre el teléfono con el 112 marcado. Para instalar, la tienda del modo administrador. |
 | **Sonido y pantalla** | Atajo a los ajustes de Android de volumen, brillo y vibración. |
 | **Modo administrador** | Ver más abajo. |
@@ -118,8 +124,9 @@ se volverá a cerrar.
 - **Contraste**: mínimo 4,5:1 con el fondo; para texto y bordes se busca 7:1. El
   cian de la marca se queda en 2,32:1 sobre blanco, así que **no se usa para
   texto ni iconos sobre fondo claro**.
-- **Objetivo táctil**: nunca por debajo de 48 dp. En la práctica, mucho más: las
-  casillas del inicio pasan de 168 dp.
+- **Objetivo táctil**: nunca por debajo de 48 dp. Las casillas del inicio son
+  cuadradas y, con dos por fila, pasan de 140 dp; con cuatro, que lo pidieron
+  personas mayores en las pruebas, quedan en unos 70 dp.
 - **Texto** siempre en `sp` y desde la escala del tema (≈1,5 veces la de
   Material), para que respete el tamaño de letra del sistema. La letra es
   Inter, con la I y la l bien distintas, y va dentro de la app.
@@ -153,7 +160,7 @@ app/src/main/java/com/doado/
 ├── launcher/       Pantalla de inicio y la Activity, que lleva la navegación
 │                   y todo lo que abre Intents.
 ├── settings/       Ajustes: PIN, interfaz, contactos, apps y modo administrador.
-├── assistant/      Asistente de voz: grabar, entender, confirmar o guiar.
+├── assistant/      Asistente de voz: grabar, entender, hacerlo o guiar.
 ├── core/ui/        Tema, medidas y las piezas comunes de interfaz.
 └── data/           Apps instaladas, casillas, contactos y ajustes guardados.
 ```
@@ -270,9 +277,10 @@ Asumido, y escrito para no volver a discutirlo:
 - El modo administrador no puede impedir salir a Android.
 - La cuenta atrás va contra la hora del sistema: cambiarla altera el desbloqueo.
 - El número de un contacto se congela al añadirlo; si cambia en la agenda, Doado
-  sigue con el viejo.
+  sigue con el viejo. La foto sí se actualiza.
 - No hay videollamada: Android no ofrece una forma estándar de iniciarla.
-- Las casillas y los contactos no se pueden reordenar; las nuevas van al final.
+- Las casillas y los contactos nuevos van al final; luego el familiar los coloca
+  donde quiera en «Colocar las casillas».
 
 ---
 
@@ -287,6 +295,8 @@ Asumido, y escrito para no volver a discutirlo:
 | [`docs/estado.md`](docs/estado.md) | En qué punto está el trabajo. Es el único documento que caduca. |
 | [`design/presentacion/doado-de-un-vistazo.pdf`](design/presentacion/doado-de-un-vistazo.pdf) | El proyecto en diez láminas: perfiles, mapa de pantallas, un flujo por perfil, arquitectura, sistema visual y estado. Para presentar. |
 | `design/presentacion/ver-presentacion.html` | Las mismas diez láminas en el navegador. |
+| `web/index.html` | La web de presentación: una página con un móvil de Doado que se puede tocar. Se abre sin servidor. |
+| `design/video/` | El vídeo de marca de 53 s (1920 × 1080, 60 fps) con su música, y el código para volver a sacarlo. |
 | `design/*.dc.html` | El lienzo donde se diseñó la interfaz antes de escribirla. |
 | `CLAUDE.md` y `.claude/rules/` | El índice del proyecto y las normas de trabajo para quien (o lo que) toque el código. |
 | `.claude/skills/doado-brand/` | La marca: logo, colores, iconos, letra y tono, con los ficheros del logo. |

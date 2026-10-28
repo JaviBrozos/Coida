@@ -4,38 +4,48 @@
 > (obligación de `CLAUDE.md`). Máximo unas 50 líneas: lo antiguo se borra, el
 > historial completo está en git. El estado de cada caso de uso vive en la ERS.
 
-**Última actualización: 21/10/2026 · Gonzalo Gómez Blanco**
+**Última actualización: 28/10/2026 · Javier Brozos**
 
 ## Dónde estamos
 
-- Launcher completo: inicio y siete pantallas de ajustes tras el PIN, con límite
+- Launcher completo: inicio y ocho pantallas de ajustes tras el PIN, con límite
   de intentos (RNF-SEG-03) y recuperación del PIN (D-23).
-- Asistente de voz en pruebas (CU-04, CU-05, CU-15; D-25 a D-31, D-37, D-42).
-- Inicio personalizable (D-45 a D-48): una, dos o tres casillas por fila,
-  contactos aparte, foto de fondo y aviso si Doado no es la pantalla de inicio.
-- Letra: Inter, decidido el 21/10 (D-50); Atkinson ya no está en la app.
+- Probado el 28/10 con dos personas mayores. Salieron D-54 a D-59: casillas
+  cuadradas de 1 a 4 por fila, un tamaño de letra menos, fotos de la agenda,
+  «Contactos favoritos», asistente sin «¿Llamo a…?» y casillas que coloca el familiar.
+- Asistente de voz en pruebas (CU-04, CU-05, CU-15; D-25, D-37, D-56, D-58).
 - Casilla «Emergencias 112» (CU-17, D-51), apagada de fábrica.
+- Web en `web/` (D-52) y vídeo de marca en `design/video/` (D-53). Aún enseñan el
+  asistente con «¿Llamo a María?» y casillas estiradas.
 
 ## Sin probar
 
-- **El asistente con voz real**: los dos modos, aclarar, la casilla marcada, la
-  conversación, el «no» seco (D-42) y TalkBack con la interfaz nueva.
-- TalkBack con tres por fila, las pestañas y el aviso de inicio. Visto al 100 % y
-  al 200 %, en claro y en un móvil de 411 dp; falta uno de 360 dp y el tema oscuro.
-- La guía del asistente con tres por fila y con los contactos aparte.
-- Una foto real de cámara (girada) y el selector de documentos de Android 9 o antes.
-- La casilla de emergencias (D-51): compila. Verla en los dos temas y pedírsela al
-  asistente con voz real (el APK de prueba del 21/10 iba sin clave).
+- **El asistente con voz real y ruido de casa** (D-56, D-58): que corte al acabar
+  la frase, el «Cancelar» a tiempo, el «repítemelo» y TalkBack. En el emulador solo
+  se ha visto el camino sin voz.
+- **El Samsung del abuelo**: que salgan las cuatro opciones de casillas por fila.
+  Simulado a 320 dp en el emulador, con 1 a 4 por fila.
+- Las fotos de los contactos con contactos que tengan foto, y el permiso denegado.
+- «Colocar las casillas» con TalkBack. El arrastre y los botones, probados.
+- Lo último de las revisiones (contorno a trazos de lo apagado, pestañas en dos
+  líneas, inicio con el móvil girado, barra de «Colocar» con letra grande): compila
+  y pasa lint, pero no se ha visto, porque el emulador se cerró por falta de memoria.
+- Con la misma persona en dos contactos de la agenda que comparten número, la foto
+  puede salir de la otra (se busca por número).
+- Una foto de fondo real de cámara (girada) y el selector de documentos de
+  Android 9 o antes. El vídeo (D-53), escuchado con altavoces.
 
 ## Siguiente
 
-1. Probar con voz real, también con TalkBack. Cambiar la clave de Groq, que quedó
-   expuesta en una sesión de trabajo.
-2. CON-06: decidir con Gonzalo sobre `docs/propuestas/con-06-clave-asistente.md`.
-   Sin resolverlo no se publica.
-3. Auditoría del 13/10, por decidir: etiqueta «Hablar» bajo el círculo (afecta a
+1. Instalar la 1.4 en los dos móviles de la prueba y repetirla.
+2. Cambiar la clave de Groq, que quedó expuesta en una sesión de trabajo.
+3. CON-06 con Gonzalo. Sin resolverlo no se publica. Para Google Play, contar
+   también el permiso de contactos en la política de privacidad (D-57).
+4. Poner al día la web (copia a mano en `JaviBrozos/doado-web`), el vídeo y las
+   capturas con D-54 a D-59. De la web, decidir lista de espera y hosting.
+5. Auditoría del 13/10, por decidir: etiqueta «Hablar» bajo el círculo (afecta a
    D-28) e icono de Ajustes a 6,71:1 en claro.
-4. Ver el icono nuevo (D-36) con varias máscaras; pasar el texto del logo a Inter
+6. Ver el icono nuevo (D-36) con varias máscaras y pasar el texto del logo a Inter
    Bold en trazos (D-50).
 
 Deuda menor: sin pruebas automáticas, solo español, isotipo sin usar (D-28) y
@@ -45,10 +55,7 @@ capturas viejas.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
-| 21/10 | Gonzalo | Casilla «Emergencias 112» (CU-17, D-51, ERS 0.10): abre el teléfono con el 112 marcado, sirena en rojo, apagada de fábrica y con nota en Ajustes → Aplicaciones. El asistente la abre o guía hasta ella ante una emergencia |
-| 21/10 | Gonzalo | La letra se queda en Inter (D-50, sustituye a D-44): fuera los cuatro `.ttf` de Atkinson de `res/font/`, y marca, diseño, README y `CLAUDE.md` corregidos |
-| 20/10 | Javier | Pestaña «Contactos» (cabe con la letra grande). Los avisos de pantalla de inicio llevan una equis: al cerrarlos explican cómo ponerlo más adelante; el del inicio se queda cerrado y el de Ajustes vuelve en cada visita. Por la auditoría: nombres sin tope de líneas, I y l distintas en Inter (`ss04`), solo dos grosores de Inter, y desde el inicio en Android 9 o antes el botón va a Ajustes, tras el PIN |
-| 20/10 | Javier | Inicio: tres por fila casi cuadradas (D-45), contactos en una segunda pantalla con pestañas (D-46), foto de fondo con franjas lisas (D-47) y aviso con botón si Doado no es la pantalla de inicio, en el inicio y en Ajustes (D-48). PIN: de ~0,9 s a ~0,12 s, con 10 000 vueltas y derivando durante la pausa (D-49). Interruptores «Llamadas» y «WhatsApp»; «Elegir pantalla de inicio». Letra Inter en prueba; titulares a 1,3 de interlineado, cifras de ancho fijo y guiones en español. ERS 0.9. Visto en el emulador |
-| 20/10 | Javier | Fusión en `main` de las ramas de Gonzalo `letra-atkinson` y `package-manager-fondo` |
-| 20/10 | Gonzalo | Letra Atkinson Hyperlegible Next en la app (D-44, sustituye a D-17): cuatro grosores en `res/font/`, cuerpo en SemiBold |
-| 20/10 | Gonzalo | Las consultas al `PackageManager` de `reload()` pasan a segundo plano (D-43): fuera el riesgo de ANR |
+| 28/10 | Javier | Asistente: el micrófono se abre antes. El pitido suena ya grabando y se tira lo que coincide con él, y su generador se crea una vez. Mientras escucha, en vez de la barra de volumen, el micrófono en grande late con la voz y suelta anillos, en degradado de la marca. Visto en el emulador, con la voz del ordenador por los altavoces |
+| 28/10 | Javier | Lo que salió de la prueba con dos personas mayores (D-54 a D-59, ERS 0.11). Casillas siempre cuadradas, de 1 a 4 por fila y ofrecidas en cualquier pantalla: era lo que en el Samsung solo dejaba poner dos. El nombre se encoge sin partir palabras, con la misma letra en toda la rejilla, y lo apagado lleva contorno a trazos. Letra con un nivel más pequeño («Normal», 0,85), migrando la clave para que nadie cambie de tamaño. «Contactos favoritos» y la foto de la agenda (`READ_CONTACTS`, solo para los guardados). Asistente: dice «Llamo a María» y llama, con «Cancelar»; solo vuelve a escuchar para pedir que le repitan; final de frase medido contra la voz (1,2 s, tope de 10 s); de fábrica, «Lo hace». Pantalla nueva «Colocar las casillas», con arrastre y botones. Arreglos de la auditoría de accesibilidad. Probado en el emulador a 411 y 320 dp |
+| 22/10 | Javier | Vídeo: a media velocidad y con pausas de lectura (1 s más 1 s por cada 15 caracteres), 53,2 s en total; música rehecha para esa duración. Por la auditoría de marca: textos secundarios a 32–34 px, fundas abiertas a 200 px, botón «No» junto a «Sí, llama», casilla señalada sin aro, lo oído aparece por palabras sin cursor, «Sus contactos» y «Tu PIN», fecha bien (miércoles), escenario con borde opaco y sin sombra. Salida `out/doado-video.mp4`, 10 Mb/s |
+| 22/10 | Javier | Vídeo de marca de 18 s en `design/video/` (D-53): 1920 × 1080 a 60 fps, H.264 y AAC, con el guion del encargo y el contenido de Doado (inicio, contactos, «A su medida», el asistente con «¿Llamo a María?», fundas de ajustes y la firma con su visto). Música y efectos propios a 120 BPM. Se renderiza en Chrome sin interfaz, sin instalar nada. Salida en `design/video/out/` |

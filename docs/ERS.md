@@ -5,8 +5,8 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.10 (borrador) |
-| Fecha | 21/10/2026 |
+| Versión | 0.11 (borrador) |
+| Fecha | 28/10/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
 
@@ -24,6 +24,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.8 | 19/10/2026 | CU-02: los accesos directos van en la rejilla del inicio, tras «Tus contactos», y sin límite (D-38). Una persona puede tener botón de llamada y de WhatsApp a la vez (D-40). En CU-05 el asistente los sitúa ahí | Javier Brozos Martínez |
 | 0.9 | 20/10/2026 | RNF-ACC-02: con tres por fila las casillas son casi cuadradas, de 96 dp de lado como mínimo, y cuatro por fila nunca (D-45). CU-02: los accesos directos pueden ir en una segunda pantalla del inicio, con pestañas (D-46). CU-08 añade la foto de fondo (D-47). CU-14: el inicio y Ajustes avisan si Doado no es la pantalla de inicio y ofrecen ponerlo (D-48) | Javier Brozos Martínez |
 | 0.10 | 21/10/2026 | CU-17 nuevo: la casilla «Emergencias 112», que abre el teléfono con el 112 marcado y la pone el familiar (D-51). CU-04: ante una emergencia, el asistente lleva a esa casilla si está | Gonzalo Gómez Blanco |
+| 0.11 | 28/10/2026 | Tras probar con dos personas mayores. RNF-ACC-02 y RNF-ACC-03: casillas siempre cuadradas, de 1 a 4 por fila, y un tamaño de letra por debajo del de siempre, con el texto encogiéndose sin partir palabras (D-54, D-55). CU-05, CU-04 y CU-15: el asistente dice lo que va a hacer y lo hace sin pedir un «Sí», y solo vuelve a escuchar para que se le repita la orden; de fábrica, «Lo hace» (D-56). RNF-USA-03: tiempos nuevos (D-58). CU-02 y RNF-PRI-01: rótulo «Contactos favoritos» y foto de la agenda (D-57). CU-10: el familiar coloca las casillas (D-59) | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -69,7 +70,7 @@ Hoy una persona mayor con un Android tiene soluciones sueltas: launchers simplif
 ### Qué aporta DOADO
 
 1. **Las tres piezas en un solo producto**: interfaz simplificada, control del familiar y asistente de IA. Hoy hay que combinar un launcher, un asistente generalista y, a veces, un móvil específico.
-2. **Un asistente hecho para mayores**: limitado a lo que el familiar ha configurado, que confirma antes de actuar y que puede guiar paso a paso en vez de solo ejecutar. Gemini hace lo contrario: es abierto y da por hecho que el usuario sabe configurarlo.
+2. **Un asistente hecho para mayores**: limitado a lo que el familiar ha configurado, que dice lo que va a hacer antes de hacerlo y que puede guiar paso a paso en vez de solo ejecutar. Gemini hace lo contrario: es abierto y da por hecho que el usuario sabe configurarlo.
 3. **Funciona en cualquier Android**: no exige comprar un Doro ni tener un Samsung. Los favoritos se definen por acción de Android, no por marca.
 4. **Accesibilidad como requisito medible**: no solo iconos grandes, sino contraste mínimo 7:1 en texto, objetivos de 48 dp o más, sin color dinámico y sin iconos que cambien de sitio (sección 4.2).
 5. **Bloqueado de verdad para la persona mayor**: PIN para los ajustes y modo administrador temporal para las salidas a Android, que se cierra solo a los 15 minutos. Se evita que el móvil quede abierto porque alguien olvidó volver a bloquearlo.
@@ -88,7 +89,7 @@ Tres actores: dos personas con distinto nivel de acceso y el asistente, que act�
 | --- | --- | --- | --- | --- |
 | ACT-01 | Persona mayor | Usuario final. Llama, escribe y hace fotos desde la pantalla de inicio, siempre de la misma forma. No entra en los ajustes. | Usuario, mayor | Actor principal. Se asume visión reducida, poca destreza con pantallas táctiles y poca experiencia previa con smartphones. |
 | ACT-02 | Familiar o cuidador | Configura el móvil tras el PIN: apps visibles, contactos de un toque, tamaño de letra y tema. Cuando necesita tocar Android por debajo (instalar apps, ajustes del sistema, cambiar la pantalla de inicio), activa el modo administrador durante 15 minutos (CU-12). | Configurador, tutor | Hereda de ACT-01. Suele estar presente de forma ocasional, no a diario. |
-| ACT-03 | Asistente de IA | Actor secundario (sistema). Interpreta órdenes habladas de ACT-01 y, según elija ACT-02, las ejecuta tras confirmar o guía paso a paso. Solo actúa sobre los contactos guardados y las casillas del inicio. | Asistente de voz | Se procesa en la nube (D-25). Nunca actúa sin un «Sí» pulsado (D-26). |
+| ACT-03 | Asistente de IA | Actor secundario (sistema). Interpreta órdenes habladas de ACT-01 y, según elija ACT-02, las ejecuta tras decir qué va a hacer, con opción a cancelar, o guía paso a paso. Solo actúa sobre los contactos guardados y las casillas del inicio. | Asistente de voz | Se procesa en la nube (D-25). Ya no pide un «Sí» (D-56). |
 
 El modo administrador no es un actor aparte: es un estado temporal en el que el familiar tiene más permisos. Por eso se modela como caso de uso (CU-12 a CU-14).
 
@@ -126,7 +127,7 @@ Se detallan los casos que más condicionan el diseño. El resto se describirá c
 | --- | --- |
 | Actor | ACT-01 Persona mayor |
 | Descripción | La persona mayor pulsa el acceso directo de un contacto en el inicio y el móvil le llama o abre su chat de WhatsApp, según lo configurado. |
-| Precondición | El familiar ha añadido el contacto y lo ha marcado para el inicio (CU-09). No hay límite: salen en la rejilla del inicio, tras el rótulo «Tus contactos» (D-38). Si el familiar lo elige, van en una segunda pantalla del inicio, a la que se llega deslizando o con la pestaña «Tus contactos» (D-46). Una persona puede tener dos accesos directos, uno para llamar y otro para WhatsApp (D-40). |
+| Precondición | El familiar ha añadido el contacto y lo ha marcado para el inicio (CU-09). No hay límite: salen en la rejilla del inicio, tras el rótulo «Contactos favoritos» (D-38), en el orden que elija el familiar (CU-10, D-59). Si el familiar lo elige, van en una segunda pantalla del inicio, a la que se llega deslizando o con la pestaña «Contactos favoritos» (D-46). Cada acceso directo lleva la foto que esa persona tiene en la agenda o, si no tiene o no hay permiso, su inicial (D-57). Una persona puede tener dos accesos directos, uno para llamar y otro para WhatsApp (D-40). |
 | Postcondición | Se inicia la llamada o se abre el chat de WhatsApp de ese contacto. |
 | Importancia | Alta |
 
@@ -141,7 +142,7 @@ Se detallan los casos que más condicionan el diseño. El resto se describirá c
 - 2: Sin permiso de llamada, el sistema abre el marcador con el número escrito y el usuario pulsa llamar.
 - 3: Si WhatsApp no está instalado, el acceso directo aparece apagado y no se puede pulsar.
 
-Comentario: el número se copia al añadir el contacto; si cambia en la agenda, DOADO conserva el antiguo (límite asumido).
+Comentario: el número se copia al añadir el contacto; si cambia en la agenda, DOADO conserva el antiguo (límite asumido). La foto, en cambio, se vuelve a leer cada vez que se vuelve al inicio.
 
 ##### CU-06. Acceder a los ajustes con PIN
 
@@ -195,7 +196,7 @@ Comentario: el modo no impide salir a Android de verdad; solo cierra las salidas
 | Campo | Valor |
 | --- | --- |
 | Actor | ACT-01 Persona mayor, ACT-03 Asistente de IA |
-| Descripción | La persona mayor pide algo hablando (por ejemplo, «llama a María») y el asistente lo hace tras confirmarlo o le guía para hacerlo, según haya elegido el familiar (CU-15). |
+| Descripción | La persona mayor pide algo hablando (por ejemplo, «llama a María») y el asistente dice lo que va a hacer y lo hace, o le guía para hacerlo, según haya elegido el familiar (CU-15). |
 | Precondición | El familiar ha activado el asistente (CU-15) y el móvil tiene conexión. En el inicio se ve el círculo del asistente, abajo en el centro. |
 | Postcondición | Modo «Lo hace»: la llamada, el chat o la app quedan abiertos. Modo «Explica cómo»: el usuario ha visto los pasos y vuelve al inicio con el botón que debe pulsar marcado. |
 | Importancia | Alta |
@@ -205,34 +206,30 @@ Acciones admitidas, y solo estas: llamar a un contacto guardado, abrir su WhatsA
 **Secuencia normal**
 
 1. El usuario pulsa el círculo del asistente.
-2. El sistema escucha y muestra «Te escucho» con un botón «Ya he terminado». Da la frase por acabada tras 2,5 s de silencio o al pulsar el botón (RNF-USA-03).
+2. El sistema escucha y muestra «Te escucho» con un botón «Ya he terminado». Da la frase por acabada tras 1,2 s de silencio, cuando lo que suena es bastante más flojo que la voz de quien habla, o al pulsar el botón (RNF-USA-03).
 3. El sistema transcribe la voz, muestra lo que ha entendido e interpreta la orden.
-4. Modo «Lo hace»: el sistema pregunta en voz alta y por escrito («¿Llamo a María?»). Al acabar de hablar, da un pitido y vuelve a escuchar solo, con la pregunta en pantalla.
-5. El usuario pulsa «Sí» o lo dice («sí», «vale», «llámala»).
-6. El sistema vuelve al inicio y ejecuta la acción.
+4. Modo «Lo hace»: el sistema dice en voz alta y por escrito lo que va a hacer («Llamo a María»), con un botón grande «Cancelar». No pregunta ni vuelve a escuchar (D-56).
+5. Al acabar la frase, el sistema vuelve al inicio y ejecuta la acción.
 
-La conversación sigue así tras cada respuesta del sistema: el usuario puede contestar hablando («no, mejor a Luis», «siguiente», «repite», «gracias») sin pulsar nada. El sistema recuerda lo hablado mientras el asistente está abierto (D-31).
+El sistema recuerda lo hablado mientras el asistente está abierto: si se le repite una orden o se le dice otra con «Hablar otra vez», entiende «no, mejor a Luis».
 
 **Secuencia alternativa: modo «Explica cómo»**
 
-4. El sistema enseña y lee los pasos de uno en uno («Mira en "Tus contactos", debajo de las apps: el botón de María está en la fila 1, a la izquierda»).
+4. El sistema enseña y lee los pasos de uno en uno («Mira en "Contactos favoritos", debajo de las apps: el botón de María está en la fila 1, a la izquierda»).
 5. El usuario pasa de paso con «Siguiente» o lo vuelve a oír con «Repetir».
 6. Al terminar, el sistema vuelve al inicio con la casilla o el contacto marcado (relleno de color y borde grueso, anunciado por TalkBack), sin mover nada. La marca se quita al pulsar cualquier cosa o el botón de inicio del móvil; no desaparece sola, ni al apagarse la pantalla.
 
 **Excepciones**
 
-- 2: No se oye voz en 10 s: el sistema dice «No te he oído» y ofrece probar otra vez.
-- 3: Orden no entendida: el sistema pide que la repita. No ejecuta nada.
-- 3: Hay dudas entre varios contactos o casillas: el sistema pregunta y muestra un botón grande por opción.
+- 2-3: No se oye voz en 10 s, o la orden no se entiende: el sistema pide que se la repita y vuelve a escuchar una sola vez. Si tampoco, se queda con «Probar otra vez». No ejecuta nada.
+- 3: Hay dudas entre varios contactos o casillas: el sistema pregunta y muestra un botón grande por opción. No vuelve a escuchar.
 - 3: Orden fuera de lo permitido (comprar, marcar un número dictado…): el sistema explica que no puede hacerlo.
 - 3: Sin conexión, o el servicio falla: mensaje en lenguaje llano que dice qué hacer; el inicio sigue funcionando (RNF-DIS-01).
-- 5: El usuario pulsa o dice «No»: el sistema no hace nada y lo dice.
-- 5: El usuario contesta con algo que no es un sí limpio («sí, pero a Luis»): el sistema no actúa; lo interpreta como una orden nueva y vuelve a preguntar.
-- 5: El usuario no dice nada en 10 s: el sistema deja de escuchar sin dar error y se queda en la misma pantalla, con «Hablar otra vez».
+- 4: El usuario pulsa «Cancelar» mientras el sistema dice lo que va a hacer: no hace nada y lo dice.
 - 1..5: El usuario pulsa «Cancelar» o sale de Doado: el sistema deja de escuchar y descarta la petición. Mientras el asistente está abierto, la pantalla no se apaga sola.
-- 2: Con TalkBack, el sistema espera a que TalkBack anuncie «Te escucho» y da un pitido antes de grabar.
+- 2: Con TalkBack, el sistema espera a que TalkBack anuncie «Te escucho» y da un pitido antes de grabar. En el paso 4 espera lo que tarda TalkBack en leer la frase antes de actuar.
 
-Comentario: la confirmación es obligatoria en todas las acciones (D-26), pulsada o dicha (D-31). Las órdenes se procesan en la nube (D-25).
+Comentario: desde el 28/10/2026 no se pide un «Sí» (D-56, que sustituye a D-26 y D-31): en la prueba con dos personas mayores, la pregunta las liaba. Las órdenes se procesan en la nube (D-25).
 
 ##### CU-04. Pedir ayuda al asistente
 
@@ -254,7 +251,7 @@ Comentario: la confirmación es obligatoria en todas las acciones (D-26), pulsad
 
 - Las de CU-05.
 - 3: Pregunta médica, legal o de dinero: el sistema no responde y sugiere hablarlo con la familia o el médico.
-- 3: Emergencia: si el inicio tiene la casilla «Emergencias 112» (CU-17), el sistema la abre tras confirmarlo o guía hasta ella, según el modo; si no, indica cómo llamar al 112. Nunca marca él ningún número.
+- 3: Emergencia: si el inicio tiene la casilla «Emergencias 112» (CU-17), el sistema la abre tras decirlo o guía hasta ella, según el modo; si no, indica cómo llamar al 112. Nunca marca él ningún número.
 
 Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se sigue CU-05 en modo «Explica cómo», con pasos fijos y la casilla marcada. Si es sobre el móvil en general, los pasos los redacta el modelo y pueden no cuadrar con cada marca.
 
@@ -274,7 +271,7 @@ Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se 
 2. El sistema explica que la voz se envía a un servicio externo para entenderla.
 3. El usuario enciende «Botón del asistente en el inicio».
 4. Si falta el permiso del micrófono, el sistema lo pide en ese momento, con el familiar delante.
-5. El usuario elige «Lo hace» o «Explica cómo». Por defecto, «Explica cómo».
+5. El usuario elige «Lo hace» o «Explica cómo». Por defecto, «Lo hace» (D-56).
 6. Opcionalmente, pulsa «Probar el asistente».
 
 **Excepciones**
@@ -303,7 +300,7 @@ Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se 
 - 1: El móvil no tiene app de teléfono: la casilla sale apagada, en su sitio, como cualquier otra (D-05).
 - 2: El usuario no pulsa llamar: no se llama a nadie. Así un toque sin querer no llega al 112.
 
-Comentario: Android no deja a una app llamar sola a un número de emergencias; el paso por el teléfono es obligado, y además evita llamadas por error (D-51). El asistente puede abrir esta casilla tras un «Sí» o guiar hasta ella (CU-04), pero no marca nunca. Mandar la ubicación por SMS queda fuera: pediría permisos nuevos.
+Comentario: Android no deja a una app llamar sola a un número de emergencias; el paso por el teléfono es obligado, y además evita llamadas por error (D-51). El asistente puede abrir esta casilla tras decirlo o guiar hasta ella (CU-04), pero no marca nunca. Mandar la ubicación por SMS queda fuera: pediría permisos nuevos.
 
 ### 4.2 Requisitos no funcionales
 
@@ -312,19 +309,19 @@ En DOADO los no funcionales son el núcleo del producto, no un añadido: la acce
 | ID | Categoría | Requisito | Criterio de aceptación | Fuente |
 | --- | --- | --- | --- | --- |
 | RNF-ACC-01 | Accesibilidad | Contraste suficiente entre texto y fondo | Mínimo 4,5:1; 7:1 para texto y bordes. El cian de marca no se usa para texto ni iconos sobre fondo claro | CLAUDE.md |
-| RNF-ACC-02 | Accesibilidad | Objetivos táctiles grandes | Ningún elemento pulsable por debajo de 48 dp. Casillas del inicio de 168 dp de alto como mínimo con dos por fila y 112 dp con una. Con tres por fila, casi cuadradas: nunca menos de 96 dp de lado, y cuatro por fila nunca (D-45). El nombre se lee entero, sin límite de líneas. Excepción: si el ancho baja después de elegir tres (otro móvil, otro tamaño de pantalla), no se cambia solo de columnas; Interfaz lo avisa | CLAUDE.md |
-| RNF-ACC-03 | Accesibilidad | El texto respeta el tamaño de letra del sistema | Todo texto en sp desde la escala del tema (≈1,5× Material), con 3 niveles extra configurables. Con techo en tres sitios, para que no se coman la pantalla: 2,0 en total, 1,5 en la cabecera y las pestañas del inicio, y 1,25 dentro de las casillas de tres por fila (D-22, D-38, D-45) | CLAUDE.md |
+| RNF-ACC-02 | Accesibilidad | Objetivos táctiles grandes | Ningún elemento pulsable por debajo de 48 dp. Con 2 a 4 por fila, casillas cuadradas del lado que dé el ancho, que nunca se estiran; con una por fila, filas de 112 dp. Las cuatro opciones se ofrecen en cualquier pantalla (D-54). El nombre se lee entero, sin palabras partidas: la letra de todas las casillas baja lo que haga falta, hasta unos 8 dp en pantalla. Excepción elegida tras probar con dos personas mayores: con cuatro por fila en un móvil estrecho, la casilla queda por debajo de 70 dp | CLAUDE.md |
+| RNF-ACC-03 | Accesibilidad | El texto respeta el tamaño de letra del sistema | Todo texto en sp desde la escala del tema (≈1,5× Material), con 4 niveles configurables: «Normal» (0,85), «Grande» (1), «Muy grande» (1,15) y «Enorme» (1,3). Escala total entre 0,85 y 2,0, y 1,5 como mucho en la cabecera y las pestañas del inicio (D-22, D-38, D-55). Excepción elegida tras la prueba: con «Normal», o al encogerse en una casilla, la letra baja de 18 sp (D-54, D-55) | CLAUDE.md |
 | RNF-ACC-04 | Accesibilidad | Separación visual por borde, no por sombra | Ningún componente se distingue solo por sombra | CLAUDE.md |
 | RNF-ACC-05 | Accesibilidad | Colores fijos, sin color dinámico | Material You desactivado en el tema | CLAUDE.md |
 | RNF-ACC-06 | Accesibilidad | Posiciones estables | Una app no disponible se muestra apagada en su sitio, nunca se quita | CLAUDE.md |
 | RNF-ACC-07 | Accesibilidad | Compatible con lector de pantalla | Todo lo pulsable tiene etiqueta de TalkBack; los iconos con texto al lado son decorativos | CLAUDE.md |
 | RNF-USA-01 | Usabilidad | Tareas básicas sin aprendizaje | Cualquier tarea básica (abrir una app, llamar a un contacto) se hace con un solo toque desde el inicio. Excepción elegida por el familiar: con los contactos en otra pantalla, llamar son dos toques (la pestaña y el contacto), D-46 | Código |
 | RNF-USA-02 | Usabilidad | La persona mayor no puede desconfigurar el móvil sin querer | Los ajustes y las salidas a Android solo son accesibles tras el PIN o el modo administrador | README |
-| RNF-USA-03 | Usabilidad | El asistente no corta a quien habla despacio | Espera hasta 10 s a que empiece a hablar, da la frase por acabada tras 2,5 s de silencio y corta a los 30 s. Siempre hay un botón «Ya he terminado». Todo lo que dice en voz alta se ve escrito, con «Repetir». Valores de partida en `VoiceTuning.kt`, a ajustar con personas reales | Propuesta |
+| RNF-USA-03 | Usabilidad | El asistente no corta a quien habla despacio ni oye la casa entera | Espera hasta 10 s a que empiece a hablar, da la frase por acabada tras 1,2 s de silencio y corta a los 10 s. Lo que suena bastante más flojo que la voz de quien habla (la tele, alguien al fondo) cuenta como silencio (D-58). Siempre hay un botón «Ya he terminado». Todo lo que dice en voz alta se ve escrito, con «Repetir». Valores de partida en `VoiceTuning.kt`, a ajustar con personas reales | Propuesta |
 | RNF-SEG-01 | Seguridad | El PIN se guarda protegido | PIN derivado con PBKDF2 y sal aleatoria, en un fichero de preferencias propio que queda fuera de las reglas de copia de seguridad. Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Salir de Doado cierra los ajustes: al volver hay que repetir el PIN. Se exceptúa la ida y vuelta que inicia el propio Doado (tienda, selector de contactos, ajustes de Android). Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-SEG-03 | Seguridad | No se puede probar el PIN a ciegas | Un solo contador de fallos para el PIN y la respuesta de recuperación. Los fallos 1 a 4 no bloquean y, desde el cuarto de la misma visita, se ofrece volver al inicio con un botón grande; el 5.º bloquea 30 s, el 6.º 1 min, el 7.º 5 min, el 8.º 15 min y del 9.º en adelante 1 h. El bloqueo sobrevive a cerrar la app, a cambiar la hora y a reiniciar, y no afecta al inicio. Cumplido desde el 30/09/2026 | Propuesta (D-24) |
-| RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | Solo se lee el contacto elegido en el selector, sin permiso sobre toda la agenda | Código |
+| RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | El nombre y el número salen del contacto elegido en el selector. Con el permiso de contactos (D-57), solo se busca la foto de los números guardados en Doado, uno a uno; nunca se recorre la agenda. Las fotos no salen del móvil ni se guardan en disco | Código |
 | RNF-PRI-02 | Privacidad | Tratamiento de datos del asistente conforme al RGPD | Al servicio externo solo salen el audio de cada frase, su transcripción, las últimas frases de la conversación en curso y los nombres de contactos y casillas; nunca los números de teléfono. Ni el audio ni la conversación se guardan en el móvil: se olvidan al cerrar el asistente. El familiar lo acepta al activar el asistente, tras leer la nota. Pendiente antes de publicar: base legal formal y contrato con el proveedor | Propuesta |
 | RNF-DIS-01 | Disponibilidad | Las funciones básicas funcionan sin conexión | Abrir apps y llamar no dependen de internet. Sin conexión, el asistente dice en lenguaje llano que la necesita y que los botones siguen funcionando | Propuesta |
 | RNF-COM-01 | Compatibilidad | Funciona en móviles de cualquier marca | minSdk 24; favoritos definidos por acción de Android, no por paquete | CLAUDE.md |
@@ -357,7 +354,7 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | Término | Definición |
 | --- | --- |
 | Launcher | Pantalla de inicio de Android: la app que se abre al pulsar Inicio y desde la que se lanzan las demás. |
-| Casilla | Botón grande del inicio que abre una app. |
+| Casilla | Botón cuadrado del inicio que abre una app (con una por fila, una fila de alto fijo). Su sitio lo elige el familiar y no cambia solo. |
 | Acceso directo de persona | Botón del inicio con el nombre de un contacto que le llama o abre su WhatsApp. |
 | Modo administrador | Periodo de 15 minutos en el que DOADO habilita la tienda, los ajustes de Android y el cambio de pantalla de inicio. |
 | PIN de ajustes | Código de 4 cifras que protege los ajustes del familiar. |
@@ -368,7 +365,7 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 
 ## 7. Conflictos pendientes de resolución
 
-Una decisión abierta, del asistente. No bloquea las pruebas, pero sí publicar. Los conflictos cerrados no se listan y están razonados en `docs/decisiones.md`: CON-05 (recuperar un PIN olvidado, D-23, 29/09/2026), y el 13/10/2026 CON-01 (la voz se procesa en la nube, D-25), CON-02 (ninguna acción sin confirmación, D-26), CON-03 (botón fijo en el inicio, D-28) y CON-04 (actúa o guía, lo elige el familiar, D-27).
+Una decisión abierta, del asistente. No bloquea las pruebas, pero sí publicar. Los conflictos cerrados no se listan y están razonados en `docs/decisiones.md`: CON-05 (recuperar un PIN olvidado, D-23, 29/09/2026), y el 13/10/2026 CON-01 (la voz se procesa en la nube, D-25), CON-02 (ninguna acción sin confirmación, D-26; revisado el 28/10/2026 por D-56, que quita la confirmación), CON-03 (botón fijo en el inicio, D-28) y CON-04 (actúa o guía, lo elige el familiar, D-27).
 
 | ID | Conflicto | Opciones | Afecta a |
 | --- | --- | --- | --- |

@@ -25,7 +25,7 @@ está en la ERS, sección 6.
 - **ACT-02, el familiar**: entra con PIN y configura. Es quien lee los textos
   largos, no ella.
 - **ACT-03, el asistente**: oye a la persona mayor y, según elija el familiar,
-  hace lo que pide tras confirmarlo o le explica cómo hacerlo. Solo con los
+  dice lo que va a hacer y lo hace, o le explica cómo hacerlo. Solo con los
   contactos guardados y las casillas del inicio.
 
 Fichas completas en la ERS, sección 4.1.1.
@@ -46,8 +46,10 @@ dilo y espera respuesta; no la cambies dentro de otra tarea.
 - Sin librería de navegación.
 - El asistente se procesa en la nube, con un cliente en formato OpenAI que
   permite cambiar de proveedor desde `local.properties` (D-25).
-- El asistente **nunca** actúa sin un «Sí», pulsado o dicho; el dicho lo reconoce el móvil, no la IA (D-26, D-31).
-- Actuar o guiar lo elige el familiar; de fábrica, guía (D-27).
+- El asistente dice lo que va a hacer y lo hace, sin pedir un «Sí», con «Cancelar» mientras lo dice; solo vuelve a escuchar para que le repitan una orden (D-56, que sustituye a D-26 y D-31).
+- Actuar o guiar lo elige el familiar; de fábrica, «Lo hace» (D-27, D-56).
+- Casillas cuadradas, de 1 a 4 por fila, con el nombre encogido para no partir palabras (D-54); cuatro tamaños de letra, el menor por debajo del de siempre (D-55).
+- Solo el familiar cambia el orden de las casillas, en «Colocar las casillas» (D-59).
 - Se activa con el círculo fijo del inicio, no con palabra clave; Ajustes es el
   botón pequeño de la esquina (D-28).
 
@@ -62,13 +64,14 @@ producto de los dos creadores, no detalles de implementación.
 
 ## Lo que Doado no hace
 
-Sin servidor propio, sin cuentas, sin analítica, sin leer toda la agenda. No
+Sin servidor propio, sin cuentas, sin analítica, sin leer toda la agenda (solo la
+foto de los números guardados, D-57). No
 añadas permisos ni dependencias nuevas sin pedirlo antes de forma explícita. El
 asistente habla con un servicio externo, pero solo le manda la voz de la orden y
 nombres, nunca números de teléfono.
 
 ## Antes de proponer una función nueva
 
-Mírala en la ERS: puede que ya sea un caso de uso (CU-01 a CU-16) con estado y
+Mírala en la ERS: puede que ya sea un caso de uso (CU-01 a CU-17) con estado y
 prioridad. Si lo es, cítalo por su ID. Si no lo es, es una propuesta nueva y se
 dice como tal.

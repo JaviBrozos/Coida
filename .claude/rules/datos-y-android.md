@@ -34,7 +34,8 @@ paths:
   ni `excludeFromRecents` sin avisar**: un error ahí deja el móvil sin pantalla
   de inicio. El comportamiento esperado de INICIO, ATRÁS y recientes está en
   `docs/arquitectura.md`.
-- **No añadas permisos por iniciativa propia.** Hoy hay tres: `CALL_PHONE` y
+- **No añadas permisos por iniciativa propia.** Hoy hay cuatro: `CALL_PHONE`,
+  `READ_CONTACTS` (solo para la foto de los contactos guardados, D-57) y
   `RECORD_AUDIO`, que son peligrosos y se piden con el familiar delante (al añadir
   un contacto y al encender el asistente), e `INTERNET`, solo para el asistente.
   La persona mayor nunca ve un diálogo de permisos.

@@ -39,6 +39,8 @@ Ningún cambio está terminado sin esto, lo haga una persona o Claude:
 | Qué hay hecho, qué falta y quién hizo qué | [`docs/estado.md`](docs/estado.md) |
 | Propuestas en discusión, antes de decidirlas (hoy, CON-06) | [`docs/propuestas/`](docs/propuestas) |
 | Presentación en diez láminas, con PDF | [`design/presentacion/`](design/presentacion) |
+| Web de presentación, una página sin servidor (D-52) | [`web/`](web) |
+| Vídeo de marca de 53 s, con su código (D-53) | [`design/video/`](design/video) |
 | Vista para alguien de fuera | [`README.md`](README.md) |
 
 Los valores exactos (colores, medidas, claves) los manda el código: si un
@@ -75,7 +77,7 @@ inspiración, pero **mandan las normas de Doado**; qué se tomó y qué no, en D
 | --- | --- | --- |
 | **ACT-01 Persona mayor** | Llama, escribe y hace fotos desde el inicio, siempre igual. No entra en los ajustes. | Pantalla de inicio |
 | **ACT-02 Familiar o cuidador** | Configura el móvil: apps, contactos de un toque, letra y tema. | Ajustes, tras el PIN |
-| **ACT-03 Asistente de IA** | Interpreta órdenes habladas y, tras un «Sí», actúa; o guía. | Círculo fijo del inicio |
+| **ACT-03 Asistente de IA** | Interpreta órdenes habladas y dice lo que va a hacer y lo hace, con opción a cancelar (D-56); o guía. | Círculo fijo del inicio |
 
 El **modo administrador** no es un actor: es un estado de 15 minutos en el que el
 familiar abre las salidas a Android. Fichas completas en la ERS, §4.1.1.
@@ -97,7 +99,8 @@ Si se rompe uno, se rompe el producto.
 
 - Servidor propio, cuentas de usuario ni analítica.
 - Permisos o dependencias nuevas sin acordarlo antes.
-- Leer toda la agenda: solo el contacto que elige el familiar en el selector.
+- Leer toda la agenda: solo el contacto que elige el familiar en el selector y,
+  con su permiso, la foto de los números guardados en Doado (D-57).
 - Impedir de verdad salir a Android: exigiría ser propietaria del dispositivo, y
   está descartado.
 
@@ -127,7 +130,7 @@ Por feature, no por capa:
 app/src/main/java/com/doado/
 ├── launcher/   Inicio y la Activity: navegación, permisos e Intents.
 ├── settings/   Ajustes: PIN, interfaz, contactos, apps y modo administrador.
-├── assistant/  Asistente de voz: grabar, nube (solo en cloud/), confirmar o guiar.
+├── assistant/  Asistente de voz: grabar, nube (solo en cloud/), hacerlo o guiar.
 ├── core/ui/    Tema, medidas y piezas comunes. Todo lo visual bebe de aquí.
 └── data/       Apps instaladas, casillas, contactos, ajustes y PIN guardados.
 ```

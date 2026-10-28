@@ -7,7 +7,7 @@
 > Las decisiones **todavía abiertas** no están aquí: viven en la ERS, sección 7,
 > y son sobre todo del asistente. No las cierres por tu cuenta.
 >
-> Última revisión: 18/10/2026.
+> Última revisión: 28/10/2026.
 
 ---
 
@@ -770,3 +770,217 @@ Los móviles con Android 12 o más tienen además «Emergencia SOS» (cinco puls
 del botón de encendido), que sí llama sola; se puede activar en los ajustes de
 Android.
 
+### D-52 · La web es una página estática con el móvil hecho en HTML (21/10/2026)
+
+**Contexto**: hacía falta una web para presentar Doado a quien no abre el
+repositorio, con la marca y sin prometer más de lo que hace.
+**Decisión**: una sola página en `web/index.html`, sin framework ni dependencias,
+que se abre sin servidor. Usa la marca de la skill: colores de `Color.kt`, la
+Inter de la app con `ss04` (D-50), copiada en `web/fonts/` con su licencia, e
+iconos copiados de `res/drawable`. Es oscura de fábrica, como la app, y en claro
+manda el marino. El hero es un móvil de Doado hecho en HTML, con las medidas de
+`DoadoDimens` a escala, que se puede tocar: casillas, contactos, el PIN y el
+asistente en sus dos modos, más unos selectores de letra, casillas por fila y
+tema. Las capturas reales van en la parte del familiar, copiadas en `web/img/`.
+La llamada a la acción es instalarlo: cuatro pasos y el comando de `adb`. Encima va
+una capa de movimiento aparte (`mv-*`) con un botón «Pausar movimiento», que
+arranca quieta si el sistema pide reducir movimiento; en reposo no esconde nada.
+**Descartado**: la Inter de Google Fonts, que pesa menos pero no trae `ss04`
+(solo `calt`, `ccmp`, `frac`, `tnum` y poco más): la I y la l volvían a ser
+iguales. Un hero con capturas o con vídeo, que no se pueden probar. Una
+lista de espera con formulario queda fuera por ahora: sin servidor propio, los
+correos los recogería un proveedor de terceros, y eso lo deciden los dos creadores.
+**Consecuencia**: la web repite el estado del proyecto (asistente en pruebas, APK
+de prueba, fuera de Google Play) y la letra de la marca: si cambian, se corrige
+`web/` en el mismo commit. La copia publicada como artifact sale del mismo
+fichero, entre las marcas `ARTIFACT:START` y `ARTIFACT:END`, sin el envoltorio
+y con la letra incrustada, porque el visor solo deja cargar letras de Google Fonts.
+La web pesa: unos 840 KB de letra, lo mismo que en la app. Para publicarla hay una copia en el repo privado `JaviBrozos/doado-web`, que no
+se actualiza sola: el original es `web/`.
+
+### D-53 · El vídeo de marca se pinta en Chrome sin interfaz, con la casilla de María de protagonista (22/10/2026)
+
+**Contexto**: Javier pidió un vídeo de 18 s a partir de un encargo pensado para
+un anuncio de música (guion segundo a segundo, una portada protagonista y una
+barra de reproducción fija abajo), pero para Doado, con los colores de la marca y
+su diseño gráfico. En la máquina no hay ffmpeg ni Node.
+**Decisión**: se respeta el guion del encargo con el contenido de Doado: el inicio
+con las casillas de fábrica, «Tus contactos», «A su medida», el asistente («Te
+escucho», «¿Llamo a María?», «Sí, llama») y la firma con su visto. La portada la
+hace la casilla de María; la barra fija, la del asistente; las fundas de discos,
+seis apartados de ajustes. Todo es función del tiempo (`window.seek(t)`) y se pinta
+en Chrome sin interfaz: canvas 2D, WebGL2 para la perspectiva, desenfoque de
+movimiento con cinco subfotogramas, H.264 y AAC con WebCodecs, con el codificador
+de la tarjeta, y un empaquetador MP4 propio. Python solo hace de servidor, con la
+biblioteca estándar. La música es propia, sintetizada con Web Audio a 120 BPM. La
+Inter lleva `ss04` horneado en el `cmap`, porque el canvas no deja activar rasgos
+OpenType.
+**Descartado**: instalar ffmpeg o Node, que habría metido programas nuevos en la
+máquina. El codificador de vídeo por software de Chrome, que se quedaba en unos
+4 Mb/s y dejaba bloques en las escenas oscuras. La portada abstracta que pedía el
+encargo, porque Javier pidió usar el diseño que ya existe. Cualquier logo o
+elemento de Spotify.
+**Consecuencia**: el vídeo se vuelve a sacar con un comando
+(`design/video/README.md`). Si cambian los iconos, la letra, los colores o los
+textos de la app, hay que regenerar los ficheros derivados y volver a renderizar.
+El MP4, el WAV y el cartel van en `design/video/out/`. La música se comprobó con
+espectrograma y niveles, pero nadie la ha escuchado aún.
+**Revisión del mismo día**: a 18 s había textos que no se podían leer. Javier pidió
+media velocidad, y además se para en cada texto hasta cumplir 1 s más 1 s por cada
+15 caracteres (la regla que propuso el auditor de marca): el vídeo dura 53,2 s. El
+guion sigue escrito en 18 s de escena y un mapa de tiempo (`WARP` en `escenas.js`)
+lo convierte; la música se rehízo para esa duración con el mismo mapa. Descartado:
+solo ralentizar, porque varios textos seguían sin llegar ni a un segundo entero en
+pantalla. A 10 Mb/s pesa unos 67 MB.
+
+### D-54 · Casillas siempre cuadradas, de 1 a 4 por fila y con la letra que quepa (28/10/2026)
+
+Pedido por Javier tras probar Doado con dos personas mayores: una con buena vista
+y soltura con el móvil, y otra mayor y con menos manejo. Sustituye a D-45 en el
+tope y en la forma.
+**Contexto**: a las dos les sobraba tamaño. Las casillas de dos por fila se
+estiraban hasta 300 dp de alto para llenar la pantalla y cambiaban de forma según
+cuántas hubiera: en un móvil bajo solo se veía una fila. Pedían tres o cuatro por
+fila. En el Samsung antiguo del abuelo, con menos de 360 dp de ancho, Interfaz ni
+siquiera ofrecía la de tres, y solo se podían poner dos por fila. También
+molestaban las palabras partidas («Mensaje/s»).
+**Decisión**:
+- Con dos o más por fila, la casilla es **cuadrada** (`aspectRatio(1f)`) y nunca
+  se estira. Con una por fila, es una fila de alto fijo (112 dp).
+- Se ofrecen siempre 1, 2, 3 y 4 por fila, mida lo que mida la pantalla. Con
+  cuatro, el hueco entre casillas baja a 10 dp.
+- El icono, los márgenes y el radio de las esquinas van en proporción al lado.
+- El texto nunca parte una palabra: baja de tamaño hasta que cada palabra cabe en
+  su línea y el texto entero en su hueco (`core/ui/FitText.kt`), hasta unos 8 dp en pantalla.
+- Todas las casillas de un apartado llevan la misma letra, la del nombre que menos
+  cabe, para que la rejilla se lea pareja. Solo si ni así cabe, sale «…».
+
+**Descartado**:
+- El `TextAutoSize` de Compose, que no detecta una palabra partida por letras.
+- Partir por sílabas con guion, que dependía de que el móvil tuviera los patrones
+  del español.
+- Dejar el máximo en tres, cuando las dos personas pidieron cuatro.
+
+**Consecuencia**: con cuatro por fila en un móvil de 360 dp, la casilla queda en
+unos 70 dp y el nombre puede bajar de los 18 sp del suelo de la ERS. RNF-ACC-02 y
+RNF-ACC-03 quedan con esta excepción. El área pulsable sigue por encima de 48 dp.
+
+### D-55 · Un tamaño de letra por debajo del de siempre (28/10/2026)
+
+Pedido por Javier en la misma prueba.
+**Contexto**: a las dos personas el tamaño «Normal» les parecía grande, e incluso
+pidieron uno menos.
+**Decisión**:
+- Cuatro tamaños sobre la escala de Android: «Normal» (0,85), «Grande» (1), «Muy
+  grande» (1,15) y «Enorme» (1,3). El antiguo «Normal» pasa a llamarse «Grande».
+- La letra se guarda en una clave nueva, `text_size_v2`. Si solo está la vieja
+  (`text_size`), se traduce un escalón hacia arriba: quien ya usaba Doado conserva
+  exactamente su tamaño.
+- Una instalación nueva arranca en el «Normal» nuevo.
+- El suelo de la escala total baja de 1 a 0,85.
+
+**Descartado**: cambiar el valor de la clave vieja, que habría encogido la letra a
+quien ya la tenía elegida. Quitar los tamaños grandes, que siguen ahí para quien
+los necesite.
+**Consecuencia**: con «Normal», la letra más pequeña baja de 18 a unos 15 sp. El
+suelo de 18 sp deja de ser absoluto.
+
+### D-56 · El asistente dice lo que va a hacer y lo hace, sin pedir un «Sí» (28/10/2026)
+
+Pedido por Javier en la misma prueba. Sustituye a D-26, a D-31 y al modo de
+fábrica de D-27.
+**Contexto**: la pregunta de confirmación («¿Llamo a María?») liaba muchísimo a
+las dos personas. Además, el micrófono se volvía a abrir solo tras cada frase y
+recogía la tele y las voces de la casa.
+**Decisión**:
+- En «Lo hace», el asistente dice «Llamo a María» y llama al acabar la frase, sin
+  preguntar. Mientras lo dice hay un botón grande «Cancelar».
+- Solo vuelve a abrir el micrófono por su cuenta si no ha entendido u oído la
+  orden, para pedir que se la repitan, y una sola vez. Después se queda con
+  «Probar otra vez».
+- En la guía, al aclarar entre dos personas y en las respuestas se avanza con
+  botones. «Hablar otra vez» sirve para decirle otra cosa.
+- El prompt pide al modelo que ante la duda aclare o diga que no ha entendido,
+  nunca que adivine. La lista blanca, y que el número salga del almacén, no
+  cambian.
+- El modo de fábrica pasa a ser «Lo hace». Quien ya lo tenía elegido conserva lo
+  suyo.
+- Fuera `VoiceReplies`: ya no hay respuestas cortas que reconocer.
+
+**Descartado**:
+- Actuar al instante sin decir nada, que no deja ver ni oír a tiempo si ha
+  entendido mal.
+- Mantener la confirmación solo dicha o solo pulsada, que seguía siendo una
+  segunda pregunta.
+
+**Consecuencia**: si entiende mal, llama a quien no es, salvo que se pulse
+«Cancelar» mientras lo dice: al menos 2,5 s, y con TalkBack lo que tarde en leerlo y 6 s más. Ante dos personas
+posibles sigue preguntando, con un botón para cada una.
+
+### D-57 · Permiso de contactos, solo para la foto de los guardados en Doado (28/10/2026)
+
+Pedido por Javier en la misma prueba.
+**Contexto**: las dos personas querían ver en Doado la foto que cada contacto
+tiene en la agenda. El selector de contactos solo da acceso a la fila elegida, y
+la foto está en otra: sin `READ_CONTACTS`, Android no deja abrirla.
+**Decisión**:
+- Se añade `READ_CONTACTS`. Se pide al añadir un contacto, con el familiar delante.
+  Si se deniega, Ajustes → Contactos lo explica y ofrece pedirlo otra vez.
+- Con el permiso, `ContactPhotos` busca **solo** los números guardados en Doado,
+  uno a uno, y lee su foto.
+- Las fotos viven en memoria: no se copian a disco, no salen del móvil y no van al
+  asistente. Se vuelven a leer al volver al inicio, por si cambian.
+- Sin foto, o sin permiso, sale la inicial de siempre.
+
+**Descartado**: copiar la foto al elegir el contacto sin pedir permiso, que
+Android no permite. Leer la agenda entera para ofrecer fotos, que es justo lo que
+Doado no hace.
+**Consecuencia**: Doado pasa a tener cuatro permisos. La regla de no leer toda la
+agenda se matiza: el permiso lo permitiría, pero el código solo pregunta por los
+números guardados. Para Google Play habrá que contarlo en la política de
+privacidad.
+
+### D-58 · El final de la frase se mide contra la propia voz (28/10/2026)
+
+Revisa los tiempos de D-37.
+**Contexto**: en la prueba con dos personas mayores, el micrófono seguía abierto
+2,5 s después de la orden y alargaba la grabación con el ruido de fondo. Whisper
+lo transcribía todo y el modelo se liaba.
+**Decisión**:
+- Para seguir contando voz, ahora hay que llegar a una cuarta parte del nivel medio
+  de quien habla (`SPEECH_DROP_RATIO`, unos −12 dB). La tele o alguien al fondo
+  suenan más flojos que la voz pegada al móvil, y cuentan como silencio.
+- El silencio que cierra la frase baja de 2,5 s a 1,2 s.
+- El tope de la grabación baja de 30 s a 10 s.
+- Para empezar a contar voz hace falta más volumen: un suelo de 250 en vez de 150,
+  y 3,2 veces el ruido en vez de 2,5.
+- Los márgenes del audio que se envía bajan a 0,3 s.
+- Sigue sin supresor de ruido ni ganancia automática.
+
+**Descartado**: volver al supresor de ruido de Android, que D-37 ya quitó porque
+estropeaba lo que oye Whisper.
+**Consecuencia**: quien hace una pausa de más de 1,2 s a mitad de frase queda
+cortado. Entonces el asistente no la entiende y pide que se la repitan. Son
+valores de partida: se afinan con el registro `DoadoVoz` en el móvil real.
+
+### D-59 · El familiar coloca las casillas arrastrándolas (28/10/2026)
+
+Pedido por Javier.
+**Contexto**: las casillas salían en el orden en que se iban poniendo, y no había
+forma de decidir dónde va cada una.
+**Decisión**:
+- Una pantalla nueva, Ajustes → «Colocar las casillas», a la que también se llega
+  desde Aplicaciones. Es una réplica del inicio, con las mismas columnas.
+- Se mantiene pulsada una casilla, se levanta (rellena de acento) y se arrastra.
+  Las demás le hacen hueco, y cerca de los bordes la rejilla se desplaza sola.
+- Como alternativa, se toca una casilla y luego su sitio, o se usan «Mover antes» y
+  «Mover después». TalkBack los ofrece también como acciones.
+- Las apps y los contactos se colocan cada uno en su apartado.
+- El orden se guarda en las mismas claves de siempre.
+
+**Descartado**: solo botones, que con muchas casillas es lento. Una librería de
+arrastre, que sería una dependencia nueva.
+**Consecuencia**: arrastrar ya no está prohibido en toda la app. Se permite en las
+pantallas del familiar, nunca en lo que usa la persona mayor, y siempre con otra
+forma de hacerlo. Las casillas siguen sin moverse solas: solo las mueve el
+familiar.
