@@ -1,0 +1,1985 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Doado convierte cualquier Android en un móvil sencillo para personas mayores: casillas grandes que no se mueven, sus personas a un toque y un asistente de voz que pregunta antes de actuar.">
+<!-- ARTIFACT:START (de aquí a ARTIFACT:END es lo que se publica como artifact; el resto es el envoltorio para servirla sola) -->
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Web de Doado</title>
+<style>
+/* Letra de la marca (D-50): la Inter de la app, solo SemiBold y Bold, con ss04. Va en fonts/ y no desde
+   Google Fonts porque la de Google no trae ss04, y sin él la I y la l son dos palos iguales. En el artifact
+   va incrustada. Los pesos por debajo de 650 usan la SemiBold, como el cuerpo de la app. */
+@font-face{font-family:"Doado Inter";src:url(fonts/inter_semibold.ttf) format("truetype");font-weight:100 650;font-style:normal;font-display:swap}
+@font-face{font-family:"Doado Inter";src:url(fonts/inter_bold.ttf) format("truetype");font-weight:651 900;font-style:normal;font-display:swap}
+/* Layout: columna de 1160 px con bandas a sangre. El hero parte el texto y un móvil vivo: lo que se promete, se toca. */
+:root{
+  /* Marca (core/ui/Color.kt). Oscura de fábrica, como la app. */
+  --bg:#0A1622;          /* tinta */
+  --band:#0B1D2E;        /* marino */
+  --panel:#122A3E;       /* superficie */
+  --panel-high:#17384F;  /* superficie alta */
+  --border:#3D7AA6;      /* línea: 3,94:1 sobre tinta */
+  --rule:#3D7AA6;
+  --line-soft:#17384F;
+  --fg:#F2F7FB;          /* 16,9:1 sobre tinta */
+  --fg-muted:#9FC4DC;    /* 9,9:1 sobre tinta · 8:1 sobre superficie */
+  --accent:#29B6F0;      /* cian: 7,86:1 sobre tinta */
+  --accent-hover:#6CCFFA;
+  --on-accent:#0A1622;
+  --accent-text:#29B6F0;
+  --mark:rgba(41,182,240,.22);
+  --halo:rgba(41,182,240,.16);
+  --frame:#0B1D2E;
+  --font:"Doado Inter",Roboto,system-ui,sans-serif;
+  --mono:ui-monospace,"Cascadia Mono",Consolas,"Roboto Mono",monospace;
+  --ease:cubic-bezier(.2,0,0,1);
+  --maxw:1160px;
+  color-scheme:dark;
+}
+/* En claro manda el marino: el cian no llega a 3:1 sobre blanco, así que solo pinta superficies grandes. */
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#FFFFFF;--band:#E9F3FA;--panel:#FFFFFF;--panel-high:#DCEBF5;--border:#0B1D2E;--rule:#54697A;--line-soft:#DCEBF5;
+    --fg:#0B1D2E;--fg-muted:#10618F;--accent:#0B1D2E;--accent-hover:#10618F;--on-accent:#FFFFFF;--accent-text:#0B1D2E;
+    --mark:rgba(41,182,240,.38);--halo:rgba(41,182,240,.24);color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#FFFFFF;--band:#E9F3FA;--panel:#FFFFFF;--panel-high:#DCEBF5;--border:#0B1D2E;--rule:#54697A;--line-soft:#DCEBF5;
+  --fg:#0B1D2E;--fg-muted:#10618F;--accent:#0B1D2E;--accent-hover:#10618F;--on-accent:#FFFFFF;--accent-text:#0B1D2E;
+  --mark:rgba(41,182,240,.38);--halo:rgba(41,182,240,.24);color-scheme:light;
+}
+
+/* Base */
+*,*::before,*::after{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+/* --nav-h es el alto de la barra: con el móvil apaisado baja para dejarle sitio al móvil del hero. */
+:root{--nav-h:76px}
+@media (max-height:500px) and (orientation:landscape){:root{--nav-h:60px}}
+html{scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h) + 20px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-feature-settings:"ss04";font-size:1.125rem;line-height:1.6;overflow-x:clip;-webkit-font-smoothing:antialiased}
+button,input{font-feature-settings:inherit}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+img{max-width:100%;height:auto;display:block}
+[hidden]{display:none!important}
+a{color:inherit}
+h1,h2,h3,p,figure{margin:0}
+h1,h2,h3{font-weight:700;letter-spacing:0;text-wrap:balance}
+/* Con la letra muy grande, una palabra larga («accesibilidad») no cabe en la línea de un móvil: se parte antes
+   de salirse. Las columnas de rejilla van con mínimo 0 para que una palabra así no ensanche la columna entera. */
+body{overflow-wrap:break-word}
+.sec-head,.statement,.flow-step,.chat,.chat-lines,.try,.cmd,.shot,.fig,.closing-in,.mv-cmp,.foot-brand,.foot-col,.stage{grid-template-columns:minmax(0,1fr)}
+p{text-wrap:pretty}
+:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.i{fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.sr{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+/* Los márgenes van en variables para que lo que se desplaza de lado (las capturas) pueda salir hasta el borde. */
+.wrap{--gl:max(16px,env(safe-area-inset-left,0px));--gr:max(16px,env(safe-area-inset-right,0px));max-width:var(--maxw);margin-inline:auto;padding-left:var(--gl);padding-right:var(--gr)}
+@media (min-width:700px){.wrap{--gl:max(32px,env(safe-area-inset-left,0px));--gr:max(32px,env(safe-area-inset-right,0px))}}
+
+/* Tipografía: una sola familia, la de la marca, con la jerarquía hecha de tamaño y peso */
+.eyebrow{font-size:1rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-text)}
+.h1{font-size:clamp(2.75rem,6.2vw,4.9rem);line-height:1.04}
+/* Con zoom fuerte, «mayores» a 44 px no cabe en la columna, y cada palabra del titular es un bloque que no se parte. */
+@media (max-width:299px){.h1{font-size:2.25rem}}
+.h2{font-size:clamp(2rem,4.2vw,3.25rem);line-height:1.1}
+.lead{font-size:clamp(1.2rem,1.7vw,1.375rem);line-height:1.55;color:var(--fg-muted);max-width:40rem}
+/* El acento es la franja; el texto, el de siempre: cian encima de la franja y la luz del hero bajaba de 4,5:1. */
+.mark{background:linear-gradient(transparent 60%,var(--mark) 60%);color:var(--fg);padding-inline:.04em}
+
+/* Botones */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:56px;padding:0 26px;border-radius:18px;border:2px solid var(--accent);font:inherit;font-size:1.125rem;font-weight:700;text-decoration:none;cursor:pointer;transition:transform .12s var(--ease),background-color .18s var(--ease),border-color .18s var(--ease),color .18s var(--ease)}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:var(--accent);color:var(--on-accent)}
+.btn-primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn-ghost{background:transparent;color:var(--fg);border-color:var(--border)}
+.btn-ghost:hover{border-color:var(--accent)}
+.btn-sm{display:inline-flex;align-items:center;gap:8px;min-height:48px;padding:0 18px;border-radius:14px;border:2px solid var(--border);background:transparent;color:var(--fg);font:inherit;font-size:1rem;font-weight:700;cursor:pointer;transition:border-color .18s var(--ease)}
+.btn-sm:hover{border-color:var(--accent)}
+.btn-sm .i{width:20px;height:20px}
+
+/* Barra */
+.nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:9;background:var(--bg);background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .2s var(--ease)}
+.nav.is-scrolled{border-bottom-color:var(--line-soft)}
+.nav-in{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;min-height:var(--nav-h)}
+.brand{display:inline-flex;align-items:center;gap:12px;min-height:48px;text-decoration:none;font-size:1.5rem;font-weight:700;color:var(--fg)}
+.brand svg{width:34px;height:34px;color:var(--accent);flex:none}
+.nav-links{display:flex;gap:2px;margin-left:auto}
+.nav-links a{padding:12px 14px;border-radius:12px;text-decoration:none;font-weight:600;color:var(--fg-muted);transition:color .18s var(--ease),background-color .18s var(--ease)}
+.nav-links a:hover{color:var(--fg);background:var(--panel-high)}
+.nav-cta{display:flex;align-items:center;gap:10px}
+.nav-cta .btn{min-height:48px;padding:0 20px;font-size:1rem}
+.theme-btn{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:transparent;color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0;flex:none;transition:border-color .18s var(--ease)}
+.theme-btn:hover{border-color:var(--accent)}
+.theme-btn .i{width:24px;height:24px}
+/* «Pruébalo» dentro del menú solo hace falta cuando el botón de la barra no cabe (ver el bloque de movimiento). */
+.nav-links .nav-try{display:none}
+.nav-menu{display:none;align-items:center;justify-content:center;gap:8px;min-width:48px;min-height:48px;padding:0 16px 0 12px;border-radius:14px;border:2px solid var(--border);background:transparent;color:var(--fg);font:inherit;font-size:1rem;font-weight:700;cursor:pointer;flex:none;transition:border-color .18s var(--ease)}
+.nav-menu:hover{border-color:var(--accent)}
+.nav-menu .i{width:24px;height:24px;flex:none}
+.nav-menu .menu-x,.nav-menu[aria-expanded="true"] .menu-bars{display:none}
+.nav-menu[aria-expanded="true"] .menu-x{display:block}
+/* En móvil los enlaces viven en un menú desplegable bajo la barra: un botón «Menú» de 48 px lo abre y lo
+   cierran Escape, elegir un enlace o tocar fuera. Fondo opaco, no translúcido: así el texto no pierde contraste. */
+@media (max-width:900px){
+  .nav-menu{display:inline-flex}
+  .nav-cta{margin-left:auto}
+  .nav-links{display:none}
+  .nav.is-open{background:var(--bg)}
+  .nav.is-open .nav-links{position:absolute;top:100%;left:0;right:0;display:flex;flex-direction:column;gap:0;margin:0;padding:4px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px));background:var(--bg);border-bottom:2px solid var(--border);max-height:calc(100vh - var(--nav-h) - env(safe-area-inset-top,0px));max-height:calc(100svh - var(--nav-h) - env(safe-area-inset-top,0px));overflow-y:auto;overscroll-behavior:contain}
+  .nav.is-open .nav-links a{display:flex;align-items:center;min-height:56px;padding:8px 4px;border-radius:0;border-bottom:1px solid var(--line-soft);font-size:1.25rem;font-weight:700;color:var(--fg)}
+  .nav.is-open .nav-links a:last-child{border-bottom:0}
+}
+/* En un móvil estrecho todo se aprieta un poco para que quepa en una fila; por debajo de 380 px el texto «Menú»
+   se queda solo para el lector y el botón, en icono. */
+@media (max-width:27.5em){.nav-in{column-gap:12px}.nav-cta{gap:8px}.brand{gap:8px}.brand svg{width:30px;height:30px}.nav-menu{padding:0 14px 0 10px}}
+@media (max-width:23.6875em){.nav-menu{padding:0;width:48px}.nav-menu-txt{position:absolute;width:1px;height:1px;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}}
+/* Con zoom fuerte ni así cabe en una fila: la barra pasa a dos y deja de ir pegada arriba, que taparía media pantalla. */
+@media (max-width:299px){.nav{position:relative;top:auto}.nav-in{flex-wrap:wrap;padding-block:6px}.nav-cta{margin-left:0}}
+
+/* Hero */
+.hero{position:relative;isolation:isolate;padding-block:clamp(28px,5vw,72px) clamp(72px,9vw,120px)}
+.hero-grid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);grid-template-areas:"copy stage" "try stage";column-gap:clamp(32px,6vw,96px);row-gap:40px}
+.hero-copy{grid-area:copy;align-self:start;display:grid;gap:24px;min-width:0}
+.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+.proof{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:10px 24px;color:var(--fg-muted);font-size:1.0625rem;font-weight:600}
+.proof li{display:inline-flex;align-items:center;gap:8px}
+.proof .i{width:22px;height:22px;color:var(--accent-text);stroke-width:2.2}
+.stage{grid-area:stage;align-self:start;justify-self:center;position:sticky;top:88px;display:grid;justify-items:center;gap:18px;min-width:0;max-width:100%}
+.stage::before{content:"";position:absolute;z-index:-1;inset:-8% -30% 10%;background:radial-gradient(closest-side,var(--halo),transparent);pointer-events:none}
+.stage-hint{display:flex;align-items:center;justify-content:center;gap:10px;max-width:24rem;min-height:3.2em;text-align:center;font-size:1.0625rem;font-weight:600;color:var(--fg-muted)}
+.try{grid-area:try;min-width:0;display:grid;gap:18px;padding:clamp(18px,2.4vw,26px);border:2px solid var(--border);border-radius:24px;background:var(--panel)}
+.try-head{display:grid;gap:4px}
+.try-head h2{font-size:1.25rem;line-height:1.3}
+.try-head p{color:var(--fg-muted);font-size:1.0625rem}
+.try-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 20px}
+@media (max-width:940px){.hero-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"copy" "stage" "try"}.stage{position:relative;top:auto}}
+@media (max-width:520px){.try-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Selector segmentado: el elegido va relleno, así se distingue también en gris */
+.seg{border:0;margin:0;padding:0;min-width:0}
+.seg legend{float:left;width:100%;padding:0;margin-bottom:8px;font-size:1rem;font-weight:700;color:var(--fg-muted)}
+.seg-row{clear:both;display:flex;flex-wrap:wrap;gap:6px}
+.seg input{position:absolute;opacity:0;width:1px;height:1px;margin:0;pointer-events:none}
+.seg label{white-space:normal;text-align:center;flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 14px;border:2px solid var(--border);border-radius:14px;font-size:1.0625rem;font-weight:600;cursor:pointer;transition:background-color .12s var(--ease),border-color .12s var(--ease),color .12s var(--ease)}
+.seg label:hover{border-color:var(--accent)}
+.seg input:checked+label{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.seg input:focus-visible+label{outline:3px solid var(--accent);outline-offset:2px}
+
+/* El móvil: medidas en dp de la app (core/ui/DoadoDimens) a escala. Tiene su propio tema, aparte del de la página. */
+.phone{
+  --dp:.8px;--letra:1;--sp:calc(var(--dp) * var(--letra));
+  --p-bg:#0A1622;--p-tile:#122A3E;--p-tile-high:#17384F;--p-line:#3D7AA6;--p-fg:#F2F7FB;--p-muted:#9FC4DC;
+  --p-primary:#29B6F0;--p-on-primary:#0A1622;--p-off:#A3B8C6;--p-plate:#0A1622;
+  /* Rojo de error del tema (Theme.kt), solo para la sirena de Emergencias 112: 8,67:1 sobre la casilla (D-51). */
+  --p-sos:#FFB4AB;--p-note:#17384F;
+  position:relative;width:calc(360 * var(--dp) + 24px);max-width:100%;padding:12px;border-radius:54px;background:var(--frame);border:2px solid var(--border)
+}
+.phone[data-tema="claro"]{--p-bg:#FFFFFF;--p-tile:#FFFFFF;--p-tile-high:#E9F3FA;--p-line:#0B1D2E;--p-fg:#0B1D2E;--p-muted:#10618F;--p-primary:#0B1D2E;--p-on-primary:#FFFFFF;--p-off:#54697A;--p-plate:#E9F3FA;--p-sos:#B3261E;--p-note:#E9F3FA}
+/* El aro de foco sigue el tema del móvil, no el de la página: con la página en claro sería marino sobre tinta. */
+.phone :focus-visible{outline-color:var(--p-primary)}
+.phone .tile.is-marked:focus-visible{outline-color:var(--p-fg);outline-offset:7px}
+@media (max-height:880px) and (min-width:941px){.phone{--dp:.7px}}
+@media (max-height:760px) and (min-width:941px){.phone{--dp:.6px}}
+@media (max-width:360px){.phone{--dp:.72px}}
+.screen{position:relative;height:calc(780 * var(--dp));border-radius:42px;overflow:hidden;background:var(--p-bg);color:var(--p-fg);font-size:calc(22 * var(--sp));line-height:1.35;transition:background-color .18s var(--ease),color .18s var(--ease)}
+/* En móvil el móvil no va fijo: si la ventana es baja (apaisado, o un móvil pequeño) la pantalla se acorta
+   para que el móvil quepa entero bajo la barra, y lo que no entra se desplaza dentro, como en la app. La letra
+   no se encoge: encogerla la dejaría por debajo de 16 px. */
+@media (max-width:940px){
+  .screen{height:min(calc(780 * var(--dp)),max(240px,calc(100vh - var(--nav-h) - 56px)));height:min(calc(780 * var(--dp)),max(240px,calc(100svh - var(--nav-h) - 56px)))}
+}
+/* Con zoom fuerte el móvil se estrecha hasta la columna: a dos o tres por fila, las casillas no llegaban a 48 px. */
+@media (max-width:299px){
+  .phone[data-cols] .tiles{grid-template-columns:minmax(0,1fr)}
+  /* La hora y el botón de ajustes no caben juntos: el botón baja, a la derecha, y no se sale de la pantalla. */
+  .home-top{flex-wrap:wrap}
+  .corner{margin-left:auto}
+  /* El móvil ocupa todo el ancho y adelgaza el marco: así las teclas del PIN, tres por fila, llegan a 48 px. */
+  .stage{justify-self:stretch;max-width:none;margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px))) calc(-1 * max(16px,env(safe-area-inset-right,0px)))}
+  .phone{padding:6px;border-radius:36px}
+  .screen{border-radius:30px}
+  .phone .ov{padding-inline:8px}
+  .phone .keys{gap:6px}
+  .stage-hint{padding-inline:16px}
+}
+.sb{position:absolute;inset:0 0 auto;z-index:4;height:calc(34 * var(--dp));display:flex;align-items:center;justify-content:space-between;padding:0 calc(28 * var(--dp));font-size:16px;line-height:1;font-weight:600;font-variant-numeric:tabular-nums;color:var(--p-fg);background:var(--p-bg);transition:background-color .18s var(--ease)}
+.sb-bat{position:relative;width:20px;height:10px;border:1.5px solid currentColor;border-radius:3px}
+.sb-bat::after{content:"";position:absolute;inset:1.5px 6px 1.5px 1.5px;background:currentColor;border-radius:1px}
+.home{position:absolute;inset:calc(34 * var(--dp)) 0 0;overflow-y:auto;scrollbar-width:none;padding:calc(12 * var(--dp)) calc(20 * var(--dp)) calc(168 * var(--dp));scroll-padding-bottom:calc(140 * var(--dp));display:flex;flex-direction:column;gap:calc(16 * var(--dp))}
+.home::-webkit-scrollbar{display:none}
+.home-top{display:flex;justify-content:space-between;align-items:flex-start;gap:calc(12 * var(--dp))}
+.clock{font-size:calc(40 * var(--sp));font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.date{font-size:max(16px,calc(20 * var(--sp)));font-weight:600;line-height:1.3;color:var(--p-fg)}
+.date::first-letter{text-transform:uppercase}
+.corner{flex:none;width:max(48px,calc(64 * var(--dp)));height:max(48px,calc(64 * var(--dp)));padding:0;border-radius:50%;border:calc(2 * var(--dp)) solid var(--p-line);background:transparent;color:var(--p-muted);display:grid;place-items:center;cursor:pointer}
+.corner .i{width:calc(32 * var(--dp));height:calc(32 * var(--dp))}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:calc(16 * var(--dp))}
+.phone[data-cols="1"] .tiles{grid-template-columns:minmax(0,1fr)}
+.phone[data-cols="3"] .tiles{grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:calc(12 * var(--dp))}
+.tile{appearance:none;font:inherit;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(10 * var(--dp));min-height:calc(168 * var(--dp));padding:calc(14 * var(--dp)) calc(10 * var(--dp));border:calc(2 * var(--dp)) solid var(--p-line);border-radius:calc(28 * var(--dp));background:var(--p-tile);color:var(--p-fg);font-size:max(16px,calc(24 * var(--sp)));font-weight:600;line-height:1.2;text-align:center;cursor:pointer;transition:border-color .12s var(--ease),background-color .12s var(--ease),color .12s var(--ease)}
+.tile:hover{border-color:var(--p-primary)}
+.tile:active{background:var(--p-tile-high);border-color:var(--p-primary)}
+.tile .i{flex:none;width:calc(72 * var(--dp));height:calc(72 * var(--dp));color:var(--p-primary)}
+/* Un nombre que no cabe se corta por sílabas, como en la app, y nunca a mitad de letra. */
+.t{display:flex;flex-direction:column;align-items:center;gap:calc(2 * var(--dp));min-width:0;overflow-wrap:break-word;-webkit-hyphens:auto;hyphens:auto}
+.t small{font-size:max(16px,calc(18 * var(--sp)));font-weight:600;color:var(--p-muted)}
+.tile.is-off,.tile.is-off .i,.tile.is-off small{color:var(--p-off)}
+.ini{flex:none;width:calc(72 * var(--dp));height:calc(72 * var(--dp));border-radius:50%;background:var(--p-plate);color:var(--p-primary);display:grid;place-items:center;font-size:calc(34 * var(--sp));font-weight:700;line-height:1}
+/* Como ContactsLabel: el icono en tono apagado y el texto en el color de siempre. */
+.rotulo{display:flex;align-items:center;gap:calc(12 * var(--dp));font-size:max(16px,calc(24 * var(--sp)));font-weight:700;color:var(--p-fg);padding:calc(8 * var(--dp)) 0 0 calc(4 * var(--dp))}
+.rotulo .i{flex:none;width:calc(28 * var(--dp));height:calc(28 * var(--dp));color:var(--p-muted)}
+.tile.is-sos .i{color:var(--p-sos)}
+.phone[data-sos="off"] .tile.is-sos{display:none}
+/* Contactos en otra pantalla (D-46): dos pestañas siempre a la vista, la elegida rellena. */
+.home-tabs{display:none;grid-template-columns:repeat(auto-fit,minmax(min(100%,8.5em),1fr));gap:calc(16 * var(--dp))}
+.phone[data-contactos="aparte"] .home-tabs{display:grid}
+.home-tab{appearance:none;font:inherit;min-width:0;min-height:max(48px,calc(64 * var(--dp)));padding:calc(6 * var(--dp)) calc(4 * var(--dp));border-radius:calc(24 * var(--dp));border:calc(2 * var(--dp)) solid var(--p-line);background:transparent;color:var(--p-fg);font-size:max(16px,calc(21 * var(--sp)));font-weight:600;line-height:1.15;overflow-wrap:break-word;-webkit-hyphens:auto;hyphens:auto;cursor:pointer}
+.home-tab[aria-pressed="true"]{background:var(--p-primary);border-color:var(--p-primary);color:var(--p-on-primary)}
+.phone[data-contactos="aparte"] .rotulo,
+.phone[data-contactos="aparte"][data-tab="apps"] [data-pane="people"],
+.phone[data-contactos="aparte"][data-tab="people"] [data-pane="apps"]{display:none}
+.phone[data-cols="1"] .tile{flex-direction:row;justify-content:flex-start;text-align:left;gap:calc(20 * var(--dp));padding-inline:calc(24 * var(--dp))}
+.phone[data-cols="1"] .t{align-items:flex-start}
+.phone[data-cols="1"] .tile .i,.phone[data-cols="1"] .ini{width:calc(54 * var(--dp));height:calc(54 * var(--dp))}
+.phone[data-cols="3"] .tile{min-height:calc(96 * var(--dp));aspect-ratio:auto;padding:calc(8 * var(--dp)) calc(4 * var(--dp));gap:calc(6 * var(--dp));font-size:max(16px,calc(20 * var(--dp) * min(var(--letra), 1.25)))}
+.phone[data-cols="3"] .tile .i,.phone[data-cols="3"] .ini{width:calc(48 * var(--dp));height:calc(48 * var(--dp))}
+.phone[data-cols="3"] .ini{font-size:calc(24 * var(--dp) * min(var(--letra), 1.25))}
+.phone[data-cols="3"] .t small{font-size:max(16px,calc(18 * var(--dp)))}
+/* Señalar sin mover: la casilla se rellena de acento y gana un aro; no cambia de sitio */
+.tile.is-marked{background:var(--p-primary);border-color:var(--p-primary);color:var(--p-on-primary);box-shadow:0 0 0 calc(4 * var(--dp)) var(--p-bg),0 0 0 calc(8 * var(--dp)) var(--p-primary)}
+.tile.is-marked .i,.tile.is-marked .t small{color:var(--p-on-primary)}
+.assist{position:absolute;z-index:2;left:50%;bottom:calc(28 * var(--dp));width:calc(96 * var(--dp));height:calc(96 * var(--dp));margin-left:calc(-48 * var(--dp));padding:0;border:0;border-radius:50%;background:var(--p-primary);color:var(--p-on-primary);box-shadow:0 0 0 calc(8 * var(--dp)) var(--p-bg);display:grid;place-items:center;cursor:pointer;transition:background-color .12s var(--ease),color .12s var(--ease)}
+.assist .i{width:calc(46 * var(--dp));height:calc(46 * var(--dp))}
+.assist:active{background:var(--p-tile-high);color:var(--p-fg)}
+.assist::after{content:"";position:absolute;inset:0;border-radius:50%;border:calc(3 * var(--dp)) solid var(--p-primary);opacity:0;pointer-events:none;animation:hint 2.6s var(--ease) 1s 4}
+@keyframes hint{0%{transform:scale(1);opacity:.8}80%,100%{transform:scale(1.45);opacity:0}}
+
+/* Pantallas encima del inicio: asistente, PIN y resultado */
+.ov{position:absolute;inset:0;z-index:3;overflow-y:auto;scrollbar-width:none;display:flex;flex-direction:column;gap:calc(14 * var(--dp));padding:calc(46 * var(--dp)) calc(20 * var(--dp)) calc(24 * var(--dp));background:var(--p-bg);color:var(--p-fg);animation:ovIn .18s var(--ease)}
+@keyframes ovIn{from{opacity:0}to{opacity:1}}
+/* Como en la app: todo alineado a la izquierda, sin equis; se sale con «Volver», «Cancelar» o «No». */
+.ov-back{align-self:flex-start;display:inline-flex;align-items:center;gap:calc(10 * var(--dp));min-height:max(48px,calc(64 * var(--dp)));padding:0 calc(22 * var(--dp)) 0 calc(16 * var(--dp));border-radius:99px;border:calc(2 * var(--dp)) solid var(--p-line);background:transparent;color:var(--p-fg);font:inherit;font-size:max(16px,calc(24 * var(--sp)));font-weight:700;cursor:pointer}
+.ov-back .i{width:calc(28 * var(--dp));height:calc(28 * var(--dp))}
+.ov-body{flex:1 0 auto;display:flex;flex-direction:column;align-items:flex-start;justify-content:flex-start;gap:calc(16 * var(--dp));text-align:left;min-height:0}
+.ov-body>*{flex:none}
+.ov-body.is-center{align-items:center;justify-content:center;text-align:center}
+.badge{width:calc(64 * var(--dp));height:calc(64 * var(--dp));border-radius:50%;background:var(--p-plate);color:var(--p-primary);display:grid;place-items:center}
+/* La barra que se mueve con la voz (LevelBar) */
+.lvl{width:100%;height:calc(24 * var(--dp));padding:calc(4 * var(--dp));border:calc(2 * var(--dp)) solid var(--p-line);border-radius:99px}
+.lvl i{display:block;height:100%;width:40%;border-radius:99px;background:var(--p-primary);animation:lvl 1.4s var(--ease) infinite alternate}
+@keyframes lvl{0%{width:6%}35%{width:58%}60%{width:24%}100%{width:72%}}
+.ov-noteCard{display:flex;gap:calc(12 * var(--dp));padding:calc(16 * var(--dp));border-radius:calc(20 * var(--dp));border:calc(2 * var(--dp)) solid var(--p-line);background:var(--p-note);font-size:max(16px,calc(20 * var(--sp)));line-height:1.35}
+.ov-noteCard .i{flex:none;width:calc(26 * var(--dp));height:calc(26 * var(--dp));color:var(--p-primary)}
+.ov-step{display:inline-flex;align-items:center;min-height:calc(36 * var(--dp));padding:0 calc(14 * var(--dp));border-radius:99px;border:calc(2 * var(--dp)) solid var(--p-primary);color:var(--p-primary);font-size:max(16px,calc(18 * var(--sp)));font-weight:700}
+.badge .i{width:calc(32 * var(--dp));height:calc(32 * var(--dp))}
+.ov-title{font-size:calc(30 * var(--sp));font-weight:700;line-height:1.25}
+.ov-heard{font-size:max(16px,calc(22 * var(--sp)));font-weight:600;color:var(--p-muted)}
+.ov-note{font-size:max(16px,calc(20 * var(--sp)));line-height:1.35;color:var(--p-muted)}
+.ov-actions{display:grid;gap:calc(12 * var(--dp))}
+.v-btn .i{flex:none;width:calc(28 * var(--dp));height:calc(28 * var(--dp))}
+.v-btn{appearance:none;font:inherit;display:inline-flex;align-items:center;justify-content:center;gap:calc(10 * var(--dp));min-height:calc(72 * var(--dp));padding:0 calc(16 * var(--dp));border-radius:calc(20 * var(--dp));border:calc(2 * var(--dp)) solid var(--p-line);background:transparent;color:var(--p-fg);font-size:max(16px,calc(24 * var(--sp)));font-weight:700;cursor:pointer}
+.v-btn.primary{background:var(--p-primary);border-color:var(--p-primary);color:var(--p-on-primary)}
+.check{width:calc(104 * var(--dp));height:calc(104 * var(--dp));color:var(--p-primary)}
+.check circle{fill:none;stroke:currentColor;stroke-width:2.5;opacity:.35}
+.check path{fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:36;stroke-dashoffset:36;animation:draw .5s var(--ease) .15s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.dots{display:flex;gap:calc(16 * var(--dp));margin-top:calc(8 * var(--dp))}
+.dots i{width:calc(20 * var(--dp));height:calc(20 * var(--dp));border-radius:50%;border:calc(2 * var(--dp)) solid var(--p-fg);transition:background-color .12s var(--ease)}
+.dots i.on{background:var(--p-fg)}
+.keys{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:calc(10 * var(--dp))}
+.key{appearance:none;font:inherit;min-height:max(48px,calc(64 * var(--dp)));border-radius:calc(14 * var(--dp));border:calc(2 * var(--dp)) solid var(--p-line);background:var(--p-tile);color:var(--p-fg);font-size:calc(30 * var(--dp));font-weight:700;font-variant-numeric:tabular-nums;cursor:pointer}
+.key:active{background:var(--p-tile-high);border-color:var(--p-primary)}
+.key-del{font-size:max(16px,calc(20 * var(--dp)))}
+
+/* Secciones */
+.section{padding-block:clamp(72px,10vw,128px)}
+.band{background:var(--band);border-block:1px solid var(--line-soft)}
+.sec-head{display:grid;gap:18px;max-width:48rem;margin-bottom:clamp(40px,5vw,64px)}
+.eyebrow-row{display:flex;flex-wrap:wrap;align-items:center;gap:12px}
+.pill{display:inline-flex;align-items:center;min-height:32px;padding:0 14px;border-radius:99px;border:2px solid var(--border);font-size:1rem;font-weight:700;color:var(--fg)}
+
+/* Lo que pasa hoy */
+.quotes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,3vw,40px);margin:28px 0 clamp(48px,6vw,80px)}
+.quote{margin:0;padding-top:20px;border-top:2px solid var(--border);font-size:clamp(1.375rem,2.2vw,1.75rem);line-height:1.3;font-weight:600;min-width:0}
+.statement{max-width:56rem;display:grid;gap:22px}
+@media (max-width:820px){.quotes{grid-template-columns:minmax(0,1fr)}}
+
+/* Rejillas de puntos con raya arriba: separan por borde, sin tarjetas */
+.features{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 56px}
+.features.three{grid-template-columns:repeat(3,minmax(0,1fr));gap:0 40px}
+.feature{display:grid;grid-template-columns:auto minmax(0,1fr);gap:18px;padding-block:28px;border-top:1px solid var(--rule)}
+.feature .i{width:40px;height:40px;color:var(--accent-text)}
+.feature .aa{display:block;width:40px;font-size:1.75rem;font-weight:700;line-height:40px;text-align:center;color:var(--accent-text)}
+.feature h3{font-size:1.3125rem;line-height:1.3;margin-bottom:6px}
+.feature p{color:var(--fg-muted)}
+@media (max-width:980px){.features.three{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:760px){.features,.features.three{grid-template-columns:minmax(0,1fr)}}
+
+/* Asistente */
+.split{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(40px,6vw,88px);align-items:start}
+@media (max-width:900px){.split{grid-template-columns:minmax(0,1fr)}}
+.promises{list-style:none;margin:36px 0 0;padding:0;display:grid}
+.promises li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px;padding-block:20px;border-top:1px solid var(--rule)}
+.promises .i{width:30px;height:30px;margin-top:2px;color:var(--accent-text)}
+.promises b{display:block;font-size:1.1875rem;margin-bottom:2px}
+.promises span{color:var(--fg-muted)}
+.chat{min-width:0;display:grid;gap:20px;padding:clamp(20px,3vw,32px);border:2px solid var(--border);border-radius:28px;background:var(--panel)}
+.chat-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px}
+.chat-head .seg{flex:1 1 15rem}
+.chat-lines{list-style:none;margin:0;padding:0;display:grid;gap:16px}
+.line{display:grid;gap:6px;justify-items:start;max-width:88%}
+.line.is-p{justify-self:end;justify-items:end;text-align:right}
+.who{font-size:1rem;font-weight:700;color:var(--fg-muted)}
+.bubble{display:inline-flex;align-items:center;gap:10px;padding:14px 18px;border-radius:20px;border:2px solid var(--border);font-size:1.25rem;line-height:1.45}
+.line.is-p .bubble{background:var(--panel-high);border-color:var(--panel-high)}
+.bubble .ok{flex:none;width:26px;height:26px;color:var(--accent-text);stroke-width:2.4}
+.chips{display:flex;gap:8px}
+.chip{display:inline-flex;align-items:center;min-height:40px;padding:0 16px;border-radius:12px;border:2px solid var(--border);font-weight:700}
+.chip.is-yes{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.chat-note{padding-top:16px;border-top:1px solid var(--rule);font-size:1.0625rem;color:var(--fg-muted)}
+/* Con zoom fuerte (390 px al 200 % son 195): menos relleno para que el botón y los bocadillos quepan enteros. */
+@media (max-width:299px){
+  .chat{padding:16px 10px}
+  .chat .btn-sm{padding:0 10px}
+  .line{max-width:100%}
+  .bubble{padding:10px 12px}
+  .bubble span{min-width:0;overflow-wrap:anywhere;-webkit-hyphens:auto;hyphens:auto}
+}
+.chat-lines.is-playing .line{opacity:0;transform:translateY(8px)}
+.chat-lines.is-playing .line.is-in{opacity:1;transform:none;transition:opacity .3s var(--ease),transform .3s var(--ease)}
+
+/* Familiar */
+.shots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(16px,2.5vw,32px);margin-bottom:clamp(48px,6vw,80px)}
+.shot{display:grid;gap:16px;align-content:start;min-width:0}
+.shot img{width:100%;border-radius:26px;border:2px solid var(--border);background:var(--panel)}
+.shot b{display:block;font-size:1.1875rem}
+.shot span{color:var(--fg-muted);font-size:1.0625rem}
+/* En móvil se desplazan de lado y llegan hasta el borde de la pantalla: la siguiente asoma entera por la
+   derecha, que es lo que avisa de que hay más. Debajo, unos puntos dicen cuántas hay y cuál se ve. */
+@media (max-width:760px){
+  .shots{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:16px;padding:0 var(--gr) 12px var(--gl);margin-inline:calc(-1 * var(--gl)) calc(-1 * var(--gr));scroll-padding-inline:var(--gl) var(--gr);overscroll-behavior-x:contain}
+  .shot{flex:0 0 min(74%,20rem);scroll-snap-align:start}
+  .shots:focus-visible{outline-offset:-3px}
+  .shots:has(+.shots-dots){margin-bottom:0}
+  .shots-dots{display:flex;justify-content:center;gap:10px;margin:12px 0 clamp(48px,6vw,80px)}
+  .shots-dots i{width:12px;height:12px;border-radius:50%;border:2px solid var(--fg-muted);transition:background-color .18s var(--ease)}
+  .shots-dots i.on{background:var(--fg-muted)}
+}
+@media (min-width:761px){.shots-dots{display:none}}
+
+/* Cifras */
+.figures{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border-top:2px solid var(--border)}
+.fig{display:grid;gap:12px;align-content:start;min-width:0;padding:28px 20px 28px 0}
+.fig+.fig{border-left:1px solid var(--rule);padding-left:24px}
+.fig-n{font-size:clamp(2.75rem,5vw,4.25rem);font-weight:700;line-height:1;color:var(--accent-text);font-variant-numeric:tabular-nums lining-nums;white-space:nowrap}
+.fig-n small{font-size:.4em;font-weight:600;margin-left:.15em}
+.fig p{color:var(--fg-muted)}
+@media (max-width:860px){
+  .figures{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .fig:nth-child(odd){border-left:0;padding-left:0}
+  .fig:nth-child(n+3){border-top:1px solid var(--rule)}
+}
+/* En un móvil, una cifra por fila: a dos columnas, con la letra al 200 %, «168 dp» se salía de la pantalla. */
+@media (max-width:480px){
+  .figures{grid-template-columns:minmax(0,1fr)}
+  .figures>.fig{border-left:0;padding:24px 0}
+  .figures>.fig+.fig{border-top:1px solid var(--rule)}
+}
+.rules-note{margin-top:40px;max-width:52rem;font-size:1.1875rem;color:var(--fg-muted)}
+.rules-note b{color:var(--fg)}
+
+/* Qué trae Doado */
+.services{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.5vw,32px)}
+.service{display:flex;flex-direction:column;gap:14px;min-width:0;padding:clamp(24px,2.8vw,36px);border:2px solid var(--border);border-radius:28px;background:var(--panel)}
+.service-ico{width:64px;height:64px;border-radius:50%;border:2px solid var(--border);display:grid;place-items:center;color:var(--accent-text)}
+.service-ico .i{width:34px;height:34px}
+.service h3{display:flex;flex-wrap:wrap;align-items:center;gap:10px;font-size:1.5rem;line-height:1.25}
+.service>p{color:var(--fg-muted)}
+.ticks{list-style:none;margin:4px 0 0;padding:0;display:grid;gap:10px}
+.ticks li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:10px;align-items:start;font-weight:600}
+.ticks .i{width:22px;height:22px;margin-top:3px;color:var(--accent-text);stroke-width:2.2}
+.service-link{margin-top:auto;align-self:flex-start;display:inline-flex;align-items:center;gap:8px;min-height:48px;font-weight:700;color:var(--accent-text);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:5px}
+.service-link .i{width:22px;height:22px;transition:transform .3s var(--ease)}
+.service-link:hover .i{transform:translateX(4px)}
+@media (max-width:980px){.services{grid-template-columns:minmax(0,1fr);max-width:40rem}}
+
+/* Cómo se pone en marcha: cuatro pasos unidos por una línea */
+.flow{--flow-gap:clamp(20px,3vw,40px);list-style:none;margin:0 0 clamp(32px,4vw,48px);padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--flow-gap)}
+.flow-step{position:relative;display:grid;gap:10px;align-content:start;min-width:0;padding-top:88px}
+.flow-n{position:absolute;top:0;left:0;z-index:1;width:64px;height:64px;border-radius:50%;border:2px solid var(--accent);background:var(--bg);color:var(--accent-text);display:grid;place-items:center;font-size:1.625rem;font-weight:700;font-variant-numeric:tabular-nums}
+.flow-step:not(:last-child)::after{content:"";position:absolute;top:31px;left:76px;right:calc(-1 * var(--flow-gap) + 12px);height:2px;background:var(--border);transform-origin:0 50%}
+.flow-step h3{font-size:1.3125rem;line-height:1.3}
+.flow-step p{color:var(--fg-muted)}
+@media (max-width:900px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}.flow-step:nth-child(2)::after{display:none}}
+@media (max-width:560px){.flow{grid-template-columns:minmax(0,1fr)}.flow-step{padding:6px 0 0 84px;min-height:64px}.flow-step::after{display:none}}
+.dict{font-size:1.125rem;color:var(--fg-muted)}
+.dict b{font-size:1.5rem;color:var(--accent-text);margin-right:6px}
+.dict i{margin-right:6px}
+.status{display:grid;gap:10px;margin-top:8px;padding:0;list-style:none}
+.status li{display:flex;align-items:center;gap:12px;font-weight:600}
+.status .dot{width:14px;height:14px;border-radius:50%;flex:none;border:2px solid var(--accent)}
+.status .dot.full{background:var(--accent)}
+.cmd{min-width:0;max-width:44rem;display:grid;gap:12px;padding:20px;border:2px solid var(--border);border-radius:20px;background:var(--panel)}
+.cmd-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.cmd-head p{font-weight:700}
+.cmd-head span{display:block;font-weight:400;color:var(--fg-muted);font-size:1rem}
+.cmd pre{margin:0;overflow-x:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:14px 16px;border-radius:12px;background:var(--bg);border:1px solid var(--line-soft)}
+.cmd code{font-family:var(--mono);font-size:1rem;line-height:1.5;color:var(--fg)}
+
+/* Testimonios: provisionales y ocultos hasta que haya citas reales */
+.testimonials{border-top:1px solid var(--line-soft)}
+.tcards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(16px,2.5vw,32px)}
+.tcard{margin:0;display:flex;flex-direction:column;gap:20px;min-width:0;padding:clamp(24px,2.8vw,36px);border:2px dashed var(--border);border-radius:28px;background:var(--panel)}
+.tcard blockquote{margin:0}
+.tcard blockquote p{font-size:clamp(1.25rem,1.8vw,1.5rem);font-weight:600;line-height:1.4}
+.tcard figcaption{margin-top:auto;display:grid;gap:2px}
+.tcard figcaption span{color:var(--fg-muted)}
+.prov-tag{justify-self:start;padding:6px 14px;border-radius:99px;background:var(--fg);color:var(--bg);font-size:1.125rem;font-weight:700}
+@media (max-width:980px){.tcards{grid-template-columns:minmax(0,1fr);max-width:40rem}}
+
+/* Preguntas frecuentes */
+.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(32px,6vw,88px);align-items:start}
+.faq-grid .sec-head{position:sticky;top:110px;margin-bottom:0}
+@media (max-width:900px){.faq-grid{grid-template-columns:minmax(0,1fr)}.faq-grid .sec-head{position:static}}
+.faq{border-top:2px solid var(--border)}
+.qa{border-bottom:1px solid var(--rule)}
+.qa summary{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:72px;padding:14px 0;font-size:1.25rem;font-weight:700;line-height:1.3;cursor:pointer;list-style:none}
+.qa summary::-webkit-details-marker{display:none}
+.qa summary>span:first-child{min-width:0}
+.qa-ico{flex:none;width:44px;height:44px;border-radius:50%;border:2px solid var(--border);display:grid;place-items:center;color:var(--accent-text);transition:transform .3s var(--ease),border-color .2s var(--ease)}
+.qa-ico .i{width:22px;height:22px;stroke-width:2.2}
+.qa summary:hover .qa-ico{border-color:var(--accent)}
+.qa[open] .qa-ico{transform:rotate(45deg)}
+.qa p{padding:0 60px 24px 0;font-size:1.125rem;line-height:1.6;color:var(--fg-muted)}
+@media (max-width:560px){.qa p{padding-right:0}}
+
+/* Llamada final */
+.closing-in{display:grid;justify-items:center;gap:22px;max-width:52rem;text-align:center}
+.closing .lead{margin-inline:auto}
+.closing .hero-actions{justify-content:center}
+.closing .status{grid-auto-flow:column;gap:10px 28px}
+@media (max-width:560px){.closing .status{grid-auto-flow:row}}
+
+/* Pie */
+.foot{padding-block:clamp(48px,6vw,72px) 32px;border-top:1px solid var(--line-soft)}
+.foot-grid{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,1fr));gap:32px 48px}
+.foot-brand{display:grid;gap:10px;align-content:start}
+.foot p{font-size:1.125rem;color:var(--fg-muted)}
+.foot .brand{font-size:1.5rem}
+.foot .brand svg{width:32px;height:32px}
+.foot-col{display:grid;align-content:start;gap:2px}
+.foot .foot-h{margin-bottom:6px;font-weight:700;color:var(--fg)}
+.foot-col a{display:inline-flex;align-items:center;min-height:48px;font-size:1.125rem;color:var(--fg-muted);text-decoration:none}
+.foot-col a:hover{color:var(--fg);text-decoration:underline;text-underline-offset:4px}
+.foot .foot-small{margin-top:40px;padding-top:24px;border-top:1px solid var(--line-soft)}
+@media (max-width:900px){.foot-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.foot-brand{grid-column:1/-1}}
+@media (max-width:480px){.foot-grid{grid-template-columns:minmax(0,1fr)}}
+
+/* Alto contraste de Windows: ahí se anulan los rellenos, que son lo que marca lo elegido y lo señalado. */
+@media (forced-colors:active){
+  .seg input:checked+label{forced-color-adjust:none;background:Highlight;color:HighlightText;border-color:Highlight}
+  .home-tab[aria-pressed="true"]{forced-color-adjust:none;background:Highlight;color:HighlightText;border-color:Highlight}
+  .tile.is-marked{outline:4px solid Highlight;outline-offset:2px}
+}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+<style id="movimiento">
+/* Capa de movimiento. Se quita entera borrando este bloque, el script «movimiento» y los elementos mv-*.
+   Todo lo que se mueve se para con «Pausar movimiento» o con el «reducir movimiento» del sistema, y lo que
+   queda quieto es el estado final, nunca el de partida. Colores, solo los roles de la página: en claro el
+   acento es marino, así que el cian nunca acaba en texto ni iconos sobre blanco. */
+:root{--sheen:rgba(255,255,255,.5)}
+/* En claro el brillo cruza texto blanco sobre marino: al 50 % lo dejaba en 3,33:1. */
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--sheen:rgba(255,255,255,.18)}}
+:root[data-theme="light"]{--sheen:rgba(255,255,255,.18)}
+.mv-pause{width:48px;height:48px;border-radius:50%;border:2px solid var(--border);background:transparent;color:var(--fg);display:grid;place-items:center;cursor:pointer;padding:0;flex:none;transition:border-color .18s var(--ease),background-color .18s var(--ease),color .18s var(--ease)}
+.mv-pause:hover{border-color:var(--accent)}
+.mv-pause .i{width:24px;height:24px}
+.mv-pause[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.mv-pause .mv-play,.mv-pause[aria-pressed="true"] .mv-stop{display:none}
+.mv-pause[aria-pressed="true"] .mv-play{display:block}
+@media (forced-colors:active){.mv-pause[aria-pressed="true"]{forced-color-adjust:none;background:Highlight;color:HighlightText;border-color:Highlight}}
+/* Con el botón de pausa y el de «Menú», en un móvil no caben cuatro botones y la marca: «Pruébalo» pasa a
+   ser la primera entrada del menú (y el hero tiene sus botones justo debajo). Ningún botón baja de 48 px. */
+@media (max-width:32.4375em){.nav-cta .btn{display:none}.nav-links .nav-try{display:flex}}
+.mv-progress{position:absolute;left:0;right:0;bottom:-1px;height:2px;background:var(--accent);transform-origin:0 50%;transform:scaleX(var(--mv-p,0));pointer-events:none}
+
+/* La D con su visto: el visto se dibuja, como al confirmar una orden */
+.mv-chk{stroke-dasharray:30;stroke-dashoffset:0}
+.mv-js .brand .mv-chk{animation:mv-draw .9s var(--ease) .6s both}
+.mv-draw-on-view.mv-in .mv-chk{animation:mv-draw 1.1s var(--ease) .25s both}
+@keyframes mv-draw{from{stroke-dashoffset:30}}
+
+/* Hero: luz que respira detrás, palabras que entran y un móvil que flota */
+.hero{overflow:clip}
+.mv-aurora{position:absolute;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.mv-aurora i{position:absolute;width:62vmax;height:62vmax;border-radius:50%;background:radial-gradient(circle,var(--halo),transparent 62%);animation:mv-drift 26s ease-in-out infinite alternate}
+.mv-aurora i:nth-child(1){top:-30vmax;right:-18vmax}
+.mv-aurora i:nth-child(2){bottom:-40vmax;left:-24vmax;background:radial-gradient(circle,var(--mark),transparent 60%);animation-duration:32s;animation-direction:alternate-reverse}
+.mv-aurora i:nth-child(3){top:20%;left:36%;width:36vmax;height:36vmax;animation-duration:21s}
+@keyframes mv-drift{from{transform:translate3d(-4vmax,2vmax,0) scale(1)}to{transform:translate3d(5vmax,-3vmax,0) scale(1.12)}}
+.mv-dots{position:absolute;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(color-mix(in srgb,var(--fg-muted) 34%,transparent) 1.2px,transparent 1.3px);background-size:30px 30px;-webkit-mask-image:radial-gradient(ellipse 60% 58% at 74% 44%,#000 10%,transparent 75%);mask-image:radial-gradient(ellipse 60% 58% at 74% 44%,#000 10%,transparent 75%)}
+.mv-w{display:inline-block;animation:mv-word .9s var(--ease) both;animation-delay:calc(var(--i) * 70ms + 120ms)}
+@keyframes mv-word{from{opacity:0;transform:translateY(.4em);filter:blur(10px)}}
+.hero .mark{background-size:100% 100%;background-repeat:no-repeat;animation:mv-mark 1s var(--ease) 1.05s both}
+@keyframes mv-mark{from{background-size:0% 100%}}
+.mv-rise{animation:mv-rise .9s var(--ease) both;animation-delay:var(--mv-d,0ms)}
+@keyframes mv-rise{from{opacity:0;transform:translateY(24px)}}
+#phone{transform:perspective(1400px) rotateX(var(--mv-rx,0deg)) rotateY(var(--mv-ry,0deg));transition:transform .6s var(--ease);animation:mv-float 7s ease-in-out infinite alternate}
+/* Lo que se va a tocar no se mueve: al pasar por encima o con el foco dentro, el móvil se queda quieto. */
+#phone:hover,#phone:focus-within{animation-play-state:paused}
+@keyframes mv-float{from{translate:0 -8px}to{translate:0 8px}}
+/* En pantalla táctil no hay hover que lo pare antes del dedo: ahí no flota. */
+@media (hover:none),(pointer:coarse){#phone{animation:none}}
+.mv-ring{position:absolute;z-index:-1;left:50%;top:44%;width:min(580px,130%);aspect-ratio:1;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent) 38%,transparent);translate:-50% -50%;opacity:.5;pointer-events:none;animation:mv-ripple 7.5s var(--ease) infinite}
+.mv-ring.mv-r2{animation-delay:2.5s}
+.mv-ring.mv-r3{animation-delay:5s}
+@keyframes mv-ripple{0%{transform:scale(.5);opacity:0}25%{opacity:1}100%{transform:scale(1.4);opacity:0}}
+.mv-chip{position:absolute;z-index:2;display:inline-flex;align-items:center;gap:12px;padding:10px 18px 10px 14px;border-radius:99px;background:var(--panel);border:2px solid var(--border);color:var(--fg);font-size:1.125rem;font-weight:700;white-space:nowrap;pointer-events:none;animation:mv-chip .9s var(--ease) both;animation-delay:var(--mv-d)}
+.mv-chip b{position:relative;flex:none;width:12px;height:12px;border-radius:50%;background:var(--accent)}
+.mv-chip b::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:2px solid var(--accent);animation:mv-halo 2.4s var(--ease) infinite}
+@keyframes mv-halo{from{transform:scale(.6);opacity:1}to{transform:scale(1.6);opacity:0}}
+@keyframes mv-chip{from{opacity:0;transform:translateY(14px) scale(.94)}}
+/* Pegadas al marco derecho del móvil (312 px de ancho), sin tapar la pantalla. A la izquierda no caben:
+   las taparía el panel «Pruébalo tú». Solo desde 1600 px: por debajo, la más larga se sale de la ventana. */
+.mv-c1{top:13%;left:calc(50% + 142px);--mv-d:1.4s}
+.mv-c2{top:45%;left:calc(50% + 142px);--mv-d:1.7s}
+.mv-c3{top:77%;left:calc(50% + 142px);--mv-d:2s}
+@media (max-width:1599px){.mv-chip{display:none}}
+
+/* Botón principal: un brillo que lo cruza; en el hero, cada pocos segundos */
+.btn-primary{position:relative;overflow:hidden;isolation:isolate}
+.btn-primary::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(110deg,transparent 30%,var(--sheen) 50%,transparent 70%);transform:translateX(-120%);transition:transform .8s var(--ease);pointer-events:none}
+.btn-primary:hover::after{transform:translateX(120%)}
+.hero .btn-primary::after{animation:mv-sheen 6s var(--ease) 3s infinite}
+@keyframes mv-sheen{0%{transform:translateX(-120%)}25%,100%{transform:translateX(120%)}}
+
+/* Cinta con lo que se le puede pedir al asistente */
+.mv-ticker{position:relative;overflow:hidden;background:var(--bg);border-block:1px solid var(--line-soft);padding-block:26px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.mv-track{display:flex;width:max-content;animation:mv-marquee 50s linear infinite}
+.mv-ticker:hover .mv-track{animation-play-state:paused}
+.mv-track ul{display:flex;align-items:center;margin:0;padding:0;list-style:none}
+.mv-track li{display:flex;align-items:center;gap:28px;padding-right:28px;font-size:clamp(1.5rem,1.1rem + 1.4vw,2.25rem);font-weight:700;line-height:1.3;white-space:nowrap}
+.mv-track li:nth-child(even){color:var(--fg-muted)}
+.mv-track svg{flex:none;width:auto;height:.72em;color:var(--accent-text)}
+@keyframes mv-marquee{to{transform:translateX(-50%)}}
+
+/* Antes y después */
+.mv-split{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(40px,6vw,88px);align-items:center}
+@media (max-width:900px){.mv-split{grid-template-columns:minmax(0,1fr)}}
+.mv-cmp{margin:0;display:grid;justify-items:center;gap:14px;min-width:0}
+.mv-cmp-phone{width:300px;max-width:100%;padding:10px;border-radius:48px;background:var(--frame);border:2px solid var(--border)}
+.mv-cmp-screen{--pos:50%;position:relative;height:600px;border-radius:38px;overflow:hidden;background:#0A1622;user-select:none;-webkit-user-select:none}
+.mv-sb{height:30px;display:flex;justify-content:space-between;align-items:center;padding:0 22px;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.mv-andr{position:absolute;inset:0;background:linear-gradient(165deg,#17384F 0%,#0B1D2E 55%,#10618F 130%);color:#F2F7FB;font-family:Roboto,system-ui,sans-serif;line-height:1.2}
+.mv-notif{margin:4px 10px 0;padding:8px 10px;border-radius:14px;background:#E9F3FA;color:#0B1D2E;font-size:10.5px;font-weight:600;line-height:1.25;display:flex;gap:8px;align-items:center}
+.mv-notif i{flex:none;width:18px;height:18px;border-radius:5px;background:#10618F}
+.mv-notif+.mv-notif{margin-top:5px}
+.mv-search{margin:14px 12px;height:34px;border-radius:17px;background:rgba(233,243,250,.16);border:1px solid rgba(233,243,250,.25);font-size:11px;display:flex;align-items:center;padding:0 14px;color:#A3B8C6}
+.mv-agrid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px 4px;padding:0 8px}
+.mv-agrid span{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:8.5px;color:#E9F3FA;text-align:center;overflow:hidden}
+.mv-agrid i,.mv-dock i{display:block;width:34px;height:34px;border-radius:11px;background:var(--c)}
+.mv-dock{position:absolute;left:12px;right:12px;bottom:20px;height:56px;border-radius:22px;background:rgba(233,243,250,.14);display:flex;justify-content:space-around;align-items:center}
+.mv-doa{position:absolute;inset:0;background:#0A1622;color:#F2F7FB;clip-path:inset(0 0 0 var(--pos));line-height:1.2}
+.mv-doa-in{padding:6px 14px 0}
+.mv-dclock{font-size:38px;font-weight:700;line-height:1.1;font-variant-numeric:tabular-nums}
+.mv-ddate{font-size:15px;font-weight:600;color:#9FC4DC;margin-bottom:12px}
+.mv-ddate::first-letter{text-transform:uppercase}
+.mv-dgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.mv-dt{height:104px;border-radius:22px;background:#122A3E;border:2px solid #3D7AA6;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;font-size:18px;font-weight:700}
+.mv-dt .i{width:44px;height:44px;color:#29B6F0}
+.mv-dt small{font-size:13px;font-weight:600;color:#9FC4DC;margin-top:-4px}
+.mv-dini{width:42px;height:42px;border-radius:50%;background:#0A1622;color:#29B6F0;display:grid;place-items:center;font-size:20px;font-weight:700}
+.mv-dlabel{font-size:15px;font-weight:700;color:#9FC4DC;margin:12px 2px 8px}
+.mv-dassist{position:absolute;left:50%;bottom:16px;width:76px;height:76px;margin-left:-38px;border-radius:50%;background:#29B6F0;color:#0A1622;box-shadow:0 0 0 6px #0A1622;display:grid;place-items:center}
+.mv-dassist .i{width:36px;height:36px}
+.mv-cmp-screen input{position:absolute;inset:0;z-index:4;width:100%;height:100%;margin:0;opacity:0;cursor:ew-resize;touch-action:pan-y}
+.mv-cmp-line{position:absolute;top:0;bottom:0;left:var(--pos);z-index:3;width:4px;margin-left:-2px;background:#29B6F0;pointer-events:none}
+.mv-cmp-knob{position:absolute;top:50%;left:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:#29B6F0;color:#0A1622;border:4px solid #0A1622;display:grid;place-items:center}
+.mv-cmp-knob .i{width:26px;height:26px;stroke-width:2.2}
+/* El aro de foco va en blanco: cae sobre el móvil, que es oscuro en los dos temas. */
+.mv-cmp-screen input:focus-visible~.mv-cmp-line .mv-cmp-knob{outline:3px solid #F2F7FB;outline-offset:4px}
+.mv-cmp figcaption{display:grid;gap:4px;width:min(100%,24rem);text-align:center}
+.mv-cmp-tag{position:absolute;top:40px;white-space:nowrap;padding:5px 12px;border-radius:99px;border:2px solid #29B6F0;background:#0A1622;color:#F2F7FB;font-size:16px;font-weight:700;line-height:1.2}
+.mv-cmp-tag.is-l{right:calc(100% + 8px)}
+.mv-cmp-tag.is-r{left:calc(100% + 8px)}
+.mv-cmp-hint{font-size:1.125rem;line-height:1.5;color:var(--fg-muted)}
+.mv-cmp-hint b{display:block;color:var(--fg)}
+
+/* Cierre: la marca grande y ondas detrás */
+#empezar{position:relative;overflow:clip;isolation:isolate}
+.mv-final-rings{position:absolute;z-index:-1;left:50%;top:50%;width:0;height:0;pointer-events:none}
+.mv-final-rings span{position:absolute;left:-380px;top:-380px;width:760px;height:760px;border-radius:50%;border:1.5px solid color-mix(in srgb,var(--accent) 30%,transparent);animation:mv-ripple 9s var(--ease) infinite}
+.mv-final-rings span:nth-child(2){animation-delay:3s}
+.mv-final-rings span:nth-child(3){animation-delay:6s}
+.mv-bigmark{width:clamp(76px,9vw,104px);height:auto;color:var(--accent-text)}
+
+/* Luz que sigue al puntero en los paneles */
+.try,.chat,.cmd{position:relative;isolation:isolate;overflow:hidden}
+.try::before,.chat::before,.cmd::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(340px circle at var(--mv-x,-500px) var(--mv-y,-500px),var(--halo),transparent 70%)}
+
+/* Aparecer al bajar */
+/* En reposo todo se ve: la animación arranca justo antes de que el bloque entre en pantalla. Si el script
+   falla o el observador no llega, no queda nada oculto. */
+.mv-rv.mv-in{animation:mv-in .9s var(--ease) both;animation-delay:var(--mv-d,0ms)}
+@keyframes mv-in{from{opacity:0;transform:translateY(28px)}}
+.feature.mv-in>.i,.feature.mv-in>.aa{animation:mv-pop .7s var(--ease) both;animation-delay:calc(var(--mv-d,0ms) + 160ms)}
+@keyframes mv-pop{from{opacity:0;transform:scale(.55)}}
+.shot img{transition:transform .5s var(--ease),border-color .3s var(--ease)}
+.shot:hover img{transform:translateY(-6px);border-color:var(--accent)}
+/* Los pasos se unen al aparecer: la línea se dibuja del uno al siguiente. */
+.flow-step.mv-in::after{animation:mv-line .9s var(--ease) both;animation-delay:calc(var(--mv-d,0ms) + 350ms)}
+@keyframes mv-line{from{transform:scaleX(0)}}
+.qa[open] p{animation:mv-rise .5s var(--ease) both}
+
+/* Móvil: lo mismo con menos trabajo. La luz del hero se queda quieta (los mismos degradados, sin moverse) y
+   pierde la mancha central; de las ondas queda una; la barra deja el desenfoque del fondo, que se recalcula
+   en cada fotograma del desplazamiento, por un fondo opaco; y las palabras del titular entran sin desenfocar. */
+@media (max-width:700px){
+  .nav{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--bg)}
+  .mv-aurora i{animation:none}
+  .mv-aurora i:nth-child(3),.mv-ring.mv-r2,.mv-ring.mv-r3,.mv-final-rings span+span{display:none}
+  .mv-w{animation-name:mv-word-lite}
+}
+@keyframes mv-word-lite{from{opacity:0;transform:translateY(.4em)}}
+/* Lo que se repite sin fin se para mientras no está en pantalla (el script pone .mv-off). */
+.mv-off,.mv-off *,.mv-off *::before,.mv-off *::after{animation-play-state:paused!important}
+
+/* Quieto: todo en su estado final y los cambios, de golpe (como «Quitar animaciones» en Android) */
+html.mv-still{scroll-behavior:auto}
+html.mv-still *,html.mv-still *::before,html.mv-still *::after{animation:none!important;transition-duration:0s!important;transition-delay:0s!important}
+html.mv-still .mv-rv{opacity:1;transform:none}
+html.mv-still .mv-chk{stroke-dashoffset:0!important}
+html.mv-still .check path{stroke-dashoffset:0}
+html.mv-still #phone{transform:none}
+html.mv-still .mv-ticker{-webkit-mask-image:none;mask-image:none}
+/* Quieta, la cinta pasa a ser un párrafo centrado con todas las frases a la vista. */
+html.mv-still .mv-track{display:block;width:auto;padding-inline:16px;text-align:center}
+html.mv-still .mv-track ul{display:block}
+html.mv-still .mv-track li{display:inline;padding:0;white-space:normal;line-height:1.5}
+html.mv-still .mv-track li svg{display:inline-block;vertical-align:-.05em;margin:0 .5em}
+html.mv-still .mv-track li:last-child svg{display:none}
+html.mv-still .mv-track ul[aria-hidden]{display:none}
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#arriba" aria-label="Doado, volver arriba">
+      <!-- El visto como máscara (trazo de 5, puntas redondas: la construcción de la marca) para poder dibujarlo. -->
+      <svg viewBox="0 0 64 64" aria-hidden="true"><defs><mask id="mv-m-nav" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><polyline class="mv-chk" points="18.8,32.2 25,38.8 39.6,24.6" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><path fill="currentColor" mask="url(#mv-m-nav)" d="M14,6 H30 A26,26 0 0 1 30,58 H14 A6,6 0 0 1 8,52 V12 A6,6 0 0 1 14,6 Z"/></svg>
+      Doado
+    </a>
+    <nav class="nav-links" id="nav-links" aria-label="Secciones">
+      <a class="nav-try" href="#demo">Pruébalo</a>
+      <a href="#beneficios">Beneficios</a>
+      <a href="#que-trae">Qué trae</a>
+      <a href="#como-empezar">Cómo empezar</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <div class="nav-cta">
+      <button class="mv-pause" id="mv-pause" type="button" aria-pressed="false" aria-label="Pausar el movimiento de la página">
+        <svg class="i mv-stop" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,6 V18 M15,6 V18"/></svg>
+        <svg class="i mv-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8,5.5 L18,12 L8,18.5 z"/></svg>
+      </button>
+      <button class="theme-btn" id="theme-btn" type="button" aria-label="Cambiar el tema de la página">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.3"/><path d="M12,3.7 a8.3,8.3 0 0,1 0,16.6 z" fill="currentColor"/></svg>
+      </button>
+      <a class="btn btn-primary" href="#demo">Pruébalo</a>
+      <button class="nav-menu" id="nav-menu" type="button" aria-expanded="false" aria-controls="nav-links">
+        <svg class="i menu-bars" viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5,7 H19.5 M4.5,12 H19.5 M4.5,17 H19.5"/></svg>
+        <svg class="i menu-x" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5,6.5 L17.5,17.5 M17.5,6.5 L6.5,17.5"/></svg>
+        <span class="nav-menu-txt">Menú</span>
+      </button>
+    </div>
+  </div>
+  <span class="mv-progress" aria-hidden="true"></span>
+</header>
+
+<main id="arriba">
+
+<!-- 1. Hero: la tesis y el producto funcionando -->
+<section class="hero" aria-labelledby="hero-title">
+  <div class="mv-aurora" aria-hidden="true"><i></i><i></i><i></i></div>
+  <div class="mv-dots" aria-hidden="true"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Pantalla de inicio para Android</p>
+      <h1 class="h1" id="hero-title">Que tus mayores vuelvan a usar <span class="mark">su móvil.</span></h1>
+      <p class="lead">Doado cambia la pantalla de inicio de cualquier Android por una que se entiende a la primera. Casillas grandes que no se mueven, sus personas a un toque y un asistente de voz que pregunta antes de hacer nada. Tú lo dejas a punto una vez, detrás de un PIN.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#como-empezar">Instálalo en su móvil</a>
+        <a class="btn btn-ghost" href="#asistente">Mira el asistente</a>
+      </div>
+      <ul class="proof">
+        <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg>Sin cuentas ni anuncios</li>
+        <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg>Nada cambia de sitio</li>
+        <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg>Contraste de 7 a 1</li>
+      </ul>
+    </div>
+
+    <div class="stage" id="demo">
+      <span class="mv-ring" aria-hidden="true"></span><span class="mv-ring mv-r2" aria-hidden="true"></span><span class="mv-ring mv-r3" aria-hidden="true"></span>
+      <div class="mv-chip mv-c1" aria-hidden="true"><b></b>Casillas que no se mueven</div>
+      <div class="mv-chip mv-c2" aria-hidden="true"><b></b>Sus personas, a un toque</div>
+      <div class="mv-chip mv-c3" aria-hidden="true"><b></b>Pregunta antes de llamar</div>
+      <div class="phone" id="phone" data-cols="2" data-tema="oscuro" data-contactos="debajo" data-tab="apps" data-sos="on">
+        <div class="screen" role="group" aria-label="Demostración del inicio de Doado. Puedes pulsar las casillas, el círculo del asistente y el botón de ajustes.">
+          <div class="sb" aria-hidden="true"><span class="sb-time">10:30</span><span class="sb-bat"></span></div>
+          <div class="home">
+            <div class="home-top">
+              <div>
+                <p class="clock">10:30</p>
+                <p class="date">martes, 21 de octubre</p>
+              </div>
+              <button class="corner" type="button" aria-label="Ajustes">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M18.80,10.34 L21.20,10.61 L21.20,13.39 L18.80,13.66 L17.98,15.63 L19.48,17.52 L17.52,19.48 L15.63,17.98 L13.66,18.80 L13.39,21.20 L10.61,21.20 L10.34,18.80 L8.37,17.98 L6.48,19.48 L4.52,17.52 L6.02,15.63 L5.20,13.66 L2.80,13.39 L2.80,10.61 L5.20,10.34 L6.02,8.37 L4.52,6.48 L6.48,4.52 L8.37,6.02 L10.34,5.20 L10.61,2.80 L13.39,2.80 L13.66,5.20 L15.63,6.02 L17.52,4.52 L19.48,6.48 L17.98,8.37 Z"/><path d="M9,12 a3,3 0 1,0 6,0 a3,3 0 1,0 -6,0"/></svg>
+              </button>
+            </div>
+            <div class="home-tabs" role="group" aria-label="Pantallas del inicio">
+              <button class="home-tab" type="button" data-tab="apps" aria-pressed="true">Aplicaciones</button>
+              <button class="home-tab" type="button" data-tab="people" aria-pressed="false">Contactos</button>
+            </div>
+            <div class="tiles" data-pane="apps">
+              <button class="tile" type="button" data-app="Llamar" data-opens="el teléfono">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2,3.8 h3 a1,1 0 0,1 0.95,0.68 l1.15,3.45 a1,1 0 0,1 -0.3,1.07 l-1.6,1.4 a12.5,12.5 0 0,0 5.2,5.2 l1.4,-1.6 a1,1 0 0,1 1.07,-0.3 l3.45,1.15 a1,1 0 0,1 0.68,0.95 v3 a1.6,1.6 0 0,1 -1.7,1.6 C10.6,20.4 3.6,13.4 3.6,5.5 a1.6,1.6 0 0,1 1.6,-1.7 z"/></svg>
+                <span class="t">Llamar</span>
+              </button>
+              <button class="tile" type="button" data-app="Mensajes">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7,4 h10 a4,4 0 0,1 4,4 v5 a4,4 0 0,1 -4,4 h-5 l-4.2,3.3 a0.5,0.5 0 0,1 -0.8,-0.4 V17 a4,4 0 0,1 -4,-4 v-5 a4,4 0 0,1 4,-4 z"/></svg>
+                <span class="t">Mensajes</span>
+              </button>
+              <button class="tile" type="button" data-app="Cámara" id="tile-camara">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,7 h2.4 l1.3,-2 a1.2,1.2 0 0,1 1,-0.5 h2.6 a1.2,1.2 0 0,1 1,0.5 l1.3,2 H18 a3,3 0 0,1 3,3 v7 a3,3 0 0,1 -3,3 H6 a3,3 0 0,1 -3,-3 v-7 a3,3 0 0,1 3,-3 z"/><path d="M8.4,13.3 a3.6,3.6 0 1,0 7.2,0 a3.6,3.6 0 1,0 -7.2,0"/></svg>
+                <span class="t">Cámara</span>
+              </button>
+              <button class="tile is-off" type="button" data-off="Fotos" aria-label="Fotos, no disponible">
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,4.5 h12 a3,3 0 0,1 3,3 v9 a3,3 0 0,1 -3,3 H6 a3,3 0 0,1 -3,-3 v-9 a3,3 0 0,1 3,-3 z"/><path d="M7.6,9.4 a1.8,1.8 0 1,0 3.6,0 a1.8,1.8 0 1,0 -3.6,0"/><path d="M3.5,17 L8.5,12.5 L12,15.5 L15,12.8 L20.5,17.5"/></svg>
+                <span class="t">Fotos<small>No disponible</small></span>
+              </button>
+              <!-- Emergencias 112 (D-51): la sirena en el rojo de error; se reconoce también por el nombre. -->
+              <button class="tile is-sos" type="button" data-sos-tile>
+                <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7,17 V12 a5,5 0 0,1 10,0 V17"/><path d="M10,13.2 a2.2,2.2 0 0,1 2,-2.2"/><path d="M5,17 h14 a1,1 0 0,1 1,1 v1 a1,1 0 0,1 -1,1 h-14 a1,1 0 0,1 -1,-1 v-1 a1,1 0 0,1 1,-1 z"/><path d="M12,2.8 v1.6 M5.3,5.3 l1.1,1.1 M18.7,5.3 l-1.1,1.1 M2.8,12 h1.6 M19.6,12 h1.6"/></svg>
+                <span class="t">Emergen&shy;cias 112</span>
+              </button>
+            </div>
+            <p class="rotulo" data-pane="people" id="rotulo-contactos"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2,8 a3.8,3.8 0 1,0 7.6,0 a3.8,3.8 0 1,0 -7.6,0"/><path d="M4.5,20 a7.5,6.6 0 0,1 15,0"/></svg>Tus contactos</p>
+            <div class="tiles" data-pane="people" role="group" aria-labelledby="rotulo-contactos">
+              <button class="tile" type="button" data-person="María" data-how="call" aria-label="María, llamar">
+                <span class="ini" aria-hidden="true">M</span>
+                <span class="t">María<small>Llamada</small></span>
+              </button>
+              <button class="tile" type="button" data-person="Luis" data-how="wa" aria-label="Luis, WhatsApp">
+                <span class="ini" aria-hidden="true">L</span>
+                <span class="t">Luis<small>WhatsApp</small></span>
+              </button>
+            </div>
+          </div>
+          <button class="assist" type="button" aria-label="Asistente de voz. Pulsa y habla.">
+            <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z"/><path d="M5.5,11 a6.5,6.5 0 0,0 13,0"/><path d="M12,17.5 V20.5 M9.5,20.5 H14.5"/></svg>
+          </button>
+          <div class="ov" id="ov" role="dialog" hidden></div>
+        </div>
+      </div>
+      <p class="stage-hint" id="stage-hint" aria-hidden="true">Pulsa el botón del asistente, el círculo de abajo, y pídele algo.</p>
+      <p class="sr" aria-live="polite" id="phone-live"></p>
+    </div>
+
+    <section class="try" aria-labelledby="try-title">
+      <div class="try-head">
+        <h2 id="try-title">Pruébalo tú</h2>
+        <p>Cambia lo mismo que cambiarías en sus ajustes, y mira el móvil.</p>
+      </div>
+      <div class="try-grid">
+        <fieldset class="seg">
+          <legend>Tamaño de letra</legend>
+          <div class="seg-row">
+            <input type="radio" name="letra" id="letra-1" value="1" checked><label for="letra-1">Normal</label>
+            <input type="radio" name="letra" id="letra-2" value="1.15"><label for="letra-2">Grande</label>
+            <input type="radio" name="letra" id="letra-3" value="1.3"><label for="letra-3">Enorme</label>
+          </div>
+        </fieldset>
+        <fieldset class="seg">
+          <legend>Casillas por fila</legend>
+          <div class="seg-row">
+            <input type="radio" name="cols" id="cols-1" value="1"><label for="cols-1">Una</label>
+            <input type="radio" name="cols" id="cols-2" value="2" checked><label for="cols-2">Dos</label>
+            <input type="radio" name="cols" id="cols-3" value="3"><label for="cols-3">Tres</label>
+          </div>
+        </fieldset>
+        <fieldset class="seg">
+          <legend>Tema</legend>
+          <div class="seg-row">
+            <input type="radio" name="tema" id="tema-o" value="oscuro" checked><label for="tema-o">Oscuro</label>
+            <input type="radio" name="tema" id="tema-c" value="claro"><label for="tema-c">Claro</label>
+          </div>
+        </fieldset>
+        <fieldset class="seg">
+          <legend>Asistente</legend>
+          <div class="seg-row">
+            <input type="radio" name="modo-movil" id="mm-hace" value="hace" data-mode checked><label for="mm-hace">Lo hace</label>
+            <input type="radio" name="modo-movil" id="mm-guia" value="guia" data-mode><label for="mm-guia">Explica cómo</label>
+          </div>
+        </fieldset>
+        <fieldset class="seg">
+          <legend>Contactos en el inicio</legend>
+          <div class="seg-row">
+            <input type="radio" name="contactos" id="ct-debajo" value="debajo" checked><label for="ct-debajo">Debajo de las apps</label>
+            <input type="radio" name="contactos" id="ct-aparte" value="aparte"><label for="ct-aparte">En otra pantalla</label>
+          </div>
+        </fieldset>
+        <fieldset class="seg">
+          <legend>Emergencias 112</legend>
+          <div class="seg-row">
+            <input type="radio" name="sos" id="sos-on" value="on" checked><label for="sos-on">Encendida</label>
+            <input type="radio" name="sos" id="sos-off" value="off"><label for="sos-off">Apagada</label>
+          </div>
+        </fieldset>
+      </div>
+    </section>
+  </div>
+</section>
+
+<!-- Cinta: lo que se le puede pedir al asistente. La segunda lista es la copia que cierra el bucle. -->
+<div class="mv-ticker">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><symbol id="mv-d" viewBox="8 6 48 52"><path fill="currentColor" fill-rule="evenodd" d="M14,6 H30 A26,26 0 0 1 30,58 H14 A6,6 0 0 1 8,52 V12 A6,6 0 0 1 14,6 Z M23.2,40.5 L23.6,40.8 L24,41.1 L24.5,41.2 L24.9,41.3 L25.4,41.3 L25.9,41.1 L26.4,40.9 L26.7,40.6 L41.3,26.4 L41.7,26 L41.9,25.6 L42,25.1 L42.1,24.6 L42.1,24.1 L41.9,23.7 L41.7,23.2 L41.4,22.9 L41,22.5 L40.6,22.3 L40.1,22.2 L39.6,22.1 L39.1,22.1 L38.7,22.3 L38.2,22.5 L37.9,22.8 L25.1,35.2 L20.6,30.5 L20.3,30.2 L19.8,29.9 L19.4,29.8 L18.9,29.7 L18.4,29.7 L17.9,29.9 L17.5,30.1 L17.1,30.4 L16.8,30.7 L16.5,31.2 L16.4,31.6 L16.3,32.1 L16.3,32.6 L16.5,33.1 L16.7,33.5 L17,33.9 Z"/></symbol></svg>
+  <div class="mv-track">
+    <ul aria-label="Cosas que se le pueden pedir al asistente">
+      <li>«Llama a mi hija»<svg aria-hidden="true"><use href="#mv-d"/></svg></li>
+      <li>«Abre el WhatsApp de Luis»<svg aria-hidden="true"><use href="#mv-d"/></svg></li>
+      <li>«¿Cómo hago una foto?»<svg aria-hidden="true"><use href="#mv-d"/></svg></li>
+      <li>«Abre la cámara»<svg aria-hidden="true"><use href="#mv-d"/></svg></li>
+      <li>«No, mejor a Carmen»<svg aria-hidden="true"><use href="#mv-d"/></svg></li>
+      <li>«¿Cómo subo el volumen?»<svg aria-hidden="true"><use href="#mv-d"/></svg></li>
+      <li>«Gracias»<svg aria-hidden="true"><use href="#mv-d"/></svg></li>
+    </ul>
+    <ul aria-hidden="true">
+      <li>«Llama a mi hija»<svg><use href="#mv-d"/></svg></li>
+      <li>«Abre el WhatsApp de Luis»<svg><use href="#mv-d"/></svg></li>
+      <li>«¿Cómo hago una foto?»<svg><use href="#mv-d"/></svg></li>
+      <li>«Abre la cámara»<svg><use href="#mv-d"/></svg></li>
+      <li>«No, mejor a Carmen»<svg><use href="#mv-d"/></svg></li>
+      <li>«¿Cómo subo el volumen?»<svg><use href="#mv-d"/></svg></li>
+      <li>«Gracias»<svg><use href="#mv-d"/></svg></li>
+    </ul>
+  </div>
+</div>
+
+<!-- 2. El problema, en sus palabras -->
+<section class="section band" aria-labelledby="hoy-title">
+  <div class="wrap">
+    <p class="eyebrow">Frases que seguro que has oído</p>
+    <div class="quotes">
+      <p class="quote">«¿Dónde se ha ido el teléfono? Si estaba aquí.»</p>
+      <p class="quote">«No toco nada, que luego lo estropeo.»</p>
+      <p class="quote">«Me ha salido una cosa y ya no sé volver.»</p>
+    </div>
+    <div class="mv-split">
+    <div class="statement">
+      <h2 class="h2" id="hoy-title">El problema no son ellos. Es una pantalla llena de iconos diminutos que cambian de sitio sin avisar.</h2>
+      <p class="lead">Doado quita lo que sobra y deja lo de cada día: grande, quieto y siempre en el mismo sitio. Para que el móvil vuelva a ser suyo.</p>
+    </div>
+    <!-- Antes y después: las dos pantallas son dibujo; lo que se maneja es el deslizador, que va encima. -->
+    <figure class="mv-cmp">
+      <div class="mv-cmp-phone">
+        <div class="mv-cmp-screen">
+          <div class="mv-andr" aria-hidden="true">
+            <div class="mv-sb"><span class="mv-stime">10:30</span><span>4G · 61 %</span></div>
+            <div class="mv-notif"><i></i>Actualización del sistema disponible. Toca para instalar.</div>
+            <div class="mv-notif"><i></i>3 aplicaciones quieren enviarte notificaciones.</div>
+            <div class="mv-search">Buscar en el teléfono y en la web</div>
+            <div class="mv-agrid">
+              <span><i style="--c:#E9F3FA"></i>Ajustes</span><span><i style="--c:#6CCFFA"></i>Galería</span><span><i style="--c:#3D7AA6"></i>Tienda</span><span><i style="--c:#A3B8C6"></i>Navegador</span><span><i style="--c:#54697A"></i>Archivos</span>
+              <span><i style="--c:#10618F"></i>Calendario</span><span><i style="--c:#DCEBF5"></i>Reloj</span><span><i style="--c:#29B6F0"></i>Notas</span><span><i style="--c:#E9F3FA"></i>Correo</span><span><i style="--c:#3D7AA6"></i>Radio</span>
+              <span><i style="--c:#A3B8C6"></i>Tiempo</span><span><i style="--c:#54697A"></i>Mapas</span><span><i style="--c:#6CCFFA"></i>Música</span><span><i style="--c:#10618F"></i>Salud</span><span><i style="--c:#DCEBF5"></i>Juegos</span>
+              <span><i style="--c:#29B6F0"></i>Calculadora</span><span><i style="--c:#3D7AA6"></i>Grabadora</span><span><i style="--c:#E9F3FA"></i>Brújula</span><span><i style="--c:#54697A"></i>Linterna</span><span><i style="--c:#A3B8C6"></i>Noticias</span>
+            </div>
+            <div class="mv-dock"><i style="--c:#29B6F0"></i><i style="--c:#E9F3FA"></i><i style="--c:#6CCFFA"></i><i style="--c:#3D7AA6"></i></div>
+          </div>
+          <div class="mv-doa" aria-hidden="true">
+            <div class="mv-sb"><span class="mv-stime">10:30</span><span>4G · 61 %</span></div>
+            <div class="mv-doa-in">
+              <p class="mv-dclock">10:30</p>
+              <p class="mv-ddate">martes, 21 de octubre</p>
+              <div class="mv-dgrid">
+                <div class="mv-dt"><svg class="i" viewBox="0 0 24 24"><path d="M5.2,3.8 h3 a1,1 0 0,1 0.95,0.68 l1.15,3.45 a1,1 0 0,1 -0.3,1.07 l-1.6,1.4 a12.5,12.5 0 0,0 5.2,5.2 l1.4,-1.6 a1,1 0 0,1 1.07,-0.3 l3.45,1.15 a1,1 0 0,1 0.68,0.95 v3 a1.6,1.6 0 0,1 -1.7,1.6 C10.6,20.4 3.6,13.4 3.6,5.5 a1.6,1.6 0 0,1 1.6,-1.7 z"/></svg>Llamar</div>
+                <div class="mv-dt"><svg class="i" viewBox="0 0 24 24"><path d="M7,4 h10 a4,4 0 0,1 4,4 v5 a4,4 0 0,1 -4,4 h-5 l-4.2,3.3 a0.5,0.5 0 0,1 -0.8,-0.4 V17 a4,4 0 0,1 -4,-4 v-5 a4,4 0 0,1 4,-4 z"/></svg>Mensajes</div>
+              </div>
+              <p class="mv-dlabel">Tus contactos</p>
+              <div class="mv-dgrid">
+                <div class="mv-dt"><span class="mv-dini">M</span>María<small>Llamada</small></div>
+                <div class="mv-dt"><span class="mv-dini">L</span>Luis<small>WhatsApp</small></div>
+              </div>
+            </div>
+            <span class="mv-dassist"><svg class="i" viewBox="0 0 24 24"><path d="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z"/><path d="M5.5,11 a6.5,6.5 0 0,0 13,0"/><path d="M12,17.5 V20.5 M9.5,20.5 H14.5"/></svg></span>
+          </div>
+          <input type="range" min="0" max="100" step="2" value="50" aria-label="Comparar: a la izquierda un Android cualquiera, a la derecha Doado" aria-describedby="mv-cmp-hint">
+          <div class="mv-cmp-line" aria-hidden="true"><span class="mv-cmp-tag is-l">Antes</span><span class="mv-cmp-tag is-r">Con Doado</span><span class="mv-cmp-knob"><svg class="i" viewBox="0 0 24 24"><path d="M9,7 L4,12 L9,17 M15,7 L20,12 L15,17"/></svg></span></div>
+        </div>
+      </div>
+      <figcaption>
+        <span class="mv-cmp-hint" id="mv-cmp-hint"><b>El mismo móvil, antes y con Doado.</b> A la izquierda de la raya, un Android como el de casi todos; a la derecha, con Doado. Arrastra la raya para ver más de cada lado.</span>
+        <span class="sr">A la izquierda, un Android con veinte iconos pequeños, avisos y buscador. A la derecha, Doado con cuatro casillas grandes, dos de ellas contactos, y el círculo del asistente.</span>
+      </figcaption>
+    </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Beneficios clave: lo que cambia, contado desde quien lo usa -->
+<section class="section" id="beneficios" aria-labelledby="beneficios-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Beneficios</p>
+      <h2 class="h2" id="beneficios-title">Lo que cambia para ella. Y para ti.</h2>
+      <p class="lead">Lo que hace falta para llamar, escribir y hacer fotos, a la vista y del tamaño de un dedo de verdad.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.2,3.8 h3 a1,1 0 0,1 0.95,0.68 l1.15,3.45 a1,1 0 0,1 -0.3,1.07 l-1.6,1.4 a12.5,12.5 0 0,0 5.2,5.2 l1.4,-1.6 a1,1 0 0,1 1.07,-0.3 l3.45,1.15 a1,1 0 0,1 0.68,0.95 v3 a1.6,1.6 0 0,1 -1.7,1.6 C10.6,20.4 3.6,13.4 3.6,5.5 a1.6,1.6 0 0,1 1.6,-1.7 z"/></svg>
+        <div><h3>Llama sola a quien quiere.</h3><p>Sus personas están en el inicio, con su nombre. Un toque y llama a María o abre el WhatsApp de Luis.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M15,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M6.5,13 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M12.5,16.75 a3.75,3.75 0 1,0 7.5,0 a3.75,3.75 0 1,0 -7.5,0"/></svg>
+        <div><h3>Encuentra cada cosa donde la dejó.</h3><p>Las casillas no se mueven. Si una app desaparece, su casilla se queda en su sitio, apagada y con su aviso.</p></div>
+      </div>
+      <div class="feature">
+        <span class="aa" aria-hidden="true">Aa</span>
+        <div><h3>Lee sin esforzarse.</h3><p>Tres tamaños de letra por encima del de Android, contraste de 7 a 1 y una letra en la que la I y la l no se confunden.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z"/><path d="M5.5,11 a6.5,6.5 0 0,0 13,0"/><path d="M12,17.5 V20.5 M9.5,20.5 H14.5"/></svg>
+        <div><h3>Pide ayuda hablando.</h3><p>Pulsa el círculo y dice lo que quiere. Doado pregunta antes de hacer nada, o le explica los pasos de uno en uno.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M7,17 V12 a5,5 0 0,1 10,0 V17"/><path d="M10,13.2 a2.2,2.2 0 0,1 2,-2.2"/><path d="M5,17 h14 a1,1 0 0,1 1,1 v1 a1,1 0 0,1 -1,1 h-14 a1,1 0 0,1 -1,-1 v-1 a1,1 0 0,1 1,-1 z"/><path d="M12,2.8 v1.6 M5.3,5.3 l1.1,1.1 M18.7,5.3 l-1.1,1.1 M2.8,12 h1.6 M19.6,12 h1.6"/></svg>
+        <div><h3>Tiene el 112 a un toque.</h3><p>Si la enciendes, la casilla «Emergencias 112» abre el teléfono con el número ya puesto. La llamada la hace ella con el botón verde de llamar: así no se llama sin querer.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12,3.2 L19,5.9 V11.4 c0,4.4 -2.9,7.9 -7,9.4 C7.9,19.3 5,15.8 5,11.4 V5.9 z"/><path d="M8.8,12 l2.2,2.2 l4.2,-4.3"/></svg>
+        <div><h3>Y tú, sin sustos.</h3><p>Los ajustes van detrás de tu PIN, en un botón pequeño de la esquina. Lo que ella no tiene que tocar, ni lo ve.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. Qué trae Doado: las tres piezas, cada una con su sección de detalle -->
+<section class="section band" id="que-trae" aria-labelledby="que-trae-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Qué trae Doado</p>
+      <h2 class="h2" id="que-trae-title">Tres piezas que trabajan juntas.</h2>
+      <p class="lead">Un inicio para ella, un asistente que le hace caso y unos ajustes que solo ves tú.</p>
+    </div>
+    <ul class="services">
+      <li class="service">
+        <span class="service-ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M15,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M6.5,13 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M12.5,16.75 a3.75,3.75 0 1,0 7.5,0 a3.75,3.75 0 1,0 -7.5,0"/></svg></span>
+        <h3>El inicio</h3>
+        <p>La pantalla que ve cada día: la hora, sus casillas y sus personas, en grande y siempre en el mismo sitio.</p>
+        <ul class="ticks">
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Una, dos o tres casillas por fila</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Sus contactos, debajo de las apps o en otra pantalla</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Emergencias 112, si la enciendes</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Tema claro u oscuro y foto de fondo</span></li>
+        </ul>
+        <a class="service-link" href="#demo">Pruébalo arriba<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12 H19 M13,6 L19,12 L13,18"/></svg></a>
+      </li>
+      <li class="service">
+        <span class="service-ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z"/><path d="M5.5,11 a6.5,6.5 0 0,0 13,0"/><path d="M12,17.5 V20.5 M9.5,20.5 H14.5"/></svg></span>
+        <h3>El asistente de voz <span class="pill">En pruebas</span></h3>
+        <p>Un círculo grande abajo, en el centro. Lo pulsa, pide lo que quiere y Doado lo hace tras un «Sí» o le explica cómo.</p>
+        <ul class="ticks">
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Llama o abre el WhatsApp de sus contactos</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Abre sus casillas</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Explica los pasos de uno en uno</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Nunca actúa sin un «Sí»</span></li>
+        </ul>
+        <a class="service-link" href="#asistente">Cómo funciona<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12 H19 M13,6 L19,12 L13,18"/></svg></a>
+      </li>
+      <li class="service">
+        <span class="service-ico"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8,10 h8 a3,3 0 0,1 3,3 v4.5 a3,3 0 0,1 -3,3 h-8 a3,3 0 0,1 -3,-3 v-4.5 a3,3 0 0,1 3,-3 z"/><path d="M8,10 V7.5 a4,4 0 0,1 8,0 V10"/><path d="M10.5,15.25 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/></svg></span>
+        <h3>Los ajustes del familiar</h3>
+        <p>Detrás de un PIN de cuatro cifras. Desde ahí lo dejas a su medida, y ella no se encuentra un ajuste por accidente.</p>
+        <ul class="ticks">
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Sus casillas y sus personas</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Letra, casillas por fila y tema</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Modo administrador de quince minutos</span></li>
+          <li><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Pregunta para recuperar el PIN</span></li>
+        </ul>
+        <a class="service-link" href="#familiar">Ver los ajustes<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12 H19 M13,6 L19,12 L13,18"/></svg></a>
+      </li>
+    </ul>
+  </div>
+</section>
+
+<!-- 5. El asistente, en detalle: la propuesta de valor -->
+<section class="section" id="asistente" aria-labelledby="asistente-title">
+  <div class="wrap split">
+    <div>
+      <div class="sec-head" style="margin-bottom:0">
+        <div class="eyebrow-row"><p class="eyebrow">Asistente de voz</p><span class="pill">En pruebas</span></div>
+        <h2 class="h2" id="asistente-title">Lo pide hablando. Doado pregunta antes de hacerlo.</h2>
+        <p class="lead">Un círculo grande abajo en el centro. Lo pulsa, habla como habla siempre, y Doado llama, abre WhatsApp o le explica paso a paso cómo hacer algo.</p>
+      </div>
+      <ul class="promises">
+        <li>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M12,3.2 L19,5.9 V11.4 c0,4.4 -2.9,7.9 -7,9.4 C7.9,19.3 5,15.8 5,11.4 V5.9 z"/><path d="M8.8,12 l2.2,2.2 l4.2,-4.3"/></svg>
+          <div><b>Nunca actúa sin un «Sí».</b><span>Pulsado o dicho. Y ese «Sí» lo reconoce el propio móvil, no la inteligencia artificial.</span></div>
+        </li>
+        <li>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z"/><path d="M5.5,11 a6.5,6.5 0 0,0 13,0"/><path d="M12,17.5 V20.5 M9.5,20.5 H14.5"/></svg>
+          <div><b>Espera sin prisa.</b><span>Aguanta las pausas largas y tiene un botón de «Ya he terminado». Lo que dice en voz alta, también lo escribe.</span></div>
+        </li>
+        <li>
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8,10 h8 a3,3 0 0,1 3,3 v4.5 a3,3 0 0,1 -3,3 h-8 a3,3 0 0,1 -3,-3 v-4.5 a3,3 0 0,1 3,-3 z"/><path d="M8,10 V7.5 a4,4 0 0,1 8,0 V10"/><path d="M10.5,15.25 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/></svg>
+          <div><b>Sus números no salen del móvil.</b><span>Al servicio de voz le llegan la voz de la orden y los nombres. Nunca un número de teléfono.</span></div>
+        </li>
+      </ul>
+    </div>
+
+    <div class="chat">
+      <div class="chat-head">
+        <fieldset class="seg">
+          <legend>Cómo le ayuda</legend>
+          <div class="seg-row">
+            <input type="radio" name="modo-chat" id="mc-hace" value="hace" data-mode checked><label for="mc-hace">Lo hace</label>
+            <input type="radio" name="modo-chat" id="mc-guia" value="guia" data-mode><label for="mc-guia">Explica cómo</label>
+          </div>
+        </fieldset>
+        <button class="btn-sm" type="button" id="replay">
+          <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8,5.5 L18,12 L8,18.5 z"/></svg>Reproducir
+        </button>
+      </div>
+      <ol class="chat-lines" id="chat-lines" aria-label="Ejemplo de conversación">
+        <li class="line is-p"><span class="who">Tu madre</span><p class="bubble"><span>Llama a María.</span></p></li>
+        <li class="line is-d"><span class="who">Doado</span><p class="bubble"><span>¿Llamo a María?</span></p><span class="chips" aria-hidden="true"><span class="chip is-yes">Sí</span><span class="chip">No</span></span><span class="sr">Con dos botones: Sí y No.</span></li>
+        <li class="line is-p"><span class="who">Tu madre</span><p class="bubble"><span>Sí.</span></p></li>
+        <li class="line is-d"><span class="who">Doado</span><p class="bubble"><svg class="i ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg><span>Llamando a María.</span></p></li>
+      </ol>
+      <p class="chat-note" id="chat-note">Modo «Lo hace»: pregunta siempre antes y espera un «Sí», pulsado o dicho.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Los ajustes del familiar, en detalle -->
+<section class="section band" id="familiar" aria-labelledby="familiar-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Para el familiar</p>
+      <h2 class="h2" id="familiar-title">Tú lo configuras una vez. Ellos solo tienen que usarlo.</h2>
+      <p class="lead">Los ajustes viven detrás de un PIN de cuatro cifras. Desde ahí eliges sus apps, sus personas, la letra y cómo le ayuda el asistente.</p>
+    </div>
+    <div class="shots" role="region" aria-label="Capturas de los ajustes">
+      <figure class="shot">
+        <img src="img/pin.png" alt="Pantalla «Ajustes de Doado»: introduce el PIN de 4 cifras, con cuatro círculos y un teclado numérico grande" loading="lazy">
+        <figcaption><b>Un PIN de cuatro cifras</b><span>Lo creas la primera vez. Si se te olvida, hay una pregunta de recuperación.</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="img/ajustes.png" alt="Índice de ajustes de Doado: Interfaz, Contactos, Aplicaciones, Asistente de voz y Sonido y pantalla" loading="lazy">
+        <figcaption><b>Todo en una lista</b><span>Interfaz, contactos, aplicaciones, asistente y sonido, con una maqueta que cambia mientras eliges.</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="img/aplicaciones.png" alt="Ajustes de aplicaciones: interruptores de Llamar, Mensajes, Cámara, Contactos y Emergencias 112, con su explicación" loading="lazy">
+        <figcaption><b>Sus casillas</b><span>Enciendes las que use. Emergencias 112 viene apagada y te explica qué hace antes de encenderla.</span></figcaption>
+      </figure>
+      <figure class="shot">
+        <img src="img/admin-activo.png" alt="Modo administrador desbloqueado, con 14:58 de cuenta atrás y los botones de la tienda, los ajustes de Android y la pantalla de inicio" loading="lazy">
+        <figcaption><b>Quince minutos para Android</b><span>El modo administrador abre la tienda y los ajustes del sistema, con cuenta atrás, y se cierra solo.</span></figcaption>
+      </figure>
+    </div>
+    <div class="features three">
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8.2,8 a3.8,3.8 0 1,0 7.6,0 a3.8,3.8 0 1,0 -7.6,0"/><path d="M4.5,20 a7.5,6.6 0 0,1 15,0"/></svg>
+        <div><h3>Sus personas</h3><p>Las eliges del listín, una a una, y a cada una le pones botón de llamar, de WhatsApp o los dos.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M15,3.5 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M6.5,13 h2.5 a2.5,2.5 0 0,1 2.5,2.5 v2.5 a2.5,2.5 0 0,1 -2.5,2.5 h-2.5 a2.5,2.5 0 0,1 -2.5,-2.5 v-2.5 a2.5,2.5 0 0,1 2.5,-2.5 z"/><path d="M12.5,16.75 a3.75,3.75 0 1,0 7.5,0 a3.75,3.75 0 1,0 -7.5,0"/></svg>
+        <div><h3>Sus aplicaciones</h3><p>Enciendes las básicas y subes al inicio cualquier otra app que ya use. Funcionan sea cual sea la marca del móvil.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5,7 H11 M17,7 H20.5"/><path d="M11.4,7 a2.6,2.6 0 1,0 5.2,0 a2.6,2.6 0 1,0 -5.2,0"/><path d="M3.5,17 H7 M13,17 H20.5"/><path d="M7.4,17 a2.6,2.6 0 1,0 5.2,0 a2.6,2.6 0 1,0 -5.2,0"/></svg>
+        <div><h3>Su letra y su tema</h3><p>Tres tamaños de letra, de una a tres casillas por fila, claro u oscuro y, si quieres, una foto de fondo.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z"/><path d="M5.5,11 a6.5,6.5 0 0,0 13,0"/><path d="M12,17.5 V20.5 M9.5,20.5 H14.5"/></svg>
+        <div><h3>Su asistente</h3><p>Lo enciendes y eliges si llama por su cuenta tras un «Sí» o si le explica los pasos. De fábrica, explica.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M8,10 h8 a3,3 0 0,1 3,3 v4.5 a3,3 0 0,1 -3,3 h-8 a3,3 0 0,1 -3,-3 v-4.5 a3,3 0 0,1 3,-3 z"/><path d="M8,10 V7.5 a4,4 0 0,1 8,0 V10"/><path d="M10.5,15.25 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0"/></svg>
+        <div><h3>Su PIN</h3><p>Cuatro cifras guardadas de forma segura, nunca en claro, y una pregunta por si un día se olvidan.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.8,10.6 L12,3.8 L20.2,10.6"/><path d="M6,9 V18 a2.5,2.5 0 0,0 2.5,2.5 h7 a2.5,2.5 0 0,0 2.5,-2.5 V9"/><path d="M10,20.5 V16 a2,2 0 0,1 4,0 v4.5"/></svg>
+        <div><h3>Avisos claros</h3><p>Si Doado aún no es la pantalla de inicio, te lo dice arriba con un botón para ponerla.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Accesibilidad: la prueba en cifras -->
+<section class="section" aria-labelledby="norma-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">La norma que no se salta</p>
+      <h2 class="h2" id="norma-title">Aquí la accesibilidad manda sobre la estética. Siempre.</h2>
+      <p class="lead">No es una capa que se añade al final. Cada pantalla de Doado se mide antes de darse por buena.</p>
+    </div>
+    <div class="figures">
+      <div class="fig"><p class="fig-n"><span aria-hidden="true">7:1</span><span class="sr">7 a 1</span></p><p>El contraste que buscamos en textos y bordes. El mínimo habitual es 4,5:1.</p></div>
+      <div class="fig"><p class="fig-n"><span aria-hidden="true">168<small>dp</small></span><span class="sr">168 dp</span></p><p>El alto mínimo de una casilla del inicio. Android se conforma con 48.</p></div>
+      <div class="fig"><p class="fig-n"><span aria-hidden="true">18<small>sp</small></span><span class="sr">18 sp</span></p><p>El texto más pequeño de toda la app. Nada por debajo.</p></div>
+      <div class="fig"><p class="fig-n">0</p><p>Colores que dependan del fondo de pantalla. Así el contraste no se rompe nunca.</p></div>
+    </div>
+    <p class="rules-note"><b>Separa por bordes, no por sombras,</b> porque una sombra suave desaparece para quien distingue poco el contraste. Esta página está hecha con las mismas reglas.</p>
+  </div>
+</section>
+
+<!-- 8. Sin letra pequeña: lo que no hace -->
+<section class="section band" aria-labelledby="no-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Sin letra pequeña</p>
+      <h2 class="h2" id="no-title">Lo que Doado no hace.</h2>
+      <p class="lead">Preferimos que lo sepas antes de instalarlo.</p>
+    </div>
+    <div class="features">
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,6 L18,18 M18,6 L6,18"/></svg>
+        <div><h3>No te pide cuentas.</h3><p>Ni a ti ni a ellos. No hay registro, ni anuncios, ni nada que pagar dentro.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,6 L18,18 M18,6 L6,18"/></svg>
+        <div><h3>No mira qué hace.</h3><p>Sin servidor propio y sin analítica. No sabemos cuándo lo usa ni para qué.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,6 L18,18 M18,6 L6,18"/></svg>
+        <div><h3>No lee toda la agenda.</h3><p>Solo ve los contactos que eliges tú en el selector, uno a uno.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,6 L18,18 M18,6 L6,18"/></svg>
+        <div><h3>No manda números de teléfono.</h3><p>El asistente se entiende en la nube, pero allí solo llegan la voz de la orden y los nombres.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,6 L18,18 M18,6 L6,18"/></svg>
+        <div><h3>No encierra el móvil.</h3><p>Cierra las salidas de Doado, que son por donde se sale en la práctica. Bloquear Android entero exigiría controlar el dispositivo, y eso no lo hacemos.</p></div>
+      </div>
+      <div class="feature">
+        <svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M6,6 L18,18 M18,6 L6,18"/></svg>
+        <div><h3>No está aún en Google Play.</h3><p>El launcher está terminado. El asistente está en pruebas con voz real, y llegará cuando esté listo.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9. Flujo: cómo se pone en marcha -->
+<section class="section" id="como-empezar" aria-labelledby="flujo-title">
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Cómo se pone en marcha</p>
+      <h2 class="h2" id="flujo-title">Una tarde para ti. Todos los días para ella.</h2>
+      <p class="lead">Lo configuras una vez, con calma, y le devuelves el móvil. A partir de ahí, su inicio deja de cambiar.</p>
+    </div>
+    <ol class="flow">
+      <li class="flow-step"><span class="flow-n" aria-hidden="true">1</span><h3>Instala Doado en su móvil.</h3><p>Vale cualquier Android 7 o posterior, de cualquier marca. Hoy se instala con el APK de prueba.</p></li>
+      <li class="flow-step"><span class="flow-n" aria-hidden="true">2</span><h3>Elige Doado como inicio.</h3><p>Pulsa el botón de Inicio: Android pregunta qué pantalla usar. Elige Doado y después «Siempre».</p></li>
+      <li class="flow-step"><span class="flow-n" aria-hidden="true">3</span><h3>Ponle tu PIN y sus cosas.</h3><p>Crea las cuatro cifras y elige sus casillas, sus personas, la letra y cómo le ayuda el asistente.</p></li>
+      <li class="flow-step"><span class="flow-n" aria-hidden="true">4</span><h3>Devuélvele el móvil.</h3><p>Si un día hay que instalar algo, el modo administrador te abre Android quince minutos y se vuelve a cerrar solo.</p></li>
+    </ol>
+    <div class="cmd">
+      <div class="cmd-head">
+        <p>¿Lo pruebas en el emulador?<span>Fíjalo como pantalla de inicio desde el ordenador.</span></p>
+        <button class="btn-sm" type="button" id="copy">Copiar</button>
+        <span class="sr" role="status" id="copy-status"></span>
+      </div>
+      <pre><code id="cmd">adb shell cmd package set-home-activity com.doado.launcher/.LauncherActivity</code></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 10. Testimonios. PROVISIONALES: son de ejemplo y la sección entera va con `hidden`, así que no se ve en la web
+     publicada (solo con ?borrador en la dirección, para revisarla). Antes de quitar `hidden`, cada cita tiene que ser
+     real, con nombre y permiso por escrito de quien la dice. Nunca se publican como si fueran reales. -->
+<section class="section testimonials" id="testimonios" aria-labelledby="testimonios-title" data-provisional hidden>
+  <div class="wrap">
+    <div class="sec-head">
+      <p class="eyebrow">Testimonios</p>
+      <h2 class="h2" id="testimonios-title">Lo que cuentan las familias que lo prueban.</h2>
+      <p class="prov-tag">Provisional: testimonios de ejemplo, no son reales.</p>
+    </div>
+    <div class="tcards">
+      <figure class="tcard">
+        <blockquote><p>«Mi madre llevaba meses sin llamarme por su cuenta. La primera semana con Doado me llamó tres veces, y una era solo para decirme que ya sabía hacerlo.»</p></blockquote>
+        <figcaption><b>[Nombre]</b><span>Hija de una usuaria de [edad] años · [Ciudad]</span></figcaption>
+      </figure>
+      <figure class="tcard">
+        <blockquote><p>«Antes cada visita era arreglarle el móvil. Ahora voy a verle a él.»</p></blockquote>
+        <figcaption><b>[Nombre]</b><span>Hijo de un usuario de [edad] años · [Ciudad]</span></figcaption>
+      </figure>
+      <figure class="tcard">
+        <blockquote><p>«Le dice al círculo "llama a mi nieta" y el móvil le pregunta antes de llamar. Eso le da mucha tranquilidad.»</p></blockquote>
+        <figcaption><b>[Nombre]</b><span>Nieta de una usuaria de [edad] años · [Ciudad]</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- 11. Preguntas frecuentes -->
+<section class="section band" id="preguntas" aria-labelledby="preguntas-title">
+  <div class="wrap faq-grid">
+    <div class="sec-head">
+      <p class="eyebrow">Preguntas frecuentes</p>
+      <h2 class="h2" id="preguntas-title">Lo que nos suelen preguntar.</h2>
+      <p class="lead">Y si tu duda no está aquí, puede que la resuelva el móvil de arriba: tócalo.</p>
+    </div>
+    <div class="faq">
+      <details class="qa"><summary><span>¿Cuánto cuesta?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>Nada. Doado es gratis, sin anuncios y sin nada que pagar dentro.</p></details>
+      <details class="qa"><summary><span>¿Dónde lo descargo?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>Todavía no está en Google Play: el launcher está terminado y el asistente de voz, en pruebas. Hoy se instala con el APK de prueba.</p></details>
+      <details class="qa"><summary><span>¿Sirve para cualquier móvil?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>Para cualquier Android 7 o posterior, de cualquier marca: las casillas buscan la app de llamar o de mensajes que tenga cada móvil. Para iPhone, no.</p></details>
+      <details class="qa"><summary><span>¿Y si toca algo y lo desconfigura?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>Todo lo que cambia algo está detrás de tu PIN, y lo que ella ve no se mueve de sitio. Si un día prefieres el inicio de antes, se cambia en un minuto desde el modo administrador.</p></details>
+      <details class="qa"><summary><span>¿Puede salirse de Doado?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>Doado cierra sus propias salidas a Android y solo las abre el modo administrador, durante quince minutos. No bloquea el móvil entero: para eso tendría que controlar el dispositivo, y no lo hace.</p></details>
+      <details class="qa"><summary><span>¿Qué oye el asistente?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>Solo escucha cuando se pulsa el círculo. Para entender la orden, la voz viaja a un servicio externo, al que solo le llegan la voz y los nombres, nunca un número de teléfono. En el móvil no se guarda nada.</p></details>
+      <details class="qa"><summary><span>¿Necesita internet?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>El inicio, no. El asistente de voz, sí.</p></details>
+      <details class="qa"><summary><span>¿Y si se me olvida el PIN?</span><span class="qa-ico" aria-hidden="true"><svg class="i" viewBox="0 0 24 24"><path d="M12,5.5 V18.5 M5.5,12 H18.5"/></svg></span></summary><p>Al crearlo puedes poner una pregunta de recuperación. Sin ella, la única salida es borrar los datos de Doado y volver a configurarlo.</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 12. Llamada final -->
+<section class="section closing" id="empezar" aria-labelledby="empezar-title">
+  <div class="mv-final-rings" aria-hidden="true"><span></span><span></span><span></span></div>
+  <div class="wrap closing-in">
+    <svg class="mv-bigmark mv-draw-on-view" viewBox="8 6 48 52" aria-hidden="true"><defs><mask id="mv-m-fin" maskUnits="userSpaceOnUse" x="0" y="0" width="64" height="64"><rect width="64" height="64" fill="#fff"/><polyline class="mv-chk" points="18.8,32.2 25,38.8 39.6,24.6" fill="none" stroke="#000" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></mask></defs><path fill="currentColor" mask="url(#mv-m-fin)" d="M14,6 H30 A26,26 0 0 1 30,58 H14 A6,6 0 0 1 8,52 V12 A6,6 0 0 1 14,6 Z"/></svg>
+    <p class="dict"><b lang="gl">doado</b><i>adj.</i>En gallego, sencillo. Fácil de hacer.</p>
+    <h2 class="h2" id="empezar-title">Empieza por el móvil de quien más te llama.</h2>
+    <p class="lead">Gratis, sin cuentas y sin anuncios. Una tarde de ajustes y su pantalla de inicio deja de cambiar.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="#como-empezar">Instálalo en su móvil</a>
+      <a class="btn btn-ghost" href="#demo">Vuelve a probar la demo</a>
+    </div>
+    <ul class="status" aria-label="Estado del proyecto">
+      <li><span class="dot full" aria-hidden="true"></span>Launcher: terminado</li>
+      <li><span class="dot" aria-hidden="true"></span>Asistente de voz: en pruebas</li>
+    </ul>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div class="foot-grid">
+      <div class="foot-brand">
+        <a class="brand" href="#arriba" aria-label="Doado, volver arriba">
+          <svg viewBox="0 0 64 64" aria-hidden="true"><path fill="currentColor" fill-rule="evenodd" d="M14,6 H30 A26,26 0 0 1 30,58 H14 A6,6 0 0 1 8,52 V12 A6,6 0 0 1 14,6 Z M23.2,40.5 L23.6,40.8 L24,41.1 L24.5,41.2 L24.9,41.3 L25.4,41.3 L25.9,41.1 L26.4,40.9 L26.7,40.6 L41.3,26.4 L41.7,26 L41.9,25.6 L42,25.1 L42.1,24.6 L42.1,24.1 L41.9,23.7 L41.7,23.2 L41.4,22.9 L41,22.5 L40.6,22.3 L40.1,22.2 L39.6,22.1 L39.1,22.1 L38.7,22.3 L38.2,22.5 L37.9,22.8 L25.1,35.2 L20.6,30.5 L20.3,30.2 L19.8,29.9 L19.4,29.8 L18.9,29.7 L18.4,29.7 L17.9,29.9 L17.5,30.1 L17.1,30.4 L16.8,30.7 L16.5,31.2 L16.4,31.6 L16.3,32.1 L16.3,32.6 L16.5,33.1 L16.7,33.5 L17,33.9 Z"/></svg>
+          Doado
+        </a>
+        <p>Una app para tus mayores.</p>
+        <p><span lang="gl">Doado</span>, en gallego, quiere decir «sencillo».</p>
+      </div>
+      <nav class="foot-col" aria-label="Doado">
+        <p class="foot-h">Doado</p>
+        <a href="#beneficios">Beneficios</a>
+        <a href="#que-trae">Qué trae</a>
+        <a href="#asistente">El asistente</a>
+        <a href="#familiar">Para el familiar</a>
+      </nav>
+      <nav class="foot-col" aria-label="Empezar">
+        <p class="foot-h">Empezar</p>
+        <a href="#demo">Pruébalo aquí</a>
+        <a href="#como-empezar">Cómo se pone en marcha</a>
+        <a href="#preguntas">Preguntas frecuentes</a>
+      </nav>
+      <div class="foot-col">
+        <p class="foot-h">Sin letra pequeña</p>
+        <p>Gratis, sin cuentas, sin anuncios y sin analítica.</p>
+        <p>Android 7 o posterior.</p>
+      </div>
+    </div>
+    <p class="foot-small">Doado · 2026 · Letra Inter, con licencia OFL.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var prefersLight = window.matchMedia('(prefers-color-scheme: light)');
+  // Sin idioma no se cortan las palabras por sílabas, y el visor del artifact no lo pone.
+  if (!root.lang) root.lang = 'es';
+
+  /* Tema de la página. Se recuerda solo en este navegador; si el visor ya fijó uno, manda el visor. */
+  var themeBtn = document.getElementById('theme-btn');
+  function isDark() { var t = root.getAttribute('data-theme'); return t ? t === 'dark' : !prefersLight.matches; }
+  function syncThemeBtn() { themeBtn.setAttribute('aria-label', isDark() ? 'Cambiar la página a tema claro' : 'Cambiar la página a tema oscuro'); }
+  try {
+    var saved = localStorage.getItem('doado-tema');
+    if (!root.hasAttribute('data-theme') && (saved === 'dark' || saved === 'light')) root.setAttribute('data-theme', saved);
+  } catch (e) {}
+  syncThemeBtn();
+  themeBtn.addEventListener('click', function () {
+    var next = isDark() ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('doado-tema', next); } catch (e) {}
+    syncThemeBtn();
+  });
+  if (prefersLight.addEventListener) prefersLight.addEventListener('change', syncThemeBtn);
+
+  var nav = document.querySelector('.nav');
+  function onScroll() { nav.classList.toggle('is-scrolled', window.scrollY > 8); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* Menú de la barra en móvil: un desplegable, no un diálogo; el resto de la página sigue a mano. Al abrirlo el
+     foco pasa al primer enlace, porque en el orden del documento los enlaces van antes que el botón. */
+  var menuBtn = document.getElementById('nav-menu');
+  var navLinks = document.getElementById('nav-links');
+  function setMenu(open, focusBtn) {
+    nav.classList.toggle('is-open', open);
+    menuBtn.setAttribute('aria-expanded', String(open));
+    if (open) {
+      var first = Array.prototype.filter.call(navLinks.querySelectorAll('a'), function (a) { return a.offsetParent !== null; })[0];
+      if (first) first.focus({ preventScroll: true });
+    } else if (focusBtn) menuBtn.focus({ preventScroll: true });
+  }
+  menuBtn.addEventListener('click', function () { setMenu(!nav.classList.contains('is-open')); });
+  navLinks.addEventListener('click', function (e) { if (e.target.closest('a') && nav.classList.contains('is-open')) setMenu(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && nav.classList.contains('is-open')) { e.preventDefault(); setMenu(false, true); }
+  });
+  document.addEventListener('click', function (e) {
+    if (nav.classList.contains('is-open') && !nav.contains(e.target)) setMenu(false);
+  });
+  // Si el foco sale de la barra con el tabulador, el menú se cierra: abierto taparía lo que se enfoca debajo.
+  nav.addEventListener('focusout', function (e) {
+    if (nav.classList.contains('is-open') && e.relatedTarget && !nav.contains(e.relatedTarget)) setMenu(false);
+  });
+  var wide = window.matchMedia('(min-width: 901px)');
+  function onWide() { if (wide.matches && nav.classList.contains('is-open')) setMenu(false); }
+  if (wide.addEventListener) wide.addEventListener('change', onWide);
+
+  /* ---- El móvil ---- */
+  var phone = document.getElementById('phone');
+  var ov = document.getElementById('ov');
+  var assistBtn = phone.querySelector('.assist');
+  var cornerBtn = phone.querySelector('.corner');
+  var camera = document.getElementById('tile-camara');
+  var home = phone.querySelector('.home');
+  var hint = document.getElementById('stage-hint');
+  var live = document.getElementById('phone-live');
+  var DEFAULT_HINT = hint.textContent;
+  var returnFocus = assistBtn;
+  var mode = 'hace';
+  var timers = [];
+
+  function later(fn, ms) { timers.push(setTimeout(fn, ms)); }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; }
+  // El rótulo de debajo del móvil no lo lee el lector; lo que importa va a la región viva. Volver al rótulo de
+  // siempre no se anuncia: llegaría justo cuando se ha pulsado otra cosa.
+  function say(text, quiet) { hint.textContent = text; live.textContent = quiet ? '' : text; }
+  function unmark() { camera.classList.remove('is-marked'); camera.removeAttribute('aria-label'); }
+
+  var ICON = {
+    mic: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M9,6.5 a3,3 0 0,1 6,0 v4.5 a3,3 0 0,1 -6,0 z"/><path d="M5.5,11 a6.5,6.5 0 0,0 13,0"/><path d="M12,17.5 V20.5 M9.5,20.5 H14.5"/></svg>',
+    back: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M19,12 H5 M11,6 L5,12 L11,18"/></svg>',
+    volume: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4,9.5 h3 l4.5,-4 v13 l-4.5,-4 h-3 a1,1 0 0,1 -1,-1 v-3 a1,1 0 0,1 1,-1 z"/><path d="M15,9 a4,4 0 0,1 0,6 M17.5,6.5 a7.5,7.5 0 0,1 0,11"/></svg>',
+    info: '<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5,12 a8.5,8.5 0 1,0 17,0 a8.5,8.5 0 1,0 -17,0"/><path d="M12,11 V16.5 M12,7.8 V8"/></svg>',
+    check: '<svg class="check" viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="21"/><path d="M14,24.5 L21,31.5 L34,17.5"/></svg>'
+  };
+  // Los textos salen de strings.xml de la app, para que la demostración diga lo mismo que el móvil.
+  var VOICE = {
+    hace: { heard: 'Llama a María', ask: '¿Llamo a María?', yes: 'Sí, llama' },
+    guia: { heard: 'Quiero hacer una foto' }
+  };
+  // Dónde está la Cámara con las casillas por fila que haya elegidas, con las frases de guide_tile_where_*.
+  function cameraWhere() {
+    var tiles = Array.prototype.filter.call(phone.querySelectorAll('[data-pane="apps"] .tile'), function (t) {
+      return t.offsetParent !== null || t === camera;
+    });
+    var i = tiles.indexOf(camera), cols = +phone.dataset.cols;
+    if (cols === 1) return 'Busca la casilla «Cámara». Es la número ' + (i + 1) + ', empezando por arriba.';
+    var side = cols === 2 ? ['a la izquierda', 'a la derecha'] : ['a la izquierda', 'en el centro', 'a la derecha'];
+    return 'Busca la casilla «Cámara». Está en la fila ' + (Math.floor(i / cols) + 1) + ', ' + side[i % cols] + '.';
+  }
+
+  function backBar() {
+    return '<button class="ov-back" type="button" data-act="cerrar">' + ICON.back + 'Volver</button>';
+  }
+  function open(html, label, from) {
+    ov.innerHTML = html;
+    ov.hidden = false;
+    // Lo de detrás, tapado, no recibe el foco ni lo recorre el lector. No es modal: el resto de la página sigue.
+    home.inert = true;
+    assistBtn.inert = true;
+    ov.setAttribute('aria-label', label);
+    if (from) returnFocus = from;
+    var f = ov.querySelector('[data-focus]') || ov.querySelector('button');
+    if (f) f.focus({ preventScroll: true });
+  }
+  function close() {
+    clearTimers();
+    ov.hidden = true;
+    ov.innerHTML = '';
+    delete ov.dataset.pin;
+    home.inert = false;
+    assistBtn.inert = false;
+    if (returnFocus) returnFocus.focus({ preventScroll: true });
+  }
+  function result(title, note, withCheck, from) {
+    delete ov.dataset.pin;
+    open('<div class="ov-body is-center">' + (withCheck ? ICON.check : '') +
+      '<p class="ov-title">' + title + '</p><p class="ov-note">' + note + '</p></div>' +
+      '<div class="ov-actions"><button class="v-btn" type="button" data-act="cerrar" data-focus>Volver al inicio</button></div>',
+      title, from);
+  }
+
+  /* Asistente: escucha, entiende y, según el modo, pregunta o explica. */
+  function listen() {
+    clearTimers(); unmark(); say(DEFAULT_HINT, true);
+    var v = VOICE[mode];
+    // Como la pantalla «Te escucho» de la app: insignia, título, explicación, barra de voz y dos botones.
+    open('<div class="ov-body"><span class="badge">' + ICON.mic + '</span>' +
+      '<p class="ov-title">Te escucho</p>' +
+      '<p class="ov-note">Habla con calma. Cuando acabes, pulsa «Ya he terminado».</p>' +
+      '<div class="lvl" aria-hidden="true"><i></i></div>' +
+      '<p class="ov-heard" aria-hidden="true"></p></div>' +
+      '<div class="ov-actions"><button class="v-btn primary" type="button" data-act="terminar" data-focus>Ya he terminado</button>' +
+      '<button class="v-btn" type="button" data-act="cerrar">Cancelar</button></div>',
+      'Asistente de voz escuchando', assistBtn);
+    var heard = ov.querySelector('.ov-heard');
+    // Quieta, la frase sale entera y la pantalla espera a «Ya he terminado»: nada pasa solo.
+    if (reduce.matches || root.classList.contains('mv-still')) { heard.textContent = '«' + v.heard + '»'; return; }
+    var n = 0;
+    function type() {
+      n += 1;
+      heard.textContent = '«' + v.heard.slice(0, n) + (n >= v.heard.length ? '»' : '');
+      if (n < v.heard.length) later(type, 60);
+    }
+    later(type, 900);
+  }
+  function answer() {
+    clearTimers();
+    var v = VOICE[mode];
+    live.textContent = 'Has dicho: ' + v.heard;
+    // Lo oído va encima de la pregunta, para ver si se ha equivocado antes de decir «Sí».
+    var heardLine = '<p class="ov-heard">Has dicho: «' + v.heard + '»</p>';
+    if (mode === 'hace') {
+      open('<div class="ov-body"><span class="badge">' + ICON.mic + '</span>' + heardLine +
+        '<p class="ov-title" id="ov-q" tabindex="-1" data-focus aria-describedby="ov-d">' + v.ask + '</p><p class="ov-note" id="ov-d">Te escucho: contéstame hablando o pulsa un botón.</p></div>' +
+        '<div class="ov-actions"><button class="v-btn primary" type="button" data-act="si">' + v.yes + '</button>' +
+        '<button class="v-btn" type="button" data-act="no">No</button>' +
+        '<button class="v-btn" type="button" data-act="repetir">' + ICON.volume + 'Repetir</button></div>', v.ask);
+    } else {
+      open('<div class="ov-body"><span class="badge">' + ICON.mic + '</span>' + heardLine +
+        '<p class="ov-title" id="ov-q" tabindex="-1" data-focus aria-describedby="ov-d">' + cameraWhere() + '</p>' +
+        '<p class="ov-noteCard" id="ov-d">' + ICON.info + '<span>Al pulsar «Entendido» te lo marco en el inicio con color y un borde grueso.</span></p></div>' +
+        '<div class="ov-actions"><button class="v-btn primary" type="button" data-act="marcar">Entendido</button>' +
+        '<button class="v-btn" type="button" data-act="repetir">' + ICON.volume + 'Repetir</button></div>',
+        'El asistente te explica cómo');
+    }
+  }
+
+  function pin() {
+    clearTimers(); unmark(); say(DEFAULT_HINT, true);
+    var keys = '';
+    for (var k = 1; k <= 9; k++) keys += '<button class="key" type="button" data-key="' + k + '">' + k + '</button>';
+    keys += '<span></span><button class="key" type="button" data-key="0">0</button>' +
+      '<button class="key key-del" type="button" data-key="del" aria-label="Borrar la última cifra">Borrar</button>';
+    open(backBar() +
+      '<div class="ov-body"><p class="ov-title">Ajustes de Doado</p>' +
+      '<p class="ov-note">Introduce el PIN de 4 cifras. Aquí vale cualquiera.</p>' +
+      '<div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div></div>' +
+      '<div class="keys">' + keys + '</div>', 'Teclado del PIN de los ajustes', cornerBtn);
+    ov.dataset.pin = '';
+  }
+
+  ov.addEventListener('click', function (e) {
+    var keyBtn = e.target.closest('[data-key]');
+    if (keyBtn && ov.dataset.pin !== undefined) {
+      var code = ov.dataset.pin;
+      if (keyBtn.dataset.key === 'del') code = code.slice(0, -1);
+      else if (code.length < 4) code += keyBtn.dataset.key;
+      ov.dataset.pin = code;
+      ov.querySelectorAll('.dots i').forEach(function (d, i) { d.classList.toggle('on', i < code.length); });
+      live.textContent = code.length + ' de 4 cifras';
+      if (code.length === 4) {
+        delete ov.dataset.pin;
+        later(function () {
+          result('Dentro de los ajustes', 'Aquí eliges sus apps, sus personas, la letra y el asistente. Sin el PIN, nadie llega hasta aquí.', false);
+        }, 350);
+      }
+      return;
+    }
+    var actBtn = e.target.closest('[data-act]');
+    if (!actBtn) return;
+    var act = actBtn.dataset.act;
+    if (act === 'cerrar') close();
+    else if (act === 'terminar') answer();
+    else if (act === 'si') result('Llamando a María', 'En su móvil, ahora mismo estaría sonando la llamada.', true);
+    else if (act === 'no') result('Vale, no llamo.', 'Sin un «Sí», Doado no hace nada.', false);
+    else if (act === 'repetir') say('Doado lo vuelve a decir en voz alta, despacio.');
+    else if (act === 'marcar') {
+      close();
+      showTab('apps');
+      camera.classList.add('is-marked');
+      camera.setAttribute('aria-label', 'Cámara. El asistente te la señala');
+      say('Doado le marca la casilla de la Cámara. Nada cambia de sitio.');
+    }
+  });
+  phone.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && !ov.hidden) { e.preventDefault(); close(); }
+  });
+  assistBtn.addEventListener('click', listen);
+  cornerBtn.addEventListener('click', pin);
+
+  phone.querySelectorAll('[data-app]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      unmark(); say(DEFAULT_HINT, true);
+      result('Abriendo ' + (b.dataset.opens || b.dataset.app), 'En su móvil se abriría la app de verdad, sea cual sea la marca.', false, b);
+    });
+  });
+  var sosTile = phone.querySelector('[data-sos-tile]');
+  sosTile.addEventListener('click', function () {
+    unmark(); say(DEFAULT_HINT, true);
+    result('Teléfono con el 112 marcado', 'Para llamar hay que pulsar el botón verde de llamar: así no se llama sin querer.', false, sosTile);
+  });
+  /* Contactos en otra pantalla (D-46): las pestañas cambian lo que se ve, nada se mueve de sitio. */
+  function showTab(t) {
+    phone.dataset.tab = t;
+    phone.querySelectorAll('.home-tab').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.tab === t)); });
+  }
+  phone.querySelectorAll('.home-tab').forEach(function (b) {
+    b.addEventListener('click', function () { showTab(b.dataset.tab); });
+  });
+  phone.querySelectorAll('[data-person]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      unmark(); say(DEFAULT_HINT, true);
+      var title = b.dataset.how === 'call' ? 'Llamando a ' + b.dataset.person : 'Abriendo el WhatsApp de ' + b.dataset.person;
+      result(title, 'Un toque y listo. Sin menús ni pasos.', true, b);
+    });
+  });
+  phone.querySelectorAll('[data-off]').forEach(function (b) {
+    b.addEventListener('click', function () {
+      unmark();
+      say(b.dataset.off + ' no está en este móvil. Su casilla se queda en su sitio, apagada.');
+    });
+  });
+
+  /* Reloj de verdad, con la fecha en español. */
+  var clockEl = phone.querySelector('.clock');
+  var dateEl = phone.querySelector('.date');
+  var sbTime = phone.querySelector('.sb-time');
+  var fmt = null;
+  try { fmt = new Intl.DateTimeFormat('es-ES', { weekday: 'long', day: 'numeric', month: 'long' }); } catch (e) {}
+  function tick() {
+    var d = new Date();
+    var t = d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0');
+    clockEl.textContent = t;
+    sbTime.textContent = t;
+    if (fmt) dateEl.textContent = fmt.format(d);
+  }
+  tick();
+  setInterval(tick, 20000);
+
+  /* Ajustes de prueba */
+  function bind(name, fn) {
+    document.querySelectorAll('input[name="' + name + '"]').forEach(function (i) {
+      i.addEventListener('change', function () { if (i.checked) fn(i.value); });
+    });
+  }
+  bind('letra', function (v) { phone.style.setProperty('--letra', v); });
+  bind('cols', function (v) { phone.dataset.cols = v; });
+  bind('contactos', function (v) { phone.dataset.contactos = v; showTab('apps'); });
+  bind('sos', function (v) { phone.dataset.sos = v; });
+  bind('tema', function (v) { phone.dataset.tema = v; });
+
+  /* ---- Conversación de ejemplo ---- */
+  var CHAT = {
+    hace: {
+      who: 'Tu madre',
+      note: 'Modo «Lo hace»: pregunta siempre antes y espera un «Sí», pulsado o dicho.',
+      lines: [['p', 'Llama a María.'], ['d', '¿Llamo a María?', ['Sí', 'No']], ['p', 'Sí.'], ['d', 'Llamando a María.', null, true]]
+    },
+    guia: {
+      who: 'Tu padre',
+      note: 'Modo «Explica cómo», el de fábrica: da los pasos de uno en uno y al acabar marca en el inicio lo que hay que pulsar.',
+      lines: [['p', 'Quiero mandarle una foto a mi nieta.'], ['d', 'Te lo explico. Primero, abre WhatsApp.'], ['p', 'Siguiente.'],
+        ['d', 'Toca el nombre de Lucía y después el clip para elegir la foto.'], ['p', 'Gracias.'], ['d', 'De nada. Te dejo marcado WhatsApp en el inicio.', null, true]]
+    }
+  };
+  var chatList = document.getElementById('chat-lines');
+  var chatNote = document.getElementById('chat-note');
+  var CHECK_SM = '<svg class="i ok" viewBox="0 0 24 24" aria-hidden="true"><path d="M5,12.5 L9.5,17 L19,7"/></svg>';
+  var chatTimers = [];
+  function stopChat() {
+    chatTimers.forEach(clearTimeout); chatTimers = [];
+    chatList.classList.remove('is-playing');
+    chatList.querySelectorAll('.line').forEach(function (li) { li.classList.remove('is-in'); });
+  }
+  // «Pausar movimiento» (capa mv-) corta también una reproducción ya empezada.
+  document.addEventListener('doado:quieto', function () { if (root.classList.contains('mv-still')) stopChat(); });
+  function renderChat() {
+    var c = CHAT[mode];
+    chatTimers.forEach(clearTimeout); chatTimers = [];
+    chatList.classList.remove('is-playing');
+    chatList.innerHTML = c.lines.map(function (l) {
+      var p = l[0] === 'p';
+      var chips = l[2] ? '<span class="chips" aria-hidden="true">' + l[2].map(function (x, i) {
+        return '<span class="chip' + (i === 0 ? ' is-yes' : '') + '">' + x + '</span>';
+      }).join('') + '</span><span class="sr">Con dos botones: ' + l[2].join(' y ') + '.</span>' : '';
+      return '<li class="line ' + (p ? 'is-p' : 'is-d') + '"><span class="who">' + (p ? c.who : 'Doado') + '</span>' +
+        '<p class="bubble">' + (l[3] ? CHECK_SM : '') + '<span>' + l[1] + '</span></p>' + chips + '</li>';
+    }).join('');
+    chatNote.textContent = c.note;
+  }
+  function setMode(m) {
+    mode = m;
+    document.querySelectorAll('input[data-mode]').forEach(function (i) { i.checked = i.value === m; });
+    renderChat();
+  }
+  bind('modo-movil', setMode);
+  bind('modo-chat', setMode);
+
+  document.getElementById('replay').addEventListener('click', function () {
+    chatTimers.forEach(clearTimeout); chatTimers = [];
+    // Con «reducir movimiento» también funciona: sin transición, salir frase a frase no es movimiento.
+    var items = chatList.querySelectorAll('.line');
+    items.forEach(function (li) { li.classList.remove('is-in'); });
+    chatList.classList.add('is-playing');
+    items.forEach(function (li, i) { chatTimers.push(setTimeout(function () { li.classList.add('is-in'); }, 200 + i * 850)); });
+    chatTimers.push(setTimeout(function () {
+      chatList.classList.remove('is-playing');
+      items.forEach(function (li) { li.classList.remove('is-in'); });
+    }, 200 + items.length * 850 + 400));
+  });
+
+  /* Lo provisional (el testimonio de ejemplo) solo se ve con ?borrador en la dirección, para revisarlo; publicado, nunca. */
+  if (/[?&]borrador\b/.test(location.search)) {
+    document.querySelectorAll('[data-provisional]').forEach(function (el) { el.hidden = false; });
+  }
+
+  /* Copiar el comando de adb */
+  var copyBtn = document.getElementById('copy');
+  var cmd = document.getElementById('cmd');
+  var copyStatus = document.getElementById('copy-status');
+  copyBtn.addEventListener('click', function () {
+    function done(t, msg) {
+      copyBtn.textContent = t;
+      copyStatus.textContent = msg;
+      setTimeout(function () { copyBtn.textContent = 'Copiar'; }, 2500);
+    }
+    function fallback() {
+      var r = document.createRange(); r.selectNodeContents(cmd);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      done('Seleccionado', 'Comando seleccionado: pulsa Ctrl+C para copiarlo.');
+    }
+    try { navigator.clipboard.writeText(cmd.textContent.trim()).then(function () { done('Copiado', 'Comando copiado.'); }, fallback); }
+    catch (e) { fallback(); }
+  });
+
+  /* Las capturas solo se desplazan de lado en pantallas estrechas: ahí, y solo ahí, se pueden enfocar para
+     moverlas con el teclado. */
+  var shots = document.querySelector('.shots');
+  // Los puntos solo dibujan dónde se está: no se pulsan, y el lector no los oye.
+  var dots = document.createElement('div');
+  dots.className = 'shots-dots';
+  dots.setAttribute('aria-hidden', 'true');
+  var shotEls = shots.querySelectorAll('.shot');
+  shotEls.forEach(function () { dots.appendChild(document.createElement('i')); });
+  function shotsDots() {
+    var r = shots.getBoundingClientRect(), best = 0, bestD = Infinity;
+    shotEls.forEach(function (s, i) {
+      var d = Math.abs(s.getBoundingClientRect().left - r.left);
+      if (d < bestD) { bestD = d; best = i; }
+    });
+    // Al final del todo manda la última, aunque no llegue a pegarse al borde izquierdo.
+    if (shots.scrollLeft + shots.clientWidth >= shots.scrollWidth - 2) best = shotEls.length - 1;
+    dots.querySelectorAll('i').forEach(function (d, i) { d.classList.toggle('on', i === best); });
+  }
+  function shotsTab() {
+    var scrolls = shots.scrollWidth > shots.clientWidth + 1;
+    if (scrolls) shots.setAttribute('tabindex', '0');
+    else shots.removeAttribute('tabindex');
+    if (scrolls && !dots.parentNode) shots.after(dots);
+    else if (!scrolls && dots.parentNode) dots.remove();
+    if (scrolls) shotsDots();
+  }
+  var dotsQueued = false;
+  shots.addEventListener('scroll', function () {
+    if (!dotsQueued) { dotsQueued = true; requestAnimationFrame(function () { dotsQueued = false; shotsDots(); }); }
+  }, { passive: true });
+  shotsTab();
+  window.addEventListener('resize', shotsTab);
+})();
+</script>
+<script id="movimiento-js">
+/* Capa de movimiento: ver el bloque de estilos «movimiento». Aquí solo hay adornos; si este script falla,
+   la página se ve entera y quieta. */
+(function () {
+  'use strict';
+  var root = document.documentElement;
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+  var KEY = 'doado-quieto';
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  // Sin elección guardada manda el sistema: con «reducir movimiento», la página arranca quieta.
+  var still = saved === null ? reduce.matches : saved === '1';
+
+  var pauseBtn = document.getElementById('mv-pause');
+  var phone = document.getElementById('phone');
+  var hooks = [];
+  function apply() {
+    root.classList.toggle('mv-still', still);
+    pauseBtn.setAttribute('aria-pressed', String(still));
+    hooks.forEach(function (fn) { fn(); });
+    // El script principal escucha esto para cortar la conversación de ejemplo si está a medias.
+    document.dispatchEvent(new Event('doado:quieto'));
+  }
+  pauseBtn.addEventListener('click', function () {
+    still = !still;
+    try { localStorage.setItem(KEY, still ? '1' : '0'); } catch (e) {}
+    apply();
+  });
+  if (reduce.addEventListener) {
+    reduce.addEventListener('change', function () {
+      var s = null;
+      try { s = localStorage.getItem(KEY); } catch (e) {}
+      if (s === null) { still = reduce.matches; apply(); }
+    });
+  }
+
+  /* Titular: cada palabra entra por su cuenta. El nombre accesible es la frase entera. */
+  var h1 = document.getElementById('hero-title');
+  if (h1) {
+    // Las palabras animadas se esconden del lector, que oye la frase entera una sola vez; con aria-label
+    // en el h1, según el lector, se oía partida o dos veces.
+    var full = h1.textContent.replace(/\s+/g, ' ').trim();
+    var vis = document.createElement('span');
+    vis.setAttribute('aria-hidden', 'true');
+    while (h1.firstChild) vis.appendChild(h1.firstChild);
+    h1.appendChild(vis);
+    var srh = document.createElement('span');
+    srh.className = 'sr';
+    srh.textContent = full;
+    h1.appendChild(srh);
+    var n = 0;
+    (function split(node) {
+      Array.prototype.slice.call(node.childNodes).forEach(function (c) {
+        if (c.nodeType === 1) { split(c); return; }
+        if (c.nodeType !== 3) return;
+        var frag = document.createDocumentFragment();
+        c.nodeValue.split(/(\s+)/).forEach(function (part) {
+          if (!part) return;
+          if (/^\s+$/.test(part)) { frag.appendChild(document.createTextNode(part)); return; }
+          var w = document.createElement('span');
+          w.className = 'mv-w';
+          w.style.setProperty('--i', n++);
+          w.textContent = part;
+          frag.appendChild(w);
+        });
+        c.parentNode.replaceChild(frag, c);
+      });
+    })(vis);
+  }
+  function rise(el, delay) {
+    if (!el) return;
+    el.classList.add('mv-rise');
+    el.style.setProperty('--mv-d', delay + 'ms');
+  }
+  var copy = document.querySelector('.hero-copy');
+  if (copy) {
+    rise(copy.querySelector('.eyebrow'), 0);
+    rise(copy.querySelector('.lead'), 550);
+    rise(copy.querySelector('.hero-actions'), 700);
+    rise(copy.querySelector('.proof'), 850);
+  }
+  rise(document.querySelector('.stage'), 250);
+  rise(document.querySelector('.try'), 950);
+
+  /* Barra de progreso de lectura */
+  var bar = document.querySelector('.mv-progress');
+  var queued = false;
+  function progress() {
+    queued = false;
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    bar.style.setProperty('--mv-p', max > 0 ? Math.min(1, window.scrollY / max).toFixed(4) : 0);
+  }
+  window.addEventListener('scroll', function () {
+    if (!queued) { queued = true; requestAnimationFrame(progress); }
+  }, { passive: true });
+  progress();
+
+  /* El móvil se inclina un poco hacia el puntero, pero nunca mientras está debajo: ahí se toca. */
+  var hero = document.querySelector('.hero');
+  function level() { phone.style.setProperty('--mv-rx', '0deg'); phone.style.setProperty('--mv-ry', '0deg'); }
+  if (hero && phone && window.matchMedia('(pointer: fine)').matches) {
+    hero.addEventListener('pointermove', function (e) {
+      if (still || phone.matches(':hover') || phone.matches(':focus-within')) { level(); return; }
+      var r = hero.getBoundingClientRect();
+      var x = (e.clientX - r.left) / r.width - 0.5;
+      var y = (e.clientY - r.top) / r.height - 0.5;
+      phone.style.setProperty('--mv-ry', (x * 10).toFixed(2) + 'deg');
+      phone.style.setProperty('--mv-rx', (-y * 8).toFixed(2) + 'deg');
+    });
+    hero.addEventListener('pointerleave', level);
+    hooks.push(function () { if (still) level(); });
+  }
+
+  /* Luz que sigue al puntero en los paneles */
+  document.querySelectorAll('.try, .chat, .cmd').forEach(function (el) {
+    el.addEventListener('pointermove', function (e) {
+      var r = el.getBoundingClientRect();
+      el.style.setProperty('--mv-x', (e.clientX - r.left) + 'px');
+      el.style.setProperty('--mv-y', (e.clientY - r.top) + 'px');
+    });
+    el.addEventListener('pointerleave', function () { el.style.setProperty('--mv-x', '-500px'); });
+  });
+
+  /* Antes y después */
+  var cmp = document.querySelector('.mv-cmp-screen');
+  var range = cmp && cmp.querySelector('input');
+  var touched = false;
+  function setPos(v) {
+    cmp.style.setProperty('--pos', v + '%');
+    var doado = Math.round(100 - v);
+    range.setAttribute('aria-valuetext', doado + ' % de la pantalla con Doado');
+  }
+  function sweep() {
+    // Un solo barrido al aparecer, para que se vea que la raya se mueve; luego manda quien mira.
+    var keys = [50, 82, 18, 50], seg = 900, t0 = null;
+    function frame(ts) {
+      // Con el foco en el deslizador, el barrido le dictaría al lector sesenta valores por segundo.
+      if (touched || still || document.activeElement === range) return;
+      if (t0 === null) t0 = ts;
+      var t = (ts - t0) / seg, i = Math.floor(t);
+      if (i >= keys.length - 1) { range.value = 50; setPos(50); return; }
+      var p = t - i;
+      var e = p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+      var v = keys[i] + (keys[i + 1] - keys[i]) * e;
+      range.value = Math.round(v);
+      setPos(v.toFixed(1));
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  }
+  if (range) {
+    /* Con el dedo, la raya va donde está el dedo, se toque donde se toque (en iPhone el deslizador nativo solo
+       se arrastra desde el tirador). Un gesto que empieza en vertical lo coge el navegador para desplazar la
+       página (touch-action: pan-y) y llega aquí como pointercancel: entonces la raya no se mueve. */
+    var drag = null;
+    function follow(x) {
+      var r = cmp.getBoundingClientRect();
+      var v = Math.max(0, Math.min(100, (x - r.left) / r.width * 100));
+      touched = true;
+      if (drag) drag.v = v;
+      range.value = Math.round(v);
+      setPos(v.toFixed(1));
+    }
+    range.addEventListener('pointerdown', function (e) { if (e.isPrimary) drag = { x: e.clientX, moved: false, v: null }; });
+    range.addEventListener('pointermove', function (e) {
+      if (!drag || !e.isPrimary) return;
+      if (!drag.moved && Math.abs(e.clientX - drag.x) < 6) return;
+      drag.moved = true;
+      follow(e.clientX);
+    });
+    range.addEventListener('pointerup', function (e) { if (drag && e.isPrimary) follow(e.clientX); drag = null; });
+    range.addEventListener('pointercancel', function () { drag = null; });
+    range.addEventListener('input', function () {
+      touched = true;
+      // Mientras se arrastra manda el dedo: el valor nativo va unos píxeles desplazado por el ancho del tirador.
+      if (drag && drag.v !== null) { range.value = Math.round(drag.v); return; }
+      setPos(range.value);
+    });
+    range.addEventListener('focus', function () { touched = true; });
+    setPos(range.value);
+  }
+
+  /* Lo que se repite sin fin (luz, ondas, cinta) se para fuera de pantalla: en un móvil modesto, ahorra batería. */
+  if ('IntersectionObserver' in window) {
+    var offIo = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) { en.target.classList.toggle('mv-off', !en.isIntersecting); });
+    });
+    document.querySelectorAll('.hero, .mv-ticker, #empezar').forEach(function (el) { offIo.observe(el); });
+  }
+
+  /* La hora del comparador es la del móvil del hero */
+  var clock = phone && phone.querySelector('.clock');
+  var date = phone && phone.querySelector('.date');
+  function syncClock() {
+    if (!clock) return;
+    document.querySelectorAll('.mv-dclock, .mv-stime').forEach(function (el) { el.textContent = clock.textContent; });
+    document.querySelectorAll('.mv-ddate').forEach(function (el) { el.textContent = date.textContent; });
+  }
+  syncClock();
+  setInterval(syncClock, 20000);
+
+  /* Cifras que cuentan hasta su valor. Cuenta solo lo que se ve: el lector oye la cifra entera, en su
+     <span class="sr">. El 0 no cuenta: hacia atrás desde un número inventado no dice nada. */
+  function count(fig) {
+    var el = fig.querySelector('.fig-n [aria-hidden]');
+    var t = el && el.firstChild;
+    if (!t || t.nodeType !== 3 || el.dataset.mvDone) return;
+    var m = /^(\d+)([\s\S]*)$/.exec(t.nodeValue);
+    if (!m) return;
+    el.dataset.mvDone = '1';
+    var end = +m[1], rest = m[2], start = 0, t0 = null;
+    if (still || end === 0) return;
+    function frame(ts) {
+      if (t0 === null) t0 = ts;
+      var p = Math.min(1, (ts - t0) / 1400);
+      var e = 1 - Math.pow(1 - p, 3);
+      t.nodeValue = (p < 1 && !still ? Math.round(start + (end - start) * e) : end) + rest;
+      if (p < 1 && !still) requestAnimationFrame(frame);
+    }
+    t.nodeValue = start + rest;
+    requestAnimationFrame(frame);
+  }
+
+  /* Aparecer al bajar, en cascada dentro de cada grupo */
+  var SEL = '.sec-head, .quote, .statement, .mv-cmp, .feature, .service, .promises li, .chat, .shot, .fig, .rules-note, .flow-step, .cmd, .tcard, .qa, .closing-in';
+  function shown(el) {
+    if (el.classList.contains('fig')) count(el);
+    // El chat ya no se reproduce solo: borraba las frases y tardaba hasta 5,7 s en volver a enseñarlas.
+    if (el.classList.contains('mv-cmp')) sweep();
+  }
+  var targets = [];
+  document.querySelectorAll(SEL).forEach(function (el) {
+    if (el.closest('.hero')) return;
+    var sibs = Array.prototype.filter.call(el.parentNode.children, function (c) { return c.matches(SEL); });
+    el.classList.add('mv-rv');
+    el.style.setProperty('--mv-d', (sibs.indexOf(el) % 4) * 90 + 'ms');
+    targets.push(el);
+  });
+  document.querySelectorAll('.mv-draw-on-view').forEach(function (el) { targets.push(el); });
+  // La clase va aquí y no arriba: si algo de lo anterior falla, la página se queda como sin script.
+  root.classList.add('mv-js');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        // Solo se anima lo que entra por abajo. Lo que ya está a la vista, al cargar o tras saltar con un
+        // enlace, se queda como está en vez de parpadear.
+        if (en.boundingClientRect.top > window.innerHeight * 0.9) en.target.classList.add('mv-in');
+        io.unobserve(en.target);
+        shown(en.target);
+      });
+    }, { rootMargin: '0px 0px 12% 0px', threshold: 0 });
+    targets.forEach(function (el) { io.observe(el); });
+  } else {
+    targets.forEach(function (el) { el.classList.add('mv-in'); });
+  }
+
+  apply();
+})();
+</script>
+<!-- ARTIFACT:END -->
+</body>
+</html>
