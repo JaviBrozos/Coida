@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -38,6 +39,7 @@ import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,14 +57,10 @@ import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.stateDescription
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.text.style.Hyphens
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -75,8 +73,10 @@ import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.TabularFigures
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
-import com.doado.core.ui.InitialBadge
-import com.doado.core.ui.NarrowTextScale
+import com.doado.core.ui.FitLine
+import com.doado.core.ui.FitText
+import com.doado.core.ui.rememberFitScale
+import com.doado.core.ui.scaledBy
 import com.doado.core.ui.NotHomeNotice
 import com.doado.core.ui.NotHomeNoticeStage
 import com.doado.data.AppIcon
@@ -88,14 +88,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
-import kotlin.math.ceil
-import kotlin.math.floor
 
 /** Un contacto listo para pintar en el inicio. */
 data class HomeContact(
     val shortcut: ContactShortcut,
     /** false si la acción no se puede hacer aquí (WhatsApp sin instalar). */
     val isAvailable: Boolean,
+    /** Su foto de la agenda (D-57), o null: entonces sale la inicial. */
+    val photo: ImageBitmap? = null,
 )
 
 /**
@@ -107,7 +107,7 @@ data class HomeContact(
  *
  * Arriba, fijos, el reloj (o el nombre, si se ha quitado el reloj) con el botón de
  * Ajustes en la esquina. Debajo, una sola rejilla que se desplaza entera: las
- * casillas de apps y, tras el rótulo «Tus contactos», los accesos directos, con
+ * casillas de apps y, tras el rótulo «Contactos favoritos», los accesos directos, con
  * la misma forma y tamaño que una casilla (D-38). El rótulo es lo que le dice a
  * la persona mayor, al desplazar, que ahí empiezan las personas.
  *
@@ -426,17 +426,17 @@ private fun AdminBanner(untilLabel: String, onClick: () -> Unit) {
 }
 
 /**
- * Apps y contactos en una sola rejilla que ocupa todo el alto que queda. Con
- * pocas casillas crecen (hasta un tope, para que no parezcan carteles) y con
- * muchas bajan hasta el mínimo y la rejilla se desplaza.
+ * Apps y contactos en una sola rejilla que ocupa todo el alto que queda y se
+ * desplaza si no cabe todo.
+ *
+ * Con dos o más por fila, las casillas son cuadradas y todas iguales, del lado
+ * que dé el ancho (D-54): nunca se estiran para llenar el alto. Antes crecían
+ * hasta 300 dp, y en un móvil bajo solo se veía una fila de dos. Con una por fila
+ * son filas de alto fijo.
  *
  * Los contactos van después de las apps y tras su rótulo, que ocupa la fila
  * entera: así empiezan siempre en una fila nueva y una casilla de app nunca queda
  * mezclada con una persona.
- *
- * Con tres por fila (D-45) las casillas no se estiran: son casi cuadradas, con el
- * alto que pida la que más texto lleva, para que todas las de una rejilla midan
- * lo mismo y ningún nombre se corte.
  *
  * @param showContactsLabel false en la pantalla de contactos (D-46), donde ya lo
  *   dice la pestaña de arriba.
@@ -479,52 +479,35 @@ private fun HomeGrid(
     }
     val hasLabel = showContactsLabel && contacts.isNotEmpty()
     val sectionHeight = if (hasLabel) {
-        labelHeight + DoadoDimens.GridSpacing + if (onPhoto) PHOTO_BAND_EXTRA else 0.dp
+        labelHeight + gridSpacing(columns) + if (onPhoto) PHOTO_BAND_EXTRA else 0.dp
     } else {
         0.dp
     }
 
     BoxWithConstraints(modifier = modifier.fillMaxWidth()) {
-        val gap = DoadoDimens.GridSpacing
-        val appRows = ceil(apps.size / columns.toFloat()).toInt()
-        val contactRows = ceil(contacts.size / columns.toFloat()).toInt()
-        val rows = (appRows + contactRows).coerceAtLeast(1)
+        val gap = gridSpacing(columns)
         // Lo que queda por encima del círculo, que es lo que se ve sin taparse.
         val visible = maxHeight - bottomPadding
-
-        val appTileHeight: Dp
-        val contactTileHeight: Dp
-        if (columns >= 3) {
-            val side = (maxWidth - gap * (columns - 1)) / columns
-            val needed = narrowTileHeights(apps, contacts, side)
-            appTileHeight = maxOf(side, needed.first)
-            contactTileHeight = maxOf(side, needed.second)
+        // Cuadradas a todo lo ancho no caben con el móvil girado: la rejilla se
+        // estrecha, centrada, hasta que una fila entera queda a la vista.
+        val gridWidth = if (columns == 1) {
+            maxWidth
         } else {
-            val minHeight = if (columns == 1) ONE_COLUMN_MIN else DoadoDimens.TileMinHeight
-            val maxTileHeight = if (columns == 1) ONE_COLUMN_MAX else TWO_COLUMN_MAX
-            val fitAll = (visible - sectionHeight - gap * (rows - 1)) / rows
-            val tileHeight = if (fitAll >= minHeight) {
-                fitAll.coerceAtMost(maxTileHeight)
-            } else {
-                // No cabe todo: filas enteras por encima del círculo al empezar, y la
-                // siguiente solo asoma por sus lados como pista de que hay más. Así,
-                // en reposo, ninguna casilla queda a medias bajo el círculo. Si el
-                // rótulo de los contactos cae en esa primera vista, también cabe entero.
-                var space = visible
-                var fullRows = floor((space + gap) / (minHeight + gap)).toInt().coerceAtLeast(1)
-                if (hasLabel && appRows <= fullRows) {
-                    space = visible - sectionHeight
-                    fullRows = floor((space + gap) / (minHeight + gap)).toInt().coerceAtLeast(1)
-                }
-                ((space - gap * (fullRows - 1)) / fullRows).coerceIn(minHeight, maxTileHeight)
-            }
-            appTileHeight = tileHeight
-            contactTileHeight = tileHeight
+            minOf(maxWidth, (visible - gap).coerceAtLeast(MIN_TILE_SIDE) * columns + gap * (columns - 1))
         }
+        val contactTileHeight = tileHeight(gridWidth, columns)
+        // La misma letra en todas las casillas de cada apartado (D-54).
+        val tileWidth = if (columns == 1) gridWidth else contactTileHeight
+        val appScale = rememberTileLabelScale(apps.map { it.label to null }, tileWidth, columns == 1)
+        val contactScale = rememberTileLabelScale(
+            contacts.map { it.shortcut.name to contactTileDetail(it) },
+            tileWidth,
+            columns == 1,
+        )
 
         // Al guiar, la casilla señalada puede estar fuera de la vista. Solo se
         // desplaza si no se ve entera por encima del círculo, y un contacto se sube
-        // hasta su rótulo si así cabe: lo que se le dice («en Tus contactos, fila
+        // hasta su rótulo si así cabe: lo que se le dice («en Contactos favoritos, fila
         // 2») tiene que cuadrar con lo que ve. La casilla no cambia de sitio.
         LaunchedEffect(highlightedId) {
             val id = highlightedId ?: return@LaunchedEffect
@@ -536,6 +519,10 @@ private fun HomeGrid(
                 contactIndex >= 0 -> apps.size + (if (hasLabel) 1 else 0) + contactIndex
                 else -> return@LaunchedEffect
             }
+            // Al volver del asistente el inicio se compone de cero: hasta el primer
+            // fotograma la rejilla no sabe qué enseña, y se desplazaba aunque la
+            // casilla ya estuviera a la vista.
+            withFrameNanos { }
             val layout = gridState.layoutInfo
             val limit = layout.viewportEndOffset - with(density) { bottomPadding.roundToPx() }
             val shown = layout.visibleItemsInfo.firstOrNull { it.index == index }
@@ -557,21 +544,18 @@ private fun HomeGrid(
             contentPadding = PaddingValues(bottom = bottomPadding),
             horizontalArrangement = Arrangement.spacedBy(gap),
             verticalArrangement = Arrangement.spacedBy(gap),
+            modifier = Modifier
+                .width(gridWidth)
+                .align(Alignment.TopCenter),
         ) {
             items(items = apps, key = { it.id }) { app ->
-                NarrowTextScale(enabled = columns >= 3) {
-                    AppTile(
-                        app = app,
-                        horizontal = columns == 1,
-                        narrow = columns >= 3,
-                        highlighted = app.id == highlightedId,
-                        onClick = { onAppClick(app) },
-                        // Mínimo, no alto fijo: con la letra muy grande el aviso
-                        // "No disponible" se recortaba y la app apagada se quedaba
-                        // distinguida solo por el color. La rejilla se desplaza.
-                        modifier = Modifier.heightIn(min = appTileHeight),
-                    )
-                }
+                AppTile(
+                    app = app,
+                    horizontal = columns == 1,
+                    highlighted = app.id == highlightedId,
+                    onClick = { onAppClick(app) },
+                    labelScale = appScale,
+                )
             }
 
             if (contacts.isNotEmpty()) {
@@ -581,66 +565,26 @@ private fun HomeGrid(
                     }
                 }
                 items(items = contacts, key = { "contact:" + it.shortcut.id }) { contact ->
-                    NarrowTextScale(enabled = columns >= 3) {
-                        ContactTile(
-                            contact = contact,
-                            horizontal = columns == 1,
-                            narrow = columns >= 3,
-                            highlighted = contact.shortcut.id == highlightedId,
-                            onClick = { onContactClick(contact.shortcut) },
-                            modifier = Modifier.heightIn(min = contactTileHeight),
-                        )
-                    }
+                    ContactTile(
+                        contact = contact,
+                        horizontal = columns == 1,
+                        highlighted = contact.shortcut.id == highlightedId,
+                        onClick = { onContactClick(contact.shortcut) },
+                        labelScale = contactScale,
+                    )
                 }
             }
         }
     }
 }
 
-/**
- * Lo que necesitan de alto las casillas de tres por fila, apps y contactos por
- * separado: el de la que más texto lleva. Se mide el texto de verdad, con la
- * misma letra, el mismo ancho y el mismo techo de escala que tendrá la casilla.
- */
-@Composable
-private fun narrowTileHeights(apps: List<FavoriteApp>, contacts: List<HomeContact>, side: Dp): Pair<Dp, Dp> {
-    val measurer = rememberTextMeasurer()
-    val density = LocalDensity.current
-    val capped = Density(density.density, density.fontScale.coerceAtMost(DoadoDimens.NarrowMaxTextScale))
-    val labelStyle = tileLabelStyle(narrow = true)
-    val smallStyle = tileSecondaryStyle()
-    val unavailable = stringResource(R.string.app_unavailable)
-    val call = stringResource(R.string.contact_action_call)
-    val whatsApp = stringResource(R.string.contact_action_whatsapp)
-    val whatsAppMissing = stringResource(R.string.contact_whatsapp_missing_short)
-    val textWidth = with(density) { (side - NarrowTilePaddingH * 2).roundToPx() }.coerceAtLeast(1)
+/** Hueco entre casillas: con cuatro por fila, uno menor, que deja más casilla. */
+internal fun gridSpacing(columns: Int): Dp =
+    if (columns >= 4) DoadoDimens.GridSpacingDense else DoadoDimens.GridSpacing
 
-    // La línea de debajo del nombre no crece con la letra (SecondaryLineScale).
-    val unscaled = Density(density.density, 1f)
-    fun height(text: String, style: TextStyle, at: Density = capped): Dp = with(density) {
-        measurer.measure(
-            text = text,
-            style = style,
-            constraints = Constraints(maxWidth = textWidth),
-            density = at,
-        ).size.height.toDp()
-    }
-
-    val fixed = NarrowTilePaddingV * 2 + DoadoDimens.TileIconSizeNarrow + NarrowTileSpacing
-    val app = apps.maxOfOrNull {
-        height(it.label, labelStyle) +
-            if (it.isAvailable) 0.dp else TileSecondaryGap + height(unavailable, smallStyle, unscaled)
-    } ?: 0.dp
-    val contact = contacts.maxOfOrNull {
-        val detail = when {
-            !it.isAvailable -> whatsAppMissing
-            it.shortcut.action == ContactAction.CALL -> call
-            else -> whatsApp
-        }
-        height(it.shortcut.name, labelStyle) + TileSecondaryGap + height(detail, smallStyle, unscaled)
-    } ?: 0.dp
-    return (fixed + app) to (fixed + contact)
-}
+/** Alto de una casilla en una rejilla de [width] con [columns] por fila: su lado, o la fila fija. */
+internal fun tileHeight(width: Dp, columns: Int): Dp =
+    if (columns == 1) DoadoDimens.TileRowHeight else (width - gridSpacing(columns) * (columns - 1)) / columns
 
 /**
  * Con foto de fondo, lo que no es casilla (el reloj, el rótulo de los contactos,
@@ -662,7 +606,7 @@ private fun PhotoBand(onPhoto: Boolean, content: @Composable () -> Unit) {
 
 /**
  * Las dos pantallas del inicio cuando los contactos van aparte (D-46): las apps y
- * «Tus contactos». Se pasa de una a otra deslizando, pero estas dos pestañas
+ * «Contactos favoritos». Se pasa de una a otra deslizando, pero estas dos pestañas
  * grandes siempre están a la vista: deslizar es un atajo, no la única forma, y
  * así se sabe que hay otra pantalla y en cuál se está.
  */
@@ -676,8 +620,19 @@ private fun HomePageTabs(selected: Int, onSelect: (Int) -> Unit) {
 }
 
 @Composable
-private fun HomePageTabsContent(selected: Int, onSelect: (Int) -> Unit) {
+private fun HomePageTabsContent(selected: Int, onSelect: (Int) -> Unit) = BoxWithConstraints {
     val colors = MaterialTheme.colorScheme
+    val labels = listOf(stringResource(R.string.home_page_apps), stringResource(R.string.home_page_contacts))
+    // Las dos con la misma letra, la que haga falta para que quepa la más larga
+    // («Contactos favoritos»), en dos líneas como mucho: en una sola bajaba a 12 dp.
+    // Así ninguna se parte (D-54) y no parece que una pese más que la otra.
+    val style = MaterialTheme.typography.labelMedium
+    val textWidth = with(LocalDensity.current) {
+        ((maxWidth - DoadoDimens.GridSpacing) / 2 - TAB_PADDING_H * 2).roundToPx()
+    }
+    val scale = labels.minOf { label ->
+        rememberFitScale(listOf(FitLine(label, style, maxLines = 2)), textWidth, Constraints.Infinity).scale
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -685,7 +640,7 @@ private fun HomePageTabsContent(selected: Int, onSelect: (Int) -> Unit) {
             .selectableGroup(),
         horizontalArrangement = Arrangement.spacedBy(DoadoDimens.GridSpacing),
     ) {
-        listOf(R.string.home_page_apps, R.string.home_page_contacts).forEachIndexed { page, label ->
+        labels.forEachIndexed { page, label ->
             val isSelected = page == selected
             DoadoCard(
                 onClick = { onSelect(page) },
@@ -703,13 +658,15 @@ private fun HomePageTabsContent(selected: Int, onSelect: (Int) -> Unit) {
             ) {
                 Box(
                     contentAlignment = Alignment.Center,
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+                    modifier = Modifier.padding(horizontal = TAB_PADDING_H, vertical = 10.dp),
                 ) {
                     Text(
-                        text = stringResource(label),
-                        style = tileLabelStyle(narrow = true),
+                        text = label,
+                        style = style.scaledBy(scale),
                         color = if (isSelected) colors.onPrimary else colors.onSurface,
                         textAlign = TextAlign.Center,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
                     )
                 }
             }
@@ -718,11 +675,12 @@ private fun HomePageTabsContent(selected: Int, onSelect: (Int) -> Unit) {
 }
 
 /**
- * Rótulo «Tus contactos» sobre los accesos directos. No dice solo «Contactos»
- * porque así se llama también la casilla de la agenda, y se confundirían.
+ * Rótulo «Contactos favoritos» sobre los accesos directos. No dice solo
+ * «Contactos» porque así se llama también la casilla de la agenda, y se
+ * confundirían. Es el nombre que eligieron las personas mayores en la prueba.
  */
 @Composable
-private fun ContactsLabel(minHeight: Dp) {
+internal fun ContactsLabel(minHeight: Dp) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -738,178 +696,25 @@ private fun ContactsLabel(minHeight: Dp) {
             modifier = Modifier.size(28.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant,
         )
-        Text(
+        // Con la letra al 200 % en un móvil estrecho, «favoritos» no cabía y se partía.
+        FitText(
             text = stringResource(R.string.home_contacts_section),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.onBackground,
+            maxLines = 2,
+            modifier = Modifier.weight(1f),
         )
-    }
-}
-
-/**
- * Acceso directo a una persona, con la forma de una casilla: la inicial ocupa el
- * sitio del icono y debajo van el nombre y lo que hace (llamar o WhatsApp). La
- * inicial va en su círculo (D-35), que es lo que la distingue de una app.
- */
-@Composable
-private fun ContactTile(
-    contact: HomeContact,
-    horizontal: Boolean,
-    highlighted: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    narrow: Boolean = false,
-) {
-    val shortcut = contact.shortcut
-    val colors = MaterialTheme.colorScheme
-    val actionText = stringResource(
-        when (shortcut.action) {
-            ContactAction.CALL -> R.string.contact_action_call
-            ContactAction.WHATSAPP -> R.string.contact_action_whatsapp
-        },
-    )
-    val clickLabel = stringResource(R.string.cd_contact_action, actionText, shortcut.name)
-    val unavailableLabel = stringResource(R.string.cd_contact_unavailable, shortcut.name)
-    // Solo se apaga el de WhatsApp sin WhatsApp. Dice qué falta, y no un «No
-    // disponible» a secas: con la misma persona dos veces, así se sabe cuál es.
-    val detail = if (contact.isAvailable) actionText else stringResource(R.string.contact_whatsapp_missing_short)
-    val highlightedLabel = stringResource(R.string.cd_highlighted)
-    // Señalado por el asistente: relleno de acento, como las casillas (AppTile).
-    val contentColor = when {
-        !contact.isAvailable -> colors.outlineVariant
-        highlighted -> colors.onPrimary
-        else -> colors.onSurface
-    }
-    val secondaryColor = when {
-        !contact.isAvailable -> colors.outlineVariant
-        highlighted -> colors.onPrimary
-        else -> colors.onSurfaceVariant
-    }
-
-    DoadoCard(
-        onClick = onClick,
-        enabled = contact.isAvailable,
-        highlighted = highlighted,
-        color = if (highlighted) colors.primary else colors.surfaceContainer,
-        shape = RoundedCornerShape(DoadoDimens.TileCornerRadius),
-        borderWidth = if (highlighted) DoadoDimens.HighlightBorderWidth else DoadoDimens.BorderWidth,
-        modifier = modifier
-            .fillMaxWidth()
-            .semantics {
-                if (contact.isAvailable) {
-                    onClick(label = clickLabel) { onClick(); true }
-                } else {
-                    contentDescription = unavailableLabel
-                }
-                if (highlighted) stateDescription = highlightedLabel
-            },
-    ) {
-        val initial: @Composable (Dp) -> Unit = { size ->
-            InitialBadge(
-                name = shortcut.name,
-                size = size,
-                shape = CircleShape,
-                color = if (contact.isAvailable) colors.primary else colors.outlineVariant,
-                plate = when {
-                    !contact.isAvailable -> colors.surfaceContainer
-                    highlighted -> colors.onPrimary
-                    else -> colors.surfaceContainerLowest
-                },
-                // En el círculo pequeño de una columna, una letra menor: con la grande
-                // al 200 % se salía del círculo.
-                textStyle = if (size < DoadoDimens.TileIconSize) {
-                    MaterialTheme.typography.labelLarge
-                } else {
-                    MaterialTheme.typography.titleMedium
-                },
-            )
-        }
-        if (horizontal) {
-            Row(
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
-            ) {
-                initial(DoadoDimens.TileIconSizeCompact)
-                ContactLabels(
-                    name = shortcut.name,
-                    detail = detail,
-                    color = contentColor,
-                    detailColor = secondaryColor,
-                    align = TextAlign.Start,
-                    modifier = Modifier.weight(1f),
-                )
-            }
-        } else {
-            Column(
-                modifier = if (narrow) {
-                    Modifier.padding(horizontal = NarrowTilePaddingH, vertical = NarrowTilePaddingV)
-                } else {
-                    Modifier.padding(horizontal = 12.dp, vertical = 16.dp)
-                },
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(
-                    if (narrow) NarrowTileSpacing else 14.dp,
-                    Alignment.CenterVertically,
-                ),
-            ) {
-                initial(if (narrow) DoadoDimens.TileIconSizeNarrow else DoadoDimens.TileIconSize)
-                ContactLabels(
-                    name = shortcut.name,
-                    detail = detail,
-                    color = contentColor,
-                    detailColor = secondaryColor,
-                    align = TextAlign.Center,
-                    narrow = narrow,
-                    modifier = Modifier.fillMaxWidth(),
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun ContactLabels(
-    name: String,
-    detail: String,
-    color: Color,
-    detailColor: Color,
-    align: TextAlign,
-    modifier: Modifier,
-    narrow: Boolean = false,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = if (align == TextAlign.Center) Alignment.CenterHorizontally else Alignment.Start,
-    ) {
-        // Como en las casillas: si el nombre no cabe, se parte por sílabas, y sin
-        // tope de líneas: al 200 % «Tía Encarnación» pide cinco, y un nombre cortado
-        // no se reconoce. La casilla crece.
-        Text(
-            text = name,
-            style = tileLabelStyle(narrow),
-            color = color,
-            textAlign = align,
-        )
-        SecondaryLineScale(narrow) {
-            Text(
-                text = detail,
-                style = tileSecondaryStyle(),
-                color = detailColor,
-                textAlign = align,
-                modifier = Modifier.padding(top = TileSecondaryGap),
-            )
-        }
     }
 }
 
 private const val MINUTE_MS = 60_000L
 private const val HEADER_MAX_TEXT_SCALE = 1.5f
 private const val CONTACTS_LABEL_KEY = "contacts-label"
+private val TAB_PADDING_H = 12.dp
+
+// El lado más pequeño de una casilla al estrechar la rejilla con el móvil girado.
+private val MIN_TILE_SIDE = 96.dp
 private val CONTACTS_LABEL_HEIGHT = 56.dp
-private val ONE_COLUMN_MIN = 112.dp
-private val ONE_COLUMN_MAX = 150.dp
-private val TWO_COLUMN_MAX = 300.dp
 
 // Las dos pantallas del inicio cuando los contactos van aparte (D-46).
 private const val APPS_PAGE = 0

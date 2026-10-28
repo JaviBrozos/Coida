@@ -80,18 +80,25 @@ data class ContactShortcut(
     }
 }
 
-/** Tamaño de letra elegido en Ajustes → Interfaz, sobre el que ya pida el sistema. */
+/**
+ * Tamaño de letra elegido en Ajustes → Interfaz, sobre el que ya pida el sistema.
+ *
+ * [NORMAL] queda por debajo del tamaño de siempre (D-55): en la prueba con dos
+ * personas mayores, el antiguo «Normal» les sobraba. Ese pasó a llamarse
+ * [LARGE], y quien lo tenía lo conserva (`SettingsStore` migra la clave).
+ */
 enum class TextSize(val scale: Float) {
-    NORMAL(1f),
-    LARGE(1.15f),
-    EXTRA_LARGE(1.3f),
+    NORMAL(0.85f),
+    LARGE(1f),
+    EXTRA_LARGE(1.15f),
+    HUGE(1.3f),
 }
 
 enum class ThemeMode { DARK, LIGHT }
 
 /** Qué hace el asistente cuando la persona mayor le pide algo (D-27). */
 enum class AssistantMode {
-    /** Lo hace él, siempre tras preguntar y recibir un «Sí» (D-26). */
+    /** Lo hace él: dice qué va a hacer y lo hace, sin pedir un «Sí» (D-56). */
     ACT,
 
     /** Explica los pasos y marca en el inicio el botón que hay que pulsar. */
@@ -100,16 +107,17 @@ enum class AssistantMode {
 
 /**
  * Ajustes del asistente de voz (CU-15). De fábrica viene apagado: hace falta que
- * el familiar lo encienda, lea a dónde va la voz y dé permiso al micrófono.
+ * el familiar lo encienda, lea a dónde va la voz y dé permiso al micrófono. Al
+ * encenderlo sale en «Lo hace» (D-56).
  */
 data class AssistantSettings(
     val enabled: Boolean = false,
-    val mode: AssistantMode = AssistantMode.GUIDE,
+    val mode: AssistantMode = AssistantMode.ACT,
 )
 
 /** Dónde van los accesos directos a personas en el inicio (D-46). */
 enum class ContactsLayout {
-    /** En la rejilla, tras «Tus contactos», como una casilla más (D-38). De fábrica. */
+    /** En la rejilla, tras «Contactos favoritos», como una casilla más (D-38). De fábrica. */
     GRID,
 
     /** En una segunda pantalla del inicio, deslizando o con su pestaña. */
@@ -119,7 +127,7 @@ enum class ContactsLayout {
 /**
  * Lo que se puede personalizar de la interfaz.
  *
- * @property columns casillas por fila, de 1 a 3 (D-45). Cuatro no caben.
+ * @property columns casillas por fila, de 1 a 4 (D-54). Con dos o más, cuadradas.
  */
 data class InterfaceSettings(
     val theme: ThemeMode = ThemeMode.DARK,

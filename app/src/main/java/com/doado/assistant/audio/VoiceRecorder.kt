@@ -4,6 +4,7 @@ import android.Manifest
 import android.media.AudioFormat
 import android.media.AudioRecord
 import android.media.MediaRecorder
+import android.os.SystemClock
 import android.util.Log
 import androidx.annotation.RequiresPermission
 import com.doado.BuildConfig
@@ -32,8 +33,10 @@ import kotlin.math.sqrt
  * Distingue voz de silencio por volumen, comparando con el ruido de fondo que va
  * midiendo: con la tele puesta el umbral sube solo. Cuesta más empezar a contar
  * voz que seguir contándola, para que el final flojo de una frase no cuente como
- * silencio. Al servicio solo va el tramo con voz y un margen: los segundos de
- * silencio son lo que hace a Whisper inventarse frases.
+ * silencio. Y para seguir contándola hay que sonar cerca de como sonaba quien da
+ * la orden (D-58): la tele o alguien hablando al fondo, más flojos, no alargan la
+ * frase. Al servicio solo va el tramo con voz y un margen: los segundos de
+ * silencio y de ruido son lo que hace a Whisper inventarse frases.
  *
  * Sin supresor de ruido ni ganancia automática (D-37): la fuente de
  * reconocimiento viene sin ellos a propósito, y los dos estropeaban lo que
@@ -47,14 +50,15 @@ class VoiceRecorder {
      * no ha llegado a hablar.
      *
      * @param stopRequested se pone a true con «Ya he terminado».
-     * @param minSpeechMs voz mínima para que cuente como dicho: más corta al
-     *   contestar a una pregunta que en la primera orden (D-42).
-     * @param onLevel volumen entre 0 y 1, cada trozo, para la barra de la pantalla.
+     * @param ignoreFirstMs lo que se tira del principio: el pitido de «habla ahora»,
+     *   que suena ya con el micrófono abierto para no hacer esperar. No cuenta ni
+     *   para medir el ruido ni para lo que se envía.
+     * @param onLevel volumen entre 0 y 1, cada trozo, para las barras de la pantalla.
      */
     @RequiresPermission(Manifest.permission.RECORD_AUDIO)
     suspend fun record(
         stopRequested: AtomicBoolean,
-        minSpeechMs: Long = VoiceTuning.MIN_SPEECH_MS,
+        ignoreFirstMs: Long = 0L,
         onLevel: (Float) -> Unit,
     ): ByteArray? =
         withContext(Dispatchers.IO) {
@@ -90,10 +94,14 @@ class VoiceRecorder {
             var speechMs = 0L
             var silenceMs = 0L
             var noiseFloor = -1.0
+            var speechLevel = -1.0
             var inSpeech = false
             var firstSpeechByte = -1
             var lastSpeechByte = 0
             var peakRms = 0.0
+            // Cuándo empezó a hablar, en ms de grabación; -1 mientras no.
+            var speechStartMs = -1L
+            val startedAt = SystemClock.elapsedRealtime()
 
             try {
                 recorder.startRecording()
@@ -105,12 +113,30 @@ class VoiceRecorder {
                     ensureActive()
                     val read = recorder.read(frame, 0, frameSamples)
                     if (read < 0) throw AssistantError(AssistantFailure.MICROPHONE)
-                    if (read == 0) continue
+                    if (read == 0) {
+                        // Sin audio, el tiempo de grabación no avanza: se mira el reloj
+                        // para que «Ya he terminado» y el tope sigan cortando.
+                        val wallMs = SystemClock.elapsedRealtime() - startedAt
+                        if (stopRequested.get() || wallMs >= HARD_LIMIT_MS) break
+                        continue
+                    }
 
                     val frameMs = read * 1000L / rate
                     elapsedMs += frameMs
+                    // Lo que coincide con el pitido no se mira ni se guarda.
+                    if (elapsedMs <= ignoreFirstMs) {
+                        onLevel(0f)
+                        continue
+                    }
                     val rms = rms(frame, read)
                     peakRms = max(peakRms, rms)
+
+                    // Todo ceros: el micrófono está bloqueado en los ajustes rápidos de
+                    // Android o de Samsung. Mejor decirlo ya que esperar diez segundos
+                    // para «no te he oído».
+                    if (peakRms == 0.0 && elapsedMs >= MUTED_AFTER_MS) {
+                        throw AssistantError(AssistantFailure.MICROPHONE)
+                    }
 
                     // El ruido de fondo baja deprisa y sube despacio. Si empieza a
                     // hablar nada más sonar el pitido, el primer trozo ya es voz: el
@@ -120,20 +146,36 @@ class VoiceRecorder {
                     if (rms > 0 && (noiseFloor < 0 || rms < noiseFloor)) {
                         noiseFloor = if (noiseFloor < 0) rms else (noiseFloor + rms) / 2
                     }
-                    val factor = if (inSpeech) {
-                        VoiceTuning.SPEECH_CONTINUE_FACTOR
+                    val threshold = if (inSpeech) {
+                        maxOf(
+                            VoiceTuning.MIN_SPEECH_RMS,
+                            noiseFloor * VoiceTuning.SPEECH_CONTINUE_FACTOR,
+                            speechLevel * VoiceTuning.SPEECH_DROP_RATIO,
+                        )
                     } else {
-                        VoiceTuning.SPEECH_START_FACTOR
+                        max(VoiceTuning.MIN_SPEECH_RMS, noiseFloor * VoiceTuning.SPEECH_START_FACTOR)
                     }
-                    inSpeech = noiseFloor >= 0 &&
-                        rms > max(VoiceTuning.MIN_SPEECH_RMS, noiseFloor * factor)
+                    inSpeech = noiseFloor >= 0 && rms > threshold
+                    if (inSpeech) {
+                        speechLevel = if (speechLevel < 0) {
+                            // Si el primer trozo es un golpe, no puede dejar la medida
+                            // tan alta que la voz de verdad deje de contar.
+                            rms.coerceAtMost(threshold * VoiceTuning.SPEECH_LEVEL_MAX_JUMP)
+                        } else {
+                            val sample = rms.coerceAtMost(speechLevel * VoiceTuning.SPEECH_LEVEL_MAX_JUMP)
+                            speechLevel + (sample - speechLevel) * VoiceTuning.SPEECH_LEVEL_RISE
+                        }
+                    }
 
                     val frameStart = pcm.size()
                     writeLittleEndian(pcm, frame, read)
                     if (inSpeech) {
                         speechMs += frameMs
                         silenceMs = 0
-                        if (firstSpeechByte < 0) firstSpeechByte = frameStart
+                        if (firstSpeechByte < 0) {
+                            firstSpeechByte = frameStart
+                            speechStartMs = elapsedMs - frameMs
+                        }
                         lastSpeechByte = pcm.size()
                     } else {
                         silenceMs += frameMs
@@ -146,10 +188,18 @@ class VoiceRecorder {
                     }
                     onLevel(level(rms))
 
-                    val hasSpoken = speechMs >= minSpeechMs
+                    // El tope de la orden cuenta desde que empieza a hablar: quien tarda
+                    // ocho segundos en arrancar no se queda con dos para decirla.
+                    val hasSpoken = speechMs >= VoiceTuning.MIN_SPEECH_MS
+                    val started = speechStartMs >= 0
                     val done = stopRequested.get() ||
-                        elapsedMs >= VoiceTuning.MAX_RECORDING_MS ||
-                        (!hasSpoken && elapsedMs >= VoiceTuning.WAIT_FOR_SPEECH_MS) ||
+                        (started && elapsedMs - speechStartMs >= VoiceTuning.MAX_RECORDING_MS) ||
+                        elapsedMs >= HARD_LIMIT_MS ||
+                        (!started && elapsedMs >= VoiceTuning.WAIT_FOR_SPEECH_MS) ||
+                        // Un ruido corto que no llega a voz: con su silencio detrás,
+                        // pasado el plazo de espera, se acaba.
+                        (started && !hasSpoken && elapsedMs >= VoiceTuning.WAIT_FOR_SPEECH_MS &&
+                            silenceMs >= VoiceTuning.END_OF_SPEECH_SILENCE_MS) ||
                         (hasSpoken && silenceMs >= VoiceTuning.END_OF_SPEECH_SILENCE_MS)
                     if (done) break
                 }
@@ -167,10 +217,10 @@ class VoiceRecorder {
                 Log.d(
                     LOG_TAG,
                     "Grabado ${elapsedMs} ms, voz ${speechMs} ms, ruido ${noiseFloor.toInt()}, " +
-                        "pico ${peakRms.toInt()}, se envían ${(to - from).coerceAtLeast(0) / bytesPerMs} ms",
+                        "voz media ${speechLevel.toInt()}, pico ${peakRms.toInt()}, se envían ${(to - from).coerceAtLeast(0) / bytesPerMs} ms",
                 )
             }
-            if (speechMs < minSpeechMs) null else wav(audio.copyOfRange(from, to), rate)
+            if (speechMs < VoiceTuning.MIN_SPEECH_MS) null else wav(audio.copyOfRange(from, to), rate)
         }
 
     /**
@@ -223,5 +273,11 @@ class VoiceRecorder {
     private companion object {
         const val WAV_HEADER_BYTES = 44
         const val LOG_TAG = "DoadoVoz"
+
+        /** Tope absoluto de una grabación: la espera a que hable más la orden entera. */
+        const val HARD_LIMIT_MS = VoiceTuning.WAIT_FOR_SPEECH_MS + VoiceTuning.MAX_RECORDING_MS
+
+        /** Tras esto oyendo solo ceros, el micrófono está bloqueado. */
+        const val MUTED_AFTER_MS = 1_500L
     }
 }

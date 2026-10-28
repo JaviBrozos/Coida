@@ -17,22 +17,37 @@ object DoadoDimens {
     /** Objetivo táctil recomendado en Doado para botones sueltos. */
     val ComfortableTouchTarget = 72.dp
 
-    /** Alto mínimo de una casilla del grid de favoritos. */
-    val TileMinHeight = 168.dp
+    /**
+     * Con dos o más por fila la casilla es cuadrada, de lado lo que dé el ancho
+     * (D-54): el icono, los márgenes y la letra van en proporción a ese lado. El
+     * icono ocupa [TileIconRatio] del lado, entre [TileIconMin] y [TileIconMax].
+     */
+    const val TileIconRatio = 0.4f
+    val TileIconMin = 24.dp
+    val TileIconMax = 96.dp
 
-    /** Icono de la casilla de dos columnas, directamente sobre ella (D-35). */
-    val TileIconSize = 72.dp
+    /** Margen interior de la casilla cuadrada: [TilePaddingRatio] del lado, entre estos dos. */
+    const val TilePaddingRatio = 0.08f
+    val TilePaddingMin = 4.dp
+    val TilePaddingMax = 16.dp
 
-    /** Icono de la casilla de una columna, que va en horizontal. */
+    /** Alto de la casilla de una por fila, que va en horizontal. Fijo: no se estira. */
+    val TileRowHeight = 112.dp
+
+    /** Icono de la casilla de una por fila. */
     val TileIconSizeCompact = 54.dp
 
-    /** Icono de casilla con tres por fila (D-45): menor, para que la casilla sea casi cuadrada. */
-    val TileIconSizeNarrow = 48.dp
+    /** Hueco entre casillas con cuatro por fila: con el de siempre, cada una perdía 6 dp. */
+    val GridSpacingDense = 10.dp
 
-    /** Radio de casilla y de contacto del inicio. */
+    /**
+     * Radio de casilla y de contacto del inicio: [TileCornerRatio] del lado, como
+     * mucho [TileCornerRadius]. Fijo, en una casilla pequeña era casi un círculo.
+     */
     val TileCornerRadius = 28.dp
+    const val TileCornerRatio = 0.18f
 
-    /** Círculo con la inicial de un contacto del inicio. */
+    /** Foto o inicial de un contacto en Ajustes → Contactos. */
     val AvatarSize = 52.dp
 
     /**
@@ -56,19 +71,15 @@ object DoadoDimens {
     /** Círculo con el micrófono arriba de la pantalla del asistente. No es pulsable. */
     val AssistantBadgeSize = 64.dp
 
-    /**
-     * Escala de letra (la del sistema por la de Doado) a partir de la que hay que
-     * dejar sitio al texto: el contacto del inicio pierde la inicial y las opciones
-     * de un [ChoiceGroup] pasan a columna. Es la de «Muy grande» con Android en
-     * normal. No es una medida, pero vive con ellas porque decide el reparto.
-     */
-    const val LargeTextScale = 1.3f
+    /** El sitio del micrófono que late mientras escucha: el círculo y sus anillos. */
+    val ListeningPulseHeight = 200.dp
 
     /**
-     * Techo de escala de la letra de las casillas con tres por fila (D-45): más
-     * grande, un nombre corriente no cabe en un tercio de pantalla.
+     * Escala de letra (la del sistema por la de Doado) a partir de la que las
+     * opciones de un [ChoiceGroup] pasan a columna. Es la de «Enorme» con Android
+     * en normal. No es una medida, pero vive con ellas porque decide el reparto.
      */
-    const val NarrowMaxTextScale = 1.25f
+    const val LargeTextScale = 1.3f
 
     /**
      * Grosor de contorno de casillas, filas y botones. Con el contorno en un tono

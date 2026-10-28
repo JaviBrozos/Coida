@@ -35,8 +35,8 @@ android {
         applicationId = "com.doado.launcher"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 2
-        versionName = "1.2"
+        versionCode = 4
+        versionName = "1.4"
 
         buildConfigField("String", "AI_BASE_URL", aiSetting("baseUrl", "https://api.groq.com/openai/v1"))
         buildConfigField("String", "AI_STT_MODEL", aiSetting("sttModel", "whisper-large-v3"))

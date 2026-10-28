@@ -35,6 +35,7 @@ fun SettingsScreen(
     onInterface: () -> Unit,
     onContacts: () -> Unit,
     onApps: () -> Unit,
+    onArrange: () -> Unit,
     onAssistant: () -> Unit,
     onSoundAndDisplay: () -> Unit,
     onAdmin: () -> Unit,
@@ -88,6 +89,13 @@ fun SettingsScreen(
                 title = stringResource(R.string.settings_apps),
                 subtitle = stringResource(R.string.settings_apps_subtitle),
                 onClick = onApps,
+                position = GroupPosition.Middle,
+            )
+            SettingsRow(
+                icon = R.drawable.ic_home,
+                title = stringResource(R.string.settings_arrange),
+                subtitle = stringResource(R.string.settings_arrange_subtitle),
+                onClick = onArrange,
                 position = GroupPosition.Middle,
             )
             SettingsRow(

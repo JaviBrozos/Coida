@@ -119,15 +119,18 @@ class ActionCatalog(
             Prompts.ACTION_CLARIFY -> {
                 val target = json.text(Prompts.FIELD_FOR)
                 val ids = json.optJSONArray(Prompts.FIELD_OPTIONS)
-                val options = (0 until (ids?.length() ?: 0))
+                val resolved = (0 until (ids?.length() ?: 0))
                     .mapNotNull { ids?.optString(it)?.trim() }
                     .distinct()
-                    .mapNotNull { (resolve(target, it) as? Interpretation.Act)?.action }
-                    .take(MAX_OPTIONS)
-                when (options.size) {
-                    0 -> Interpretation.NotUnderstood
-                    1 -> Interpretation.Act(options.single())
-                    else -> Interpretation.Clarify(options)
+                    .map { resolve(target, it) }
+                val options = resolved.mapNotNull { (it as? Interpretation.Act)?.action }.take(MAX_OPTIONS)
+                when {
+                    // Aunque solo quede una, se pregunta igual: el modelo dudaba, y
+                    // desde D-56 lo que sale de aquí se haría sin preguntar.
+                    options.isNotEmpty() -> Interpretation.Clarify(options)
+                    // Todas eran de WhatsApp sin WhatsApp, o casillas apagadas: se dice qué falta.
+                    resolved.isNotEmpty() && resolved.all { it is Interpretation.Missing } -> resolved.first()
+                    else -> Interpretation.NotUnderstood
                 }
             }
 
@@ -173,7 +176,8 @@ class ActionCatalog(
         optString(key).trim().takeUnless { it.isEmpty() || it == "null" }
 
     private companion object {
-        const val MAX_STEPS = 6
+        // Los mismos que pide el prompt (regla 5): más pasos no se siguen de oído.
+        const val MAX_STEPS = 4
         const val MAX_OPTIONS = 4
     }
 }

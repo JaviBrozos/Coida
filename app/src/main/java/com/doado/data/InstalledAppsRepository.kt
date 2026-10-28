@@ -58,6 +58,17 @@ class InstalledAppsRepository(context: Context) {
     }
 
     /**
+     * Guarda el orden en que el familiar ha colocado las casillas (D-59). Es lo
+     * único que las mueve: nada cambia de sitio por sí solo. Un id guardado que no
+     * venga en [orderedIds] se queda detrás, en el orden que tenía.
+     */
+    fun saveHomeOrder(orderedIds: List<String>) {
+        val current = favoritesStore.favoriteIds()
+        val placed = orderedIds.filter { it in current }
+        favoritesStore.saveFavoriteIds(placed + current.filterNot { it in placed })
+    }
+
+    /**
      * Intención con la que abrir una casilla, o null si en este móvil no hay
      * ninguna app que sepa atenderla.
      */
@@ -122,11 +133,15 @@ class InstalledAppsRepository(context: Context) {
                 ?: appContext.getString(R.string.app_removed_label)
             return FavoriteApp(id, label, AppIcon.Vector(R.drawable.ic_apps), null)
         }
-        val icon = info.loadIcon(packageManager).toBitmap(ICON_PX, ICON_PX).asImageBitmap()
+        // Algún tema de iconos de fabricante da un dibujo que no se deja pasar a
+        // mapa de bits; antes eso cerraba Doado. Mejor el icono genérico.
+        val icon = runCatching {
+            AppIcon.Bitmap(info.loadIcon(packageManager).toBitmap(ICON_PX, ICON_PX).asImageBitmap())
+        }.getOrElse { AppIcon.Vector(R.drawable.ic_apps) }
         return FavoriteApp(
             id = id,
             label = info.loadLabel(packageManager).toString(),
-            icon = AppIcon.Bitmap(icon),
+            icon = icon,
             packageName = packageName,
         )
     }
@@ -164,7 +179,11 @@ class InstalledAppsRepository(context: Context) {
     }
 
     private companion object {
-        /** Lado del icono real de una app; de sobra para una casilla de 72-96dp. */
-        const val ICON_PX = 192
+        /**
+         * Lado del icono real de una app. El más grande de una casilla mide 96 dp
+         * (`DoadoDimens.TileIconMax`), que en un móvil xxhdpi son 288 px: con menos
+         * se estiraba y se veía borroso.
+         */
+        const val ICON_PX = 288
     }
 }

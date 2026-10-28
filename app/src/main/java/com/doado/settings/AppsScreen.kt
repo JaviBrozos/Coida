@@ -62,6 +62,7 @@ fun AppsScreen(
     others: List<OtherAppRow>,
     onToggle: (id: String, onHome: Boolean) -> Unit,
     onBack: () -> Unit,
+    onArrange: () -> Unit = {},
 ) {
     // Sin hueco general entre elementos: las filas de un mismo apartado van
     // pegadas en un grupo, y el aire se pone a mano entre apartados.
@@ -75,6 +76,17 @@ fun AppsScreen(
                 subtitle = stringResource(R.string.apps_subtitle),
                 backLabel = stringResource(R.string.cd_back_settings),
                 onBack = onBack,
+            )
+        }
+
+        // Las que se encienden van al final del inicio: justo aquí se pueden colocar
+        // en su sitio (D-59).
+        item {
+            OutlineButton(
+                text = stringResource(R.string.apps_arrange),
+                icon = R.drawable.ic_home,
+                onClick = onArrange,
+                modifier = Modifier.padding(top = 14.dp),
             )
         }
 

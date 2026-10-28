@@ -12,6 +12,13 @@
         android:required="false" />
 
     <!--
+        La foto que cada contacto guardado en Doado tiene en la agenda (D-57). Se
+        pide al añadir un contacto, con el familiar delante, y solo se consultan los
+        números guardados aquí, nunca la agenda entera. Sin él, salen las iniciales.
+    -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
+    <!--
         Asistente de voz (D-25). El micrófono se pide al encender el asistente en
         los ajustes, con el familiar delante; internet, para entender la orden.
     -->

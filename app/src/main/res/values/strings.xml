@@ -12,11 +12,11 @@
 
     <!-- Pantalla de inicio -->
     <string name="home_admin_banner">Modo administrador activo hasta las %1$s</string>
-    <string name="home_contacts_section">Tus contactos</string>
+    <string name="home_contacts_section">Contactos favoritos</string>
     <string name="contact_action_call">Llamada</string>
     <string name="contact_action_whatsapp">WhatsApp</string>
     <string name="home_page_apps">Aplicaciones</string>
-    <string name="home_page_contacts">Contactos</string>
+    <string name="home_page_contacts">Contactos favoritos</string>
     <string name="home_not_default">Doado aún no es la pantalla de inicio de este móvil. Ponlo para que salga al pulsar Inicio.</string>
     <string name="not_home_later">Si más adelante quieres que Doado sea la pantalla de inicio, entra en Ajustes, abre Modo administrador, desbloquéalo y pulsa «Elegir pantalla de inicio».</string>
     <string name="cd_close_notice">Cerrar este aviso</string>
@@ -122,6 +122,8 @@
     </plurals>
     <string name="settings_apps">Aplicaciones</string>
     <string name="settings_apps_subtitle">Qué apps salen en el inicio</string>
+    <string name="settings_arrange">Colocar las casillas</string>
+    <string name="settings_arrange_subtitle">Dónde va cada una en el inicio</string>
     <string name="settings_sound">Sonido y pantalla</string>
     <string name="settings_sound_subtitle">Volumen, brillo y vibración de Android</string>
     <string name="settings_admin">Modo administrador</string>
@@ -131,7 +133,7 @@
     <string name="settings_pin_subtitle">Cambiar las 4 cifras</string>
     <string name="settings_assistant">Asistente de voz</string>
     <string name="settings_assistant_subtitle_off">Pedir cosas al móvil hablando</string>
-    <string name="settings_assistant_subtitle_act">Encendido: lo hace tras preguntar</string>
+    <string name="settings_assistant_subtitle_act">Encendido: lo dice y lo hace</string>
     <string name="settings_assistant_subtitle_guide">Encendido: explica cómo hacerlo</string>
 
     <!--
@@ -147,7 +149,7 @@
     <string name="assistant_settings_mode">Cuando le pida algo</string>
     <string name="assistant_mode_act">Lo hace</string>
     <string name="assistant_mode_guide">Explica cómo</string>
-    <string name="assistant_settings_act_note">Antes de llamar o abrir algo, siempre pregunta y espera a que se pulse «Sí».</string>
+    <string name="assistant_settings_act_note">Cuando entiende lo que se le pide, dice qué va a hacer y lo hace, sin preguntar. Mientras lo dice, se puede cancelar.</string>
     <string name="assistant_settings_guide_note">Explica los pasos de uno en uno y, al acabar, marca en el inicio el botón que hay que pulsar.</string>
     <string name="assistant_settings_try">Probar el asistente</string>
     <string name="assistant_settings_try_disabled">Para probarlo, enciende antes el botón del asistente.</string>
@@ -160,17 +162,13 @@
     <string name="assistant_listening_title">Te escucho</string>
     <string name="assistant_listening_body">Habla con calma. Cuando acabes, pulsa «Ya he terminado».</string>
     <string name="assistant_done_speaking">Ya he terminado</string>
-    <string name="assistant_follow_up_listening">Te escucho: contéstame hablando o pulsa un botón.</string>
     <string name="assistant_speak_again">Hablar otra vez</string>
     <string name="assistant_cancel">Cancelar</string>
     <string name="assistant_thinking">Un momento…</string>
     <string name="assistant_heard">Has dicho: «%1$s»</string>
-    <string name="assistant_confirm_call">¿Llamo a %1$s?</string>
-    <string name="assistant_confirm_whatsapp">¿Abro el WhatsApp de %1$s?</string>
-    <string name="assistant_confirm_open">¿Abro %1$s?</string>
-    <string name="assistant_yes_call">Sí, llama</string>
-    <string name="assistant_yes_open">Sí, ábrelo</string>
-    <string name="assistant_no">No</string>
+    <string name="assistant_acting_call">Llamo a %1$s.</string>
+    <string name="assistant_acting_whatsapp">Abro el WhatsApp de %1$s.</string>
+    <string name="assistant_acting_open">Abro %1$s.</string>
     <string name="assistant_declined">Vale, no hago nada.</string>
     <string name="assistant_step_counter">Paso %1$d de %2$d</string>
     <string name="assistant_step_spoken">Paso %1$d de %2$d. %3$s</string>
@@ -185,8 +183,10 @@
     <string name="assistant_refuse_default">Eso no lo puedo hacer. Puedo llamar, abrir WhatsApp o abrir tus casillas.</string>
     <string name="assistant_missing_app">%1$s no está en este móvil. Pide a tu familiar que la instale.</string>
     <string name="assistant_try_again">Probar otra vez</string>
-    <string name="assistant_failure_not_heard">No te he oído bien. Pulsa «Probar otra vez» y habla cerca del móvil.</string>
-    <string name="assistant_failure_not_understood">No te he entendido. Dímelo con otras palabras.</string>
+    <string name="assistant_failure_not_heard">No te he oído bien. Habla cerca del móvil y repítemelo.</string>
+    <string name="assistant_failure_not_heard_again">Sigo sin oírte. Pulsa «Probar otra vez» y habla cerca del móvil.</string>
+    <string name="assistant_failure_not_understood">No te he entendido. Repítemelo, por favor.</string>
+    <string name="assistant_failure_not_understood_again">Sigo sin entenderte. Pulsa «Probar otra vez» y dímelo con otras palabras.</string>
     <string name="assistant_failure_no_internet">Sin internet no puedo ayudarte. Tus botones siguen funcionando como siempre.</string>
     <string name="assistant_failure_busy">Ahora mismo estoy muy ocupado. Prueba dentro de un rato.</string>
     <string name="assistant_failure_unavailable">Ahora no puedo ayudarte. Pide a tu familiar que lo mire.</string>
@@ -196,10 +196,15 @@
     <string name="guide_side_left">a la izquierda</string>
     <string name="guide_side_center">en el centro</string>
     <string name="guide_side_right">a la derecha</string>
-    <string name="guide_contact_where_grid">Mira en «Tus contactos», debajo de las apps: el botón de %1$s está en la fila %2$d, %3$s.</string>
-    <string name="guide_contact_where_page_grid">Pulsa «Contactos», arriba, o desliza la pantalla hacia la izquierda: el botón de %1$s está en la fila %2$d, %3$s.</string>
-    <string name="guide_contact_where_page_one">Pulsa «Contactos», arriba, o desliza la pantalla hacia la izquierda: el botón de %1$s es el número %2$d.</string>
-    <string name="guide_contact_where_one">Mira en «Tus contactos», debajo de las apps: el botón de %1$s es el número %2$d.</string>
+    <!-- Con cuatro por fila (D-54), «izquierda, centro, derecha» no basta. -->
+    <string name="guide_side_far_left">a la izquierda del todo</string>
+    <string name="guide_side_second_left">en el segundo sitio por la izquierda</string>
+    <string name="guide_side_second_right">en el segundo sitio por la derecha</string>
+    <string name="guide_side_far_right">a la derecha del todo</string>
+    <string name="guide_contact_where_grid">Mira en «Contactos favoritos», debajo de las apps: el botón de %1$s está en la fila %2$d, %3$s.</string>
+    <string name="guide_contact_where_page_grid">Pulsa «Contactos favoritos», arriba, o desliza la pantalla hacia la izquierda: el botón de %1$s está en la fila %2$d, %3$s.</string>
+    <string name="guide_contact_where_page_one">Pulsa «Contactos favoritos», arriba, o desliza la pantalla hacia la izquierda: el botón de %1$s es el número %2$d.</string>
+    <string name="guide_contact_where_one">Mira en «Contactos favoritos», debajo de las apps: el botón de %1$s es el número %2$d.</string>
     <string name="guide_contact_press_call">Púlsalo y el móvil le llamará.</string>
     <string name="guide_contact_press_whatsapp">Púlsalo y se abrirá su conversación de WhatsApp.</string>
     <string name="guide_tile_where_grid">Busca la casilla «%1$s». Está en la fila %2$d, %3$s.</string>
@@ -217,16 +222,16 @@
     <string name="interface_text_normal">Normal</string>
     <string name="interface_text_large">Grande</string>
     <string name="interface_text_extra_large">Muy grande</string>
+    <string name="interface_text_huge">Enorme</string>
     <string name="interface_columns">Casillas por fila</string>
     <string name="interface_columns_one">1 por fila</string>
     <string name="interface_columns_two">2 por fila</string>
     <string name="interface_columns_three">3 por fila</string>
-    <string name="interface_columns_three_big_text">Con esta letra, los nombres se leen mejor con 2 por fila.</string>
-    <string name="interface_columns_three_narrow">En esta pantalla caben como mucho 2 por fila.</string>
+    <string name="interface_columns_four">4 por fila</string>
     <string name="interface_contacts">Contactos en el inicio</string>
     <string name="interface_contacts_grid">Debajo de las apps</string>
     <string name="interface_contacts_page">En otra pantalla</string>
-    <string name="interface_contacts_page_note">Los contactos van en una segunda pantalla del inicio. Se llega deslizando hacia la izquierda o pulsando «Contactos», arriba.</string>
+    <string name="interface_contacts_page_note">Los contactos van en una segunda pantalla del inicio. Se llega deslizando hacia la izquierda o pulsando «Contactos favoritos», arriba.</string>
     <string name="interface_wallpaper">Fondo del inicio</string>
     <string name="interface_wallpaper_pick">Elegir una foto</string>
     <string name="interface_wallpaper_change">Cambiar la foto</string>
@@ -238,10 +243,12 @@
     <string name="interface_theme_light">Claro</string>
     <string name="interface_clock">Mostrar el reloj</string>
     <string name="interface_clock_subtitle">Hora y fecha arriba del inicio</string>
-    <string name="interface_note">El tamaño de letra se suma al que tenga puesto Android en sus ajustes de accesibilidad.</string>
+    <string name="interface_note">El tamaño de letra se combina con el que tenga puesto Android en sus ajustes de accesibilidad: si Android ya está al máximo, los tamaños más grandes se ven igual.</string>
 
     <!-- Ajustes → Contactos -->
-    <string name="contacts_subtitle">Salen en el inicio, debajo de las apps, en «Tus contactos».</string>
+    <string name="contacts_subtitle">Salen en el inicio, debajo de las apps, en «Contactos favoritos».</string>
+    <string name="contacts_photos_note">Para que en el inicio salga la foto que cada persona tiene en la agenda, Doado necesita permiso para ver los contactos. Solo mira los de esta lista, y las fotos no salen del móvil. Si al pulsar el botón no sale nada, abre Modo administrador, luego Ajustes de Android, y dale a Doado permiso de contactos.</string>
+    <string name="contacts_photos_allow">Ver las fotos</string>
     <string name="contacts_empty">Todavía no hay contactos. Añade a las personas a las que más se llama.</string>
     <string name="contacts_add">Añadir contacto</string>
     <string name="contacts_button_call">Llamadas</string>
@@ -259,7 +266,23 @@
     <string name="apps_section_basic">Básicas</string>
     <string name="apps_section_others">Otras apps de este móvil</string>
     <string name="apps_emergency_note">Abre el teléfono con el 112 ya marcado. Para llamar hay que pulsar el botón verde: así no se llama sin querer.</string>
+    <string name="apps_arrange">Colocar en el inicio</string>
     <string name="apps_note">Las apps nuevas se instalan desde la tienda, en Modo administrador. Cuando terminan de instalarse, aparecen en esta lista.</string>
+
+    <!-- Ajustes → Colocar las casillas (D-59). Lo usa el familiar. -->
+    <string name="arrange_subtitle">Mantén pulsada una casilla y arrástrala a su sitio. También puedes tocarla y moverla con los botones.</string>
+    <string name="arrange_section_apps">Aplicaciones</string>
+    <string name="arrange_move_before">Mover antes</string>
+    <string name="arrange_move_after">Mover después</string>
+    <string name="arrange_done">Listo</string>
+    <string name="arrange_moving">Mueves: %1$s</string>
+    <string name="cd_arrange_place">En la fila %1$d, %2$s</string>
+    <string name="cd_arrange_place_one">La número %1$d empezando por arriba</string>
+    <string name="cd_arrange_selected">Elegida para mover. %1$s</string>
+    <string name="cd_arrange_select">Elegir para mover</string>
+    <string name="cd_arrange_release">Dejar de mover</string>
+    <string name="cd_arrange_put_here">Poner aquí %1$s</string>
+    <string name="arrange_empty">Todavía no hay casillas en el inicio. Ponlas en Aplicaciones o en Contactos.</string>
 
     <!-- Ajustes → Modo administrador -->
     <string name="admin_locked">Doado está al mando</string>

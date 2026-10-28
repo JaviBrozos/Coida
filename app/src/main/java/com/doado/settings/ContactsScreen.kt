@@ -1,6 +1,5 @@
 package com.doado.settings
 
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +15,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import com.doado.R
 import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoSwitchVisual
-import com.doado.core.ui.InitialBadge
+import com.doado.core.ui.ContactAvatar
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.NoteCard
 import com.doado.core.ui.OutlineButton
@@ -44,6 +44,10 @@ import com.doado.data.ContactShortcut
  * Por dentro cada casilla es su propio [ContactShortcut]; aquí se juntan los de un
  * mismo número. Encender uno nuevo lo añade al final, para no mover las casillas
  * que ya hay. Con los dos apagados la persona sigue guardada, para el asistente.
+ *
+ * @param photos la foto de la agenda de cada número que la tiene (D-57).
+ * @param photosAllowed hay permiso para leerlas; si no, una nota con un botón que
+ *   lo pide, con el familiar delante.
  */
 @Composable
 fun ContactsScreen(
@@ -54,6 +58,9 @@ fun ContactsScreen(
     onRemove: (person: ContactShortcut) -> Unit,
     onBack: () -> Unit,
     notice: String? = null,
+    photos: Map<String, ImageBitmap> = emptyMap(),
+    photosAllowed: Boolean = true,
+    onAllowPhotos: () -> Unit = {},
 ) {
     SettingsColumn(
         modifier = Modifier
@@ -72,12 +79,20 @@ fun ContactsScreen(
 
         if (contacts.isEmpty()) {
             NoteCard(text = stringResource(R.string.contacts_empty))
+        } else if (!photosAllowed) {
+            NoteCard(text = stringResource(R.string.contacts_photos_note))
+            OutlineButton(
+                text = stringResource(R.string.contacts_photos_allow),
+                icon = R.drawable.ic_contacts,
+                onClick = onAllowPhotos,
+            )
         }
 
         groupByPerson(contacts).forEach { buttons ->
             val person = buttons.first()
             PersonCard(
                 person = person,
+                photo = photos[person.number],
                 callOn = buttons.any { it.action == ContactAction.CALL && it.onHome },
                 whatsappOn = buttons.any { it.action == ContactAction.WHATSAPP && it.onHome },
                 whatsappInstalled = whatsappInstalled,
@@ -112,6 +127,7 @@ private fun groupByPerson(contacts: List<ContactShortcut>): List<List<ContactSho
 @Composable
 private fun PersonCard(
     person: ContactShortcut,
+    photo: ImageBitmap?,
     callOn: Boolean,
     whatsappOn: Boolean,
     whatsappInstalled: Boolean,
@@ -133,8 +149,9 @@ private fun PersonCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(14.dp),
             ) {
-                // La misma inicial que en el inicio: el familiar reconoce el acceso directo.
-                InitialBadge(name = person.name, size = DoadoDimens.AvatarSize, shape = CircleShape)
+                // La misma cara que en el inicio, foto o inicial: el familiar reconoce
+                // el acceso directo.
+                ContactAvatar(name = person.name, photo = photo, size = DoadoDimens.AvatarSize)
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = person.name,

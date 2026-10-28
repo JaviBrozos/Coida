@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Density
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import com.doado.R
 import com.doado.assistant.ActionCatalog
@@ -61,6 +62,7 @@ import com.doado.core.ui.DoadoTheme
 import com.doado.core.ui.NotHomeNoticeStage
 import com.doado.data.AssistantSettings
 import com.doado.data.ContactAction
+import com.doado.data.ContactPhotos
 import com.doado.data.ContactShortcut
 import com.doado.data.ContactShortcutsStore
 import com.doado.data.DefaultFavorites
@@ -78,6 +80,7 @@ import com.doado.data.WHATSAPP_PACKAGE
 import com.doado.settings.ADMIN_UNLOCK_MINUTES
 import com.doado.settings.AdminScreen
 import com.doado.settings.AppsScreen
+import com.doado.settings.ArrangeScreen
 import com.doado.settings.AssistantSettingsScreen
 import com.doado.settings.BasicAppRow
 import com.doado.settings.ContactsScreen
@@ -94,7 +97,7 @@ import kotlinx.coroutines.withContext
 
 /** Pantallas de Doado. Son pocas y planas: no hace falta una librería de navegación. */
 private enum class Screen {
-    HOME, PIN, SETTINGS, INTERFACE, CONTACTS, APPS, ADMIN, CHANGE_PIN, ASSISTANT, ASSISTANT_SETTINGS,
+    HOME, PIN, SETTINGS, INTERFACE, CONTACTS, APPS, ARRANGE, ADMIN, CHANGE_PIN, ASSISTANT, ASSISTANT_SETTINGS,
 }
 
 /**
@@ -112,6 +115,7 @@ class LauncherActivity : ComponentActivity() {
     private lateinit var contactsStore: ContactShortcutsStore
     private lateinit var pinStore: PinStore
     private lateinit var wallpaperStore: WallpaperStore
+    private lateinit var contactPhotos: ContactPhotos
 
     private var screen by mutableStateOf(Screen.HOME)
     private var interfaceSettings by mutableStateOf(InterfaceSettings())
@@ -122,6 +126,15 @@ class LauncherActivity : ComponentActivity() {
     private var whatsappInstalled by mutableStateOf(false)
     private var installedApps by mutableStateOf(emptyList<InstalledApp>())
     private var defaultPackages by mutableStateOf(emptySet<String>())
+
+    /** Las fotos de la agenda de los contactos guardados, por número (D-57). Solo en memoria. */
+    private var photos by mutableStateOf(emptyMap<String, ImageBitmap>())
+
+    /** Hay permiso para leer esas fotos; si no, Ajustes → Contactos ofrece pedirlo. */
+    private var photosAllowed by mutableStateOf(true)
+
+    /** A dónde vuelve «Colocar las casillas»: a Ajustes, o a Aplicaciones si se llegó desde ahí. */
+    private var arrangeReturn = Screen.SETTINGS
 
     /** La foto de fondo del inicio (D-47), ya leída del disco; null si no hay. */
     private var wallpaper by mutableStateOf<ImageBitmap?>(null)
@@ -161,6 +174,9 @@ class LauncherActivity : ComponentActivity() {
     /** La consulta al PackageManager en curso; una nueva cancela la anterior. */
     private var appsJob: Job? = null
 
+    /** La lectura de las fotos de la agenda en curso; igual. */
+    private var photosJob: Job? = null
+
     private val assistantConfig = AssistantConfig.fromBuildConfig()
     private lateinit var assistant: AssistantController
     private var assistantSettings by mutableStateOf(AssistantSettings())
@@ -193,9 +209,11 @@ class LauncherActivity : ComponentActivity() {
             if (result.resultCode == RESULT_OK) result.data?.data?.let(::addPickedContact)
         }
 
-    // Si se deniega no pasa nada: los contactos de llamada abren el marcador.
-    private val requestCallPermission =
-        registerForActivityResult(ActivityResultContracts.RequestPermission()) { }
+    // Llamar directo y ver las fotos de la agenda (D-57), juntos al añadir un
+    // contacto, con el familiar delante. Si se deniegan no pasa nada: los contactos
+    // de llamada abren el marcador y salen con su inicial.
+    private val requestContactPermissions =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { reload() }
 
     // El selector de fotos de Android no pide permisos: Doado solo recibe la foto
     // elegida. Sale a pantalla aparte, como el de contactos.
@@ -234,6 +252,7 @@ class LauncherActivity : ComponentActivity() {
         contactsStore = ContactShortcutsStore(this)
         pinStore = PinStore(this)
         wallpaperStore = WallpaperStore(this)
+        contactPhotos = ContactPhotos(this)
         hasWallpaper = wallpaperStore.exists()
         loadWallpaper()
         val assistantClient = OpenAiCompatibleClient(assistantConfig)
@@ -244,6 +263,7 @@ class LauncherActivity : ComponentActivity() {
             interpreter = assistantClient,
             onExecute = ::executeAssistantAction,
             onFinish = ::onAssistantFinished,
+            isInForeground = { lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) },
         )
         reload()
 
@@ -262,20 +282,18 @@ class LauncherActivity : ComponentActivity() {
 
             // "Tamaño de la letra" se multiplica por la escala que ya tenga Android.
             //
-            // Con suelo en 1: Android deja bajar su escala hasta 0,85, y sin este
-            // tope toda la tipografía de Doado encogía con ella. "No disponible"
-            // se quedaba en 15,3 sp, por debajo del mínimo de 18 sp del proyecto.
-            // Doado puede agrandar el texto respecto al sistema, nunca encogerlo.
+            // Con suelo en 0,85, el de «Normal» (D-55): en la prueba con dos
+            // personas mayores el tamaño de siempre les sobraba y pidieron un nivel
+            // menos. Más abajo no: si Android también está en pequeño, la letra
+            // de Doado no sigue encogiendo con él.
             //
             // Y con techo en 2: Android ya llega por sí solo al 200 %, y encima
-            // "Muy grande" daba 2,6. A esa escala el inicio se quedaba con una
-            // franja de rejilla y los nombres partidos a media palabra
-            // ("Cáma / ra"). Con el techo, el ajuste de Doado sigue agrandando a
-            // quien tiene Android en normal, pero nunca pasa del máximo del sistema.
+            // "Enorme" daba 2,6. Con el techo, el ajuste de Doado sigue agrandando
+            // a quien tiene Android en normal, pero nunca pasa del máximo del sistema.
             val density = LocalDensity.current
             val scaled = Density(
                 density.density,
-                (density.fontScale * settings.textSize.scale).coerceIn(1f, MAX_TEXT_SCALE),
+                (density.fontScale * settings.textSize.scale).coerceIn(MIN_TEXT_SCALE, MAX_TEXT_SCALE),
             )
 
             CompositionLocalProvider(LocalDensity provides scaled) {
@@ -388,13 +406,7 @@ class LauncherActivity : ComponentActivity() {
         if (target == Screen.HOME) {
             HomeScreen(
                 apps = homeApps,
-                contacts = contacts.filter { it.onHome }.map {
-                    HomeContact(
-                        shortcut = it,
-                        isAvailable = it.action != ContactAction.WHATSAPP ||
-                            whatsappInstalled,
-                    )
-                },
+                contacts = homeContacts(),
                 columns = interfaceSettings.columns,
                 showClock = interfaceSettings.showClock,
                 adminUnlockedUntil = adminUnlockedUntil,
@@ -479,6 +491,7 @@ class LauncherActivity : ComponentActivity() {
                     onInterface = { screen = Screen.INTERFACE },
                     onContacts = { screen = Screen.CONTACTS },
                     onApps = { openAppsScreen() },
+                    onArrange = { openArrange(from = Screen.SETTINGS) },
                     onAssistant = {
                         assistantMicDenied = false
                         screen = Screen.ASSISTANT_SETTINGS
@@ -520,6 +533,12 @@ class LauncherActivity : ComponentActivity() {
                         saveContacts(contacts.filterNot { it.id == person.id || it.isSamePersonAs(person) })
                     },
                     onBack = { contactsNotice = null; screen = Screen.SETTINGS },
+                    photos = photos,
+                    photosAllowed = photosAllowed,
+                    onAllowPhotos = {
+                        contactsNotice = null
+                        requestContactPermissions.launch(arrayOf(Manifest.permission.READ_CONTACTS))
+                    },
                 )
 
                 Screen.APPS -> AppsScreen(
@@ -540,6 +559,16 @@ class LauncherActivity : ComponentActivity() {
                         reload()
                     },
                     onBack = { screen = Screen.SETTINGS },
+                    onArrange = { openArrange(from = Screen.APPS) },
+                )
+
+                Screen.ARRANGE -> ArrangeScreen(
+                    apps = homeApps,
+                    contacts = homeContacts(),
+                    columns = interfaceSettings.columns,
+                    onAppsOrder = ::saveAppOrder,
+                    onContactsOrder = ::saveContactOrder,
+                    onBack = { screen = arrangeReturn },
                 )
 
                 Screen.ADMIN -> AdminScreen(
@@ -559,11 +588,9 @@ class LauncherActivity : ComponentActivity() {
                 Screen.ASSISTANT -> AssistantScreen(
                     state = assistant.state,
                     level = assistant.level,
-                    followUpListening = assistant.followUpListening,
-                    onSpeakAgain = assistant::speakAgain,
+                    onSpeakAgain = assistant::retry,
                     onDoneSpeaking = assistant::finishSpeaking,
-                    onConfirm = assistant::confirm,
-                    onDecline = assistant::decline,
+                    onCancelAction = assistant::cancelAction,
                     onChoose = assistant::choose,
                     onNext = assistant::nextStep,
                     onRepeat = assistant::repeat,
@@ -588,7 +615,43 @@ class LauncherActivity : ComponentActivity() {
     private fun parentOf(current: Screen): Screen = when (current) {
         Screen.HOME, Screen.PIN, Screen.SETTINGS -> Screen.HOME
         Screen.ASSISTANT -> assistantReturn
+        Screen.ARRANGE -> arrangeReturn
         else -> Screen.SETTINGS
+    }
+
+    /** Los accesos directos del inicio, con lo que hace falta para pintarlos. */
+    private fun homeContacts(): List<HomeContact> = contacts.filter { it.onHome }.map {
+        HomeContact(
+            shortcut = it,
+            isAvailable = it.action != ContactAction.WHATSAPP || whatsappInstalled,
+            photo = photos[it.number],
+        )
+    }
+
+    private fun openArrange(from: Screen) {
+        arrangeReturn = from
+        screen = Screen.ARRANGE
+    }
+
+    /**
+     * El familiar ha recolocado las casillas (D-59). Se aplica ya a lo que se ve,
+     * para que nada salte mientras se vuelve a leer del PackageManager.
+     */
+    private fun saveAppOrder(ids: List<String>) {
+        // Una carga que iba por detrás (al encender una app en Aplicaciones y venir
+        // a colocarla) leyó el orden de antes y lo pondría encima del nuevo: se
+        // cancela y se vuelve a leer, ya con el orden guardado.
+        appsJob?.cancel()
+        repository.saveHomeOrder(ids)
+        val byId = homeApps.associateBy { it.id }
+        homeApps = ids.mapNotNull { byId[it] } + homeApps.filterNot { it.id in ids }
+        homeIds = repository.homeIds()
+        loadApps(withInstalled = installedApps.isEmpty())
+    }
+
+    private fun saveContactOrder(ids: List<String>) {
+        contactsStore.saveHomeOrder(ids)
+        contacts = contactsStore.all()
     }
 
     private fun reload() {
@@ -599,6 +662,24 @@ class LauncherActivity : ComponentActivity() {
         contacts = contactsStore.all()
         homeIds = repository.homeIds()
         loadApps(withInstalled = screen == Screen.APPS)
+        loadPhotos()
+    }
+
+    /**
+     * Las fotos de la agenda (D-57), aparte de las casillas: leerlas no debe retrasar
+     * el primer pintado del inicio. También es IPC, con la agenda, así que va en
+     * `Dispatchers.IO`. `ContactPhotos` devuelve la misma foto si no ha cambiado.
+     */
+    private fun loadPhotos() {
+        photosJob?.cancel()
+        val numbers = contacts.map { it.number }
+        photosJob = lifecycleScope.launch {
+            val (allowed, loaded) = withContext(Dispatchers.IO) {
+                contactPhotos.hasPermission() to contactPhotos.load(numbers)
+            }
+            photosAllowed = allowed
+            if (loaded != photos) photos = loaded
+        }
     }
 
     private fun openAppsScreen() {
@@ -732,9 +813,10 @@ class LauncherActivity : ComponentActivity() {
     }
 
     /**
-     * La persona mayor ha dicho «Sí» (D-26). Se vuelve antes al inicio para que, al
-     * colgar o cerrar la app, sea lo que se encuentre. El contacto y su número son
-     * los guardados en Doado, nunca algo que haya dicho el modelo.
+     * El asistente ha dicho lo que va a hacer y nadie lo ha cancelado (D-56). Se
+     * vuelve antes al inicio para que, al colgar o cerrar la app, sea lo que se
+     * encuentre. El contacto y su número son los guardados en Doado, nunca algo que
+     * haya dicho el modelo.
      */
     private fun executeAssistantAction(action: AssistantAction) {
         screen = Screen.HOME
@@ -795,10 +877,6 @@ class LauncherActivity : ComponentActivity() {
     }
 
     /**
-     * El selector de contactos concede permiso de lectura solo sobre la fila
-     * elegida, así que Doado no necesita pedir acceso a toda la agenda.
-     */
-    /**
      * Enciende o apaga el botón de llamada o de WhatsApp de una persona (D-40). Si
      * ese botón ya existe, solo cambia si sale en el inicio, y conserva su sitio; si
      * no, se crea al final, para no mover las casillas que ya hay.
@@ -818,6 +896,11 @@ class LauncherActivity : ComponentActivity() {
         }
     }
 
+    /**
+     * El selector de contactos concede permiso de lectura solo sobre la fila
+     * elegida: el nombre y el número salen sin pedir acceso a la agenda. La foto sí
+     * lo pide (D-57), y solo se usa para los números guardados aquí.
+     */
     private fun addPickedContact(uri: Uri) {
         val projection = arrayOf(
             ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME,
@@ -849,12 +932,11 @@ class LauncherActivity : ComponentActivity() {
         }
         saveContacts(contacts + shortcut)
 
-        // Se pide aquí, con el familiar delante, y no en el inicio con la persona mayor.
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) !=
-            PackageManager.PERMISSION_GRANTED
-        ) {
-            requestCallPermission.launch(Manifest.permission.CALL_PHONE)
+        // Se piden aquí, con el familiar delante, y no en el inicio con la persona mayor.
+        val missing = listOf(Manifest.permission.CALL_PHONE, Manifest.permission.READ_CONTACTS).filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
         }
+        if (missing.isNotEmpty()) requestContactPermissions.launch(missing.toTypedArray())
     }
 
     private fun openStore() {
@@ -998,6 +1080,9 @@ class LauncherActivity : ComponentActivity() {
 
         /** Escala de letra máxima: la misma que Android permite por sí solo (200 %). */
         const val MAX_TEXT_SCALE = 2f
+
+        /** Y mínima: la de «Normal» con Android en normal (D-55). */
+        const val MIN_TEXT_SCALE = 0.85f
 
         /** El fundido entre pantallas: la nueva entra algo más despacio de lo que sale la vieja. */
         const val SCREEN_FADE_IN_MS = 180

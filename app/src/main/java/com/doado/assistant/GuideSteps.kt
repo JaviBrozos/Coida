@@ -84,7 +84,7 @@ object GuideSteps {
     }
 
     /**
-     * Los accesos directos van debajo de las apps y tras el rótulo «Tus contactos»,
+     * Los accesos directos van debajo de las apps y tras el rótulo «Contactos favoritos»,
      * que empieza fila (D-38): se cuentan desde ahí. Si van en su propia pantalla
      * (D-46), el inicio pasa solo a ella al señalarlo, y se cuenta desde arriba de
      * esa pantalla; se dice también cómo llegar, para la próxima vez.
@@ -123,13 +123,22 @@ object GuideSteps {
         }
     }
 
-    /** Con dos por fila, izquierda o derecha; con tres, también el centro (D-45). */
-    private fun side(res: Resources, index: Int, columns: Int): String {
+    /**
+     * Con dos por fila, izquierda o derecha; con tres, también el centro (D-45).
+     * Con cuatro (D-54) no hay centro: se cuenta desde el borde más cercano.
+     */
+    internal fun side(res: Resources, index: Int, columns: Int): String {
         val column = index % columns
         return res.getString(
-            when (column) {
-                0 -> R.string.guide_side_left
-                columns - 1 -> R.string.guide_side_right
+            when {
+                columns >= 4 -> when (column) {
+                    0 -> R.string.guide_side_far_left
+                    1 -> R.string.guide_side_second_left
+                    columns - 1 -> R.string.guide_side_far_right
+                    else -> R.string.guide_side_second_right
+                }
+                column == 0 -> R.string.guide_side_left
+                column == columns - 1 -> R.string.guide_side_right
                 else -> R.string.guide_side_center
             },
         )

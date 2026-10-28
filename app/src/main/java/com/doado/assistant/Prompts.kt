@@ -8,7 +8,9 @@ package com.doado.assistant
  * constantes para que [ActionCatalog] lea exactamente lo que aquí se pide.
  *
  * Lo que diga el modelo nunca se ejecuta a ciegas: llamar, escribir o abrir pasa
- * siempre por la lista blanca y por un «Sí» pulsado (D-26).
+ * siempre por la lista blanca. Desde que no se pide un «Sí» (D-56), lo que el
+ * modelo elige se hace en cuanto el móvil lo anuncia: por eso la regla 2 le pide
+ * que ante la duda pregunte o diga que no lo ha entendido, nunca que adivine.
  */
 object Prompts {
 
@@ -44,7 +46,7 @@ QUÉ PUEDES HACER, Y SOLO ESTO
 
 REGLAS
 1. Usa SOLO ids de la lista de abajo. Nunca inventes ids, nombres ni números de teléfono.
-2. Si habla de un parentesco o un apodo y no hay forma segura de saber quién es, usa "$ACTION_CLARIFY" con los contactos posibles. Si no encaja ninguno, "$ACTION_NOT_UNDERSTOOD".
+2. Lo que elijas se hace enseguida, sin preguntarle: NUNCA adivines. Si habla de un parentesco o un apodo y no hay forma segura de saber quién es, usa "$ACTION_CLARIFY" con los contactos posibles. Si no encaja ninguno, o la frase está cortada o mezclada con otras voces, "$ACTION_NOT_UNDERSTOOD".
 3. Si dice solo un nombre sin verbo («María»), lo normal es llamar.
 4. "$FIELD_SAY": una o dos frases cortas y sencillas, sin tecnicismos ni palabras en inglés. Háblale SIEMPRE de tú, nunca de usted («puedo ayudarte», no «puedo ayudarle»), aunque te hable de usted. Para "$ACTION_REFUSE", di con cariño que eso no lo puedes hacer y qué sí puedes hacer.
 5. "$FIELD_STEPS": solo con "$ACTION_EXPLAIN". De 1 a 4 pasos, una acción por paso, frases cortas. Si depende de la marca del móvil, explícalo de forma general.

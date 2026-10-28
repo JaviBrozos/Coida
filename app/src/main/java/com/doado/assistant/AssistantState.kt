@@ -51,11 +51,13 @@ sealed interface AssistantState {
     /** Transcribiendo o interpretando. [heard] es lo que ha entendido, si ya se sabe. */
     data class Thinking(val heard: String?) : AssistantState
 
-    /** Modo «Lo hace»: pregunta antes de hacer nada (D-26). */
-    data class Confirm(
+    /**
+     * Modo «Lo hace»: dice qué va a hacer («Llamo a María») y, al acabar la frase,
+     * lo hace, sin preguntar (D-56). Hasta entonces se puede cancelar.
+     */
+    data class Acting(
         val action: AssistantAction,
-        val question: String,
-        val yesLabel: String,
+        val text: String,
         val heard: String,
     ) : AssistantState
 
@@ -76,12 +78,18 @@ sealed interface AssistantState {
     data class Clarify(
         val question: String,
         val options: List<ClarifyOption>,
+        /** Lo que dijo, para seguir enseñándolo tras elegir una opción. */
+        val heard: String = "",
     ) : AssistantState
 
     /** Una frase y nada más: una negativa, una respuesta corta, un «vale, no hago nada». */
     data class Answer(val text: String) : AssistantState
 
-    data class Failed(val failure: AssistantFailure) : AssistantState
+    /**
+     * No ha salido bien. Con [listensAgain], el móvil pide que se lo repita y vuelve
+     * a escuchar solo; si no, se queda esperando a que se pulse.
+     */
+    data class Failed(val failure: AssistantFailure, val listensAgain: Boolean = false) : AssistantState
 }
 
 /** Una de las opciones al aclarar, con el texto de su botón. */

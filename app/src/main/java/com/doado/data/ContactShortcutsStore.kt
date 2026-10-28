@@ -6,10 +6,11 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 /**
- * Contactos fijados como accesos directos, en el orden en que se añadieron.
+ * Contactos fijados como accesos directos, en el orden en que salen en el inicio:
+ * el de llegada, salvo que el familiar los haya colocado a mano (D-59).
  *
- * Se guardan como JSON en SharedPreferences: son pocos (caben cuatro en el
- * inicio) y así no hace falta montar una base de datos para esto.
+ * Se guardan como JSON en SharedPreferences: son pocos y así no hace falta montar
+ * una base de datos para esto.
  */
 class ContactShortcutsStore(context: Context) {
 
@@ -48,6 +49,21 @@ class ContactShortcutsStore(context: Context) {
             )
         }
         prefs.edit { putString(KEY_CONTACTS, array.toString()) }
+    }
+
+    /**
+     * Reordena los accesos directos del inicio según [orderedIds] (D-59). Los que
+     * no están en el inicio no se ven, así que conservan su hueco en la lista: solo
+     * se reparten de nuevo los huecos de los que sí están.
+     */
+    fun saveHomeOrder(orderedIds: List<String>) {
+        val contacts = all()
+        val byId = contacts.associateBy { it.id }
+        // Sin repetidos: un id dos veces se comía a otro, y la rejilla no admite claves iguales.
+        val placed = orderedIds.distinct().mapNotNull { byId[it] }.filter { it.onHome }
+        val rest = contacts.filter { it.onHome && it !in placed }
+        val queue = ArrayDeque(placed + rest)
+        save(contacts.map { if (it.onHome) queue.removeFirst() else it })
     }
 
     companion object {

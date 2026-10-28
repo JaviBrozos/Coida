@@ -2,6 +2,7 @@ package com.doado.core.ui
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,7 +38,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -48,12 +48,15 @@ import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.drawOutline
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipRect
 import androidx.compose.ui.graphics.drawscope.inset
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
@@ -70,7 +73,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.Hyphens
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -96,6 +98,8 @@ import androidx.compose.ui.unit.dp
  *   lo importante (el modo administrador activo, por ejemplo).
  * @param borderWidth grosor del contorno. Solo cambia para señalar algo
  *   ([DoadoDimens.HighlightBorderWidth], cuando guía el asistente).
+ * @param dashed contorno a trazos: la casilla de una app que no está (D-54). Así se
+ *   distingue también en gris y cuando el «No disponible» va pequeño.
  */
 @Composable
 fun DoadoCard(
@@ -106,6 +110,7 @@ fun DoadoCard(
     shape: Shape = RoundedCornerShape(DoadoDimens.CardCornerRadius),
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
     borderWidth: Dp = DoadoDimens.BorderWidth,
+    dashed: Boolean = false,
     content: @Composable () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
@@ -114,15 +119,16 @@ fun DoadoCard(
     val feedback = rememberClickFeedback()
 
     val borderColor = when {
-        !enabled -> colors.outlineVariant
         pressed || highlighted -> colors.primary
+        !enabled -> colors.outlineVariant
         else -> colors.outline
     }
-    val border = BorderStroke(borderWidth, borderColor)
+    val border = if (dashed) null else BorderStroke(borderWidth, borderColor)
+    val outlined = if (dashed) modifier.dashedOutline(borderWidth, borderColor, shape) else modifier
     val background = if (pressed) colors.surfaceContainerHigh else color
 
     if (onClick == null) {
-        Surface(modifier = modifier, shape = shape, color = background, border = border) {
+        Surface(modifier = outlined, shape = shape, color = background, border = border) {
             content()
         }
     } else {
@@ -130,7 +136,7 @@ fun DoadoCard(
             onClick = { feedback(); onClick() },
             // El Surface pulsable de Material no dice que es un botón; sin esto
             // TalkBack decía «botón» en unas piezas y en otras no.
-            modifier = modifier.semantics { role = Role.Button },
+            modifier = outlined.semantics { role = Role.Button },
             enabled = enabled,
             shape = shape,
             color = background,
@@ -141,6 +147,26 @@ fun DoadoCard(
         }
     }
 }
+
+/** Contorno a trazos de [width] por dentro de [shape], pintado encima de la pieza. */
+private fun Modifier.dashedOutline(width: Dp, color: Color, shape: Shape): Modifier = drawWithContent {
+    drawContent()
+    val stroke = width.toPx()
+    inset(stroke / 2) {
+        drawOutline(
+            outline = shape.createOutline(size, layoutDirection, this),
+            color = color,
+            style = Stroke(
+                width = stroke,
+                pathEffect = PathEffect.dashPathEffect(floatArrayOf(stroke * DASH_ON, stroke * DASH_OFF)),
+            ),
+        )
+    }
+}
+
+/** Trazo y hueco del contorno a trazos, en grosores de línea. */
+private const val DASH_ON = 4f
+private const val DASH_OFF = 3f
 
 /** El toque de vibración de un toque que cuenta. Ver la cabecera del fichero. */
 @Composable
@@ -209,6 +235,69 @@ fun InitialBadge(
         )
     }
 }
+
+/**
+ * La cara de un contacto: su foto de la agenda (D-57) o, si no tiene o no hay
+ * permiso, la inicial. Siempre en círculo, que es lo que distingue a una persona
+ * de una app (D-35). Decorativa, como [InitialBadge]: el nombre va escrito al lado.
+ *
+ * La foto lleva el contorno de siempre: sin él, una foto oscura sobre el fondo
+ * oscuro no tenía borde. La inicial crece con el círculo, sin salirse de él.
+ *
+ * @param onAccent la casilla está rellena de acento (señalada por el asistente):
+ *   el plato de la inicial pasa al color que va encima del acento.
+ */
+@Composable
+fun ContactAvatar(
+    name: String,
+    photo: ImageBitmap?,
+    size: Dp,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onAccent: Boolean = false,
+) {
+    val colors = MaterialTheme.colorScheme
+    if (photo != null) {
+        Image(
+            bitmap = photo,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            alpha = if (enabled) 1f else 0.35f,
+            modifier = modifier
+                .size(size)
+                .clip(CircleShape)
+                .border(
+                    DoadoDimens.BorderWidth,
+                    // Sobre el acento, el contorno normal no se veía (1:1 en claro).
+                    when {
+                        onAccent -> colors.onPrimary
+                        enabled -> colors.outline
+                        else -> colors.outlineVariant
+                    },
+                    CircleShape,
+                ),
+        )
+        return
+    }
+    val style = MaterialTheme.typography.titleMedium
+    val lineHeight = with(LocalDensity.current) { style.lineHeight.toDp() }
+    InitialBadge(
+        name = name,
+        modifier = modifier,
+        size = size,
+        shape = CircleShape,
+        color = if (enabled) colors.primary else colors.outlineVariant,
+        plate = when {
+            !enabled -> colors.surfaceContainer
+            onAccent -> colors.onPrimary
+            else -> colors.surfaceContainerLowest
+        },
+        textStyle = style.scaledBy((size * INITIAL_TO_CIRCLE / lineHeight).coerceAtMost(1f)),
+    )
+}
+
+/** Lo que ocupa la inicial del alto de su círculo, como mucho. */
+private const val INITIAL_TO_CIRCLE = 0.6f
 
 /**
  * Cabecera de las pantallas de ajustes: «Volver» arriba, y debajo el título y
@@ -823,17 +912,3 @@ private fun ButtonContent(text: String, @DrawableRes icon: Int?, contentColor: C
 
 /** Hueco entre el marco de un [ChoiceGroup] y sus opciones. */
 private val SEGMENT_GAP = 6.dp
-
-/**
- * Con tres casillas por fila, la letra de lo que va dentro crece con la del
- * sistema solo hasta [DoadoDimens.NarrowMaxTextScale] (D-45). Ajustes → Interfaz
- * avisa de que, con más letra, se lee mejor con dos por fila: el inicio no cambia
- * de columnas solo. Sin [enabled], no toca nada.
- */
-@Composable
-fun NarrowTextScale(enabled: Boolean, content: @Composable () -> Unit) {
-    if (!enabled) return content()
-    val density = LocalDensity.current
-    val capped = Density(density.density, density.fontScale.coerceAtMost(DoadoDimens.NarrowMaxTextScale))
-    CompositionLocalProvider(LocalDensity provides capped) { content() }
-}

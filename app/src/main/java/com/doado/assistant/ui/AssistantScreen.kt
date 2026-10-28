@@ -1,14 +1,9 @@
 package com.doado.assistant.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -16,7 +11,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
@@ -25,8 +19,6 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.style.Hyphens
-import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.doado.R
@@ -35,9 +27,9 @@ import com.doado.assistant.AssistantFailure
 import com.doado.assistant.AssistantState
 import com.doado.assistant.ClarifyOption
 import com.doado.assistant.messageRes
-import com.doado.core.ui.DoadoCard
 import com.doado.core.ui.DoadoDimens
 import com.doado.core.ui.DoadoTheme
+import com.doado.core.ui.FitText
 import com.doado.core.ui.IconBadge
 import com.doado.core.ui.NoteCard
 import com.doado.core.ui.OutlineButton
@@ -51,6 +43,11 @@ import com.doado.data.ContactShortcut
  * Una sola idea cada vez, en letra grande, y como mucho un botón principal. Todo
  * lo que el móvil dice en voz alta está también escrito, con «Repetir».
  *
+ * Solo escucha cuando lo pone (barra de volumen y «Ya he terminado»): al acabar de
+ * hablar no vuelve a abrir el micrófono por su cuenta, salvo para pedir que le
+ * repitan una orden que no ha entendido (D-56). Para decirle otra cosa está
+ * «Hablar otra vez».
+ *
  * Para TalkBack, que es quien habla cuando está encendido: la frase principal es
  * **una única** región viva que siempre está en el mismo sitio y solo cambia de
  * texto. Si cada estado pintara la suya, el nodo nacería nuevo y TalkBack no
@@ -63,11 +60,9 @@ import com.doado.data.ContactShortcut
 fun AssistantScreen(
     state: AssistantState,
     level: Float,
-    followUpListening: Boolean,
     onSpeakAgain: () -> Unit,
     onDoneSpeaking: () -> Unit,
-    onConfirm: () -> Unit,
-    onDecline: () -> Unit,
+    onCancelAction: () -> Unit,
     onChoose: (ClarifyOption) -> Unit,
     onNext: () -> Unit,
     onRepeat: () -> Unit,
@@ -80,11 +75,11 @@ fun AssistantScreen(
         AssistantState.Idle -> ""
         AssistantState.Listening -> stringResource(R.string.assistant_listening_title)
         is AssistantState.Thinking -> stringResource(R.string.assistant_thinking)
-        is AssistantState.Confirm -> state.question
+        is AssistantState.Acting -> state.text
         is AssistantState.Guide -> state.steps[state.index]
         is AssistantState.Clarify -> state.question
         is AssistantState.Answer -> state.text
-        is AssistantState.Failed -> stringResource(state.failure.messageRes)
+        is AssistantState.Failed -> stringResource(state.messageRes)
     }
     val counter = (state as? AssistantState.Guide)
         ?.takeIf { it.steps.size > 1 }
@@ -98,20 +93,26 @@ fun AssistantScreen(
             .padding(DoadoDimens.ScreenPadding),
         verticalArrangement = Arrangement.spacedBy(20.dp),
     ) {
-        // Redondo como el círculo del inicio, para que se vea que esto sale de ahí,
-        // pero hundido y no relleno de acento: relleno parecía un botón más, y no
-        // se puede pulsar.
-        IconBadge(
-            icon = R.drawable.ic_assistant,
-            size = DoadoDimens.AssistantBadgeSize,
-            plate = MaterialTheme.colorScheme.surfaceContainerLowest,
-            shape = CircleShape,
-        )
+        if (state == AssistantState.Listening) {
+            // Escuchando, el micrófono crece y late con la voz, en grande y en el
+            // centro: es lo que dice que le está oyendo.
+            ListeningPulse(level)
+        } else {
+            // Redondo como el círculo del inicio, para que se vea que esto sale de
+            // ahí, pero hundido y no relleno de acento: relleno parecía un botón más,
+            // y no se puede pulsar.
+            IconBadge(
+                icon = R.drawable.ic_assistant,
+                size = DoadoDimens.AssistantBadgeSize,
+                plate = MaterialTheme.colorScheme.surfaceContainerLowest,
+                shape = CircleShape,
+            )
+        }
 
         // Lo que va encima de la frase principal.
         when (state) {
             is AssistantState.Thinking -> state.heard?.let { Heard(it) }
-            is AssistantState.Confirm -> if (state.heard.isNotBlank()) Heard(state.heard)
+            is AssistantState.Acting -> if (state.heard.isNotBlank()) Heard(state.heard)
             is AssistantState.Guide -> {
                 // El contador va también dentro de lo que anuncia la frase.
                 if (counter != null) StepCounter(counter)
@@ -122,29 +123,11 @@ fun AssistantScreen(
 
         Message(text = message, announced = counter?.let { "$it. $message" } ?: message)
 
-        // La conversación (D-31): tras hablar, el micrófono se reabre solo con la
-        // pregunta a la vista. Si se ha cerrado sin oír nada, se puede reabrir.
-        val conversational = state is AssistantState.Confirm || state is AssistantState.Guide ||
-            state is AssistantState.Clarify || state is AssistantState.Answer ||
-            (state is AssistantState.Failed && state.failure == AssistantFailure.NOT_UNDERSTOOD)
-        if (conversational) {
-            if (followUpListening) {
-                FollowUpStrip(level, onDoneSpeaking)
-            } else {
-                OutlineButton(
-                    text = stringResource(R.string.assistant_speak_again),
-                    icon = R.drawable.ic_assistant,
-                    onClick = onSpeakAgain,
-                )
-            }
-        }
-
         when (state) {
             AssistantState.Idle -> Unit
 
             AssistantState.Listening -> {
                 Detail(stringResource(R.string.assistant_listening_body))
-                LevelBar(level)
                 PrimaryButton(text = stringResource(R.string.assistant_done_speaking), onClick = onDoneSpeaking)
                 OutlineButton(text = stringResource(R.string.assistant_cancel), onClick = onClose)
             }
@@ -152,11 +135,9 @@ fun AssistantScreen(
             is AssistantState.Thinking ->
                 OutlineButton(text = stringResource(R.string.assistant_cancel), onClick = onClose)
 
-            is AssistantState.Confirm -> {
-                PrimaryButton(text = state.yesLabel, onClick = onConfirm)
-                OutlineButton(text = stringResource(R.string.assistant_no), onClick = onDecline)
-                RepeatButton(onRepeat)
-            }
+            // Va a hacerlo en cuanto acabe la frase: lo único que hay es pararlo.
+            is AssistantState.Acting ->
+                PrimaryButton(text = stringResource(R.string.assistant_cancel), onClick = onCancelAction)
 
             is AssistantState.Guide -> if (state.isLast) {
                 if (state.highlightId != null) NoteCard(text = stringResource(R.string.assistant_highlight_hint))
@@ -181,69 +162,54 @@ fun AssistantScreen(
 
             is AssistantState.Answer -> {
                 PrimaryButton(text = stringResource(R.string.assistant_finish), onClick = onFinish)
+                SpeakAgainButton(onSpeakAgain)
                 RepeatButton(onRepeat)
             }
 
-            is AssistantState.Failed -> {
+            is AssistantState.Failed -> when {
+                // Dice «repítemelo» y vuelve a escuchar solo: no hay nada que pulsar.
+                state.listensAgain ->
+                    OutlineButton(text = stringResource(R.string.assistant_cancel), onClick = onClose)
+
                 // Si falta la clave o el micrófono, reintentar no arregla nada: lo
                 // tiene que mirar el familiar.
-                val canRetry = state.failure != AssistantFailure.UNAVAILABLE &&
-                    state.failure != AssistantFailure.MICROPHONE
-                if (canRetry) {
+                state.failure == AssistantFailure.UNAVAILABLE || state.failure == AssistantFailure.MICROPHONE ->
+                    PrimaryButton(text = stringResource(R.string.assistant_finish), onClick = onFinish)
+
+                else -> {
                     PrimaryButton(text = stringResource(R.string.assistant_try_again), onClick = onRetry)
                     OutlineButton(text = stringResource(R.string.assistant_finish), onClick = onFinish)
-                } else {
-                    PrimaryButton(text = stringResource(R.string.assistant_finish), onClick = onFinish)
                 }
             }
         }
+
+        // En una guía o al aclarar se puede pedir otra cosa sin cerrar.
+        if (state is AssistantState.Guide || state is AssistantState.Clarify) SpeakAgainButton(onSpeakAgain)
     }
 }
 
 /**
- * La frase principal: grande y anunciada por TalkBack cuando cambia.
- *
- * Con la letra al 200 % un nombre largo («¿Llamo a Encarnación?») no cabe en una
- * línea: se parte con guion por sílabas en vez de a mitad de palabra.
+ * La frase principal: grande y anunciada por TalkBack cuando cambia. Si una palabra
+ * no cabe en la línea («Encarnación» al 200 %), la letra baja en vez de partirla.
  *
  * @param announced lo que dice TalkBack, si no es igual que lo escrito.
  */
 @Composable
 private fun Message(text: String, announced: String) {
-    Text(
+    FitText(
         text = text,
-        style = MaterialTheme.typography.titleLarge.copy(
-            hyphens = Hyphens.Auto,
-            lineBreak = LineBreak.Paragraph,
-        ),
+        style = MaterialTheme.typography.titleLarge,
         color = MaterialTheme.colorScheme.onBackground,
-        modifier = Modifier.semantics {
-            liveRegion = LiveRegionMode.Polite
-            if (announced != text) contentDescription = announced
-        },
+        maxLines = Int.MAX_VALUE,
+        modifier = Modifier
+            .fillMaxWidth()
+            // Un solo nodo con el texto de dentro: si no, la región viva no tendría
+            // qué anunciar.
+            .semantics(mergeDescendants = true) {
+                liveRegion = LiveRegionMode.Polite
+                if (announced != text) contentDescription = announced
+            },
     )
-}
-
-/**
- * El micrófono se ha vuelto a abrir para contestar. Va en un recuadro con su
- * barra, para que se vea que escucha sin tapar la pregunta ni sus botones.
- */
-@Composable
-private fun FollowUpStrip(level: Float, onDoneSpeaking: () -> Unit) {
-    DoadoCard(onClick = null, highlighted = true, modifier = Modifier.fillMaxWidth()) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(
-                text = stringResource(R.string.assistant_follow_up_listening),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface,
-            )
-            LevelBar(level)
-            OutlineButton(text = stringResource(R.string.assistant_done_speaking), onClick = onDoneSpeaking)
-        }
-    }
 }
 
 /** «Paso 2 de 3». Para TalkBack ya va dentro de la frase principal. */
@@ -266,7 +232,7 @@ private fun Detail(text: String) {
     )
 }
 
-/** Lo que ha entendido, para que pueda ver si se ha equivocado antes de decir «Sí». */
+/** Lo que ha entendido, para que vea a tiempo si se ha equivocado y pueda cancelar. */
 @Composable
 private fun Heard(text: String) {
     Text(
@@ -285,30 +251,13 @@ private fun RepeatButton(onRepeat: () -> Unit) {
     )
 }
 
-/**
- * Barra que se mueve con la voz: le dice que el móvil la está oyendo. Es solo una
- * ayuda visual; para TalkBack no existe, el texto de arriba ya lo dice.
- */
 @Composable
-private fun LevelBar(level: Float) {
-    val colors = MaterialTheme.colorScheme
-    val shape = CircleShape
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(24.dp)
-            .border(DoadoDimens.BorderWidth, colors.outline, shape)
-            .padding(4.dp)
-            .clearAndSetSemantics { },
-        contentAlignment = Alignment.CenterStart,
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .fillMaxWidth(level.coerceIn(0.02f, 1f))
-                .background(colors.primary, shape),
-        )
-    }
+private fun SpeakAgainButton(onSpeakAgain: () -> Unit) {
+    OutlineButton(
+        text = stringResource(R.string.assistant_speak_again),
+        icon = R.drawable.ic_assistant,
+        onClick = onSpeakAgain,
+    )
 }
 
 private fun iconFor(action: AssistantAction): Int = when (action) {
@@ -319,23 +268,20 @@ private fun iconFor(action: AssistantAction): Int = when (action) {
 
 @Preview(showBackground = true, widthDp = 411, heightDp = 891)
 @Composable
-private fun AssistantConfirmPreview() {
+private fun AssistantActingPreview() {
     DoadoTheme(darkTheme = true) {
         AssistantScreen(
-            state = AssistantState.Confirm(
+            state = AssistantState.Acting(
                 action = AssistantAction.CallContact(
                     ContactShortcut("1", "María", "600000000", ContactAction.CALL, true),
                 ),
-                question = "¿Llamo a María?",
-                yesLabel = "Sí, llama",
+                text = "Llamo a María.",
                 heard = "Llama a mi hija María",
             ),
-            level = 0.4f,
-            followUpListening = true,
+            level = 0f,
             onSpeakAgain = {},
             onDoneSpeaking = {},
-            onConfirm = {},
-            onDecline = {},
+            onCancelAction = {},
             onChoose = {},
             onNext = {},
             onRepeat = {},

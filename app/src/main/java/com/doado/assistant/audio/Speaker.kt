@@ -83,7 +83,13 @@ class Speaker(context: Context) : TextToSpeech.OnInitListener {
         val id = "doado-asistente-${++utteranceCount}"
         currentUtterance = id
         currentOnDone = onDone
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, id)
+        // Si el motor no acepta la frase (caído o desvinculado), no avisará nunca de
+        // que ha acabado: se avisa ya, como si se hubiera dicho.
+        if (tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, id) != TextToSpeech.SUCCESS) {
+            currentOnDone = null
+            currentUtterance = null
+            onDone?.let { main.post(it) }
+        }
     }
 
     fun stop() {
@@ -97,6 +103,13 @@ class Speaker(context: Context) : TextToSpeech.OnInitListener {
         stop()
         tts.shutdown()
     }
+
+    /**
+     * El móvil no va a decir nada en voz alta: lee TalkBack, o no hay motor de voz.
+     * Entonces [speak] avisa al momento, y quien espere a que acabe la frase tiene
+     * que dar tiempo a leerla.
+     */
+    val isSilent: Boolean get() = broken || screenReaderOn
 
     /** TalkBack (o cualquier lector con exploración táctil) está encendido. */
     val screenReaderOn: Boolean

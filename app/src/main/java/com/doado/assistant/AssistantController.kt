@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.media.AudioManager
 import android.media.ToneGenerator
+import android.os.SystemClock
 import androidx.annotation.StringRes
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -19,32 +20,40 @@ import com.doado.assistant.cloud.IntentInterpreter
 import com.doado.assistant.cloud.SpeechToText
 import com.doado.data.AssistantMode
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import java.util.concurrent.atomic.AtomicBoolean
 
 /**
  * El asistente de voz de principio a fin: escuchar, transcribir, interpretar y,
- * según el modo, preguntar antes de actuar o explicar los pasos.
+ * según el modo, hacerlo o explicar los pasos.
  *
- * Es una **conversación** (D-31): cuando el móvil acaba de hablar, vuelve a abrir
- * el micrófono solo, sin quitar de la pantalla lo que acaba de decir, para que se
- * le pueda contestar hablando. «Sí», «no», «siguiente» o «gracias» se entienden
- * aquí mismo ([VoiceReplies]); lo demás va al modelo con lo hablado antes, que se
- * olvida al cerrar. Si no oye nada, apaga el micrófono y espera, sin error.
+ * **Una orden, una escucha** (D-56). En la prueba con dos personas mayores, la
+ * pregunta de confirmación y el micrófono que se volvía a abrir solo las liaban:
+ * contestaban a destiempo y se colaba el ruido de la casa. Ahora:
+ *  · En «Lo hace», dice qué va a hacer («Llamo a María») y lo hace al acabar la
+ *    frase. Mientras lo dice, «Cancelar» lo para.
+ *  · El micrófono solo se vuelve a abrir solo cuando no ha entendido u oído la
+ *    orden, para que se la repitan, y una sola vez. El resto se hace con botones.
+ *  · Lo hablado se recuerda mientras está abierto: al repetir, el modelo sabe qué
+ *    se había dicho antes. Se olvida al cerrar.
  *
  * Es una clase normal con el `lifecycleScope` de la Activity, no un ViewModel
  * (D-29): salir de Doado cancela todo con [cancel], y no hay recreaciones de las
  * que sobrevivir. Su estado es de Compose para que la pantalla se pinte sola.
  *
- * No ejecuta nada en el móvil: cuando hay un «Sí», pulsado o dicho, avisa con
- * [onExecute] y es la Activity quien lanza el Intent, como con cualquier toque.
+ * No ejecuta nada en el móvil: avisa con [onExecute] y es la Activity quien lanza
+ * el Intent, como con cualquier toque. El número sale siempre del almacén.
  *
- * @param onExecute la persona mayor ha confirmado la acción.
+ * @param onExecute toca hacer la acción.
  * @param onFinish se ha cerrado el asistente; [highlightId] es lo que hay que
  *   marcar en el inicio, si se estaba guiando hacia algo.
+ * @param isInForeground Doado está a la vista. Si un diálogo del sistema lo tapa
+ *   justo al ir a actuar, no se actúa: no se llama a nadie sin que se vea.
  */
 class AssistantController(
     context: Context,
@@ -53,11 +62,15 @@ class AssistantController(
     private val interpreter: IntentInterpreter,
     private val onExecute: (AssistantAction) -> Unit,
     private val onFinish: (highlightId: String?) -> Unit,
+    private val isInForeground: () -> Boolean = { true },
 ) {
     private val appContext = context.applicationContext
     private val res get() = appContext.resources
     private val recorder = VoiceRecorder()
     private val speaker = Speaker(appContext)
+
+    /** El que hace el pitido de «habla ahora». Se crea la primera vez que suena. */
+    private var tone: ToneGenerator? = null
 
     var state: AssistantState by mutableStateOf(AssistantState.Idle)
         private set
@@ -66,16 +79,9 @@ class AssistantController(
     var level by mutableFloatStateOf(0f)
         private set
 
-    /**
-     * Escuchando la respuesta con la pregunta todavía en pantalla. La primera orden
-     * no cuenta: esa tiene su propio estado, [AssistantState.Listening].
-     */
-    var followUpListening by mutableStateOf(false)
-        private set
-
     private var job: Job? = null
     private val stopRequested = AtomicBoolean(false)
-    private var mode = AssistantMode.GUIDE
+    private var mode = AssistantMode.ACT
     private var catalog: ActionCatalog? = null
 
     /** Lo hablado en esta conversación. Solo en memoria; se borra al cerrar. */
@@ -85,9 +91,9 @@ class AssistantController(
     private var lastSaid = ""
 
     /**
-     * «No te he entendido» seguidos. Con la tele de fondo, el ruido se transcribe,
-     * no se entiende y el micrófono se reabriría sin fin; a partir de
-     * [MAX_MISUNDERSTANDINGS] se calla y espera a que pulse.
+     * Veces seguidas que no ha entendido u oído la orden. La primera pide que se la
+     * repitan y vuelve a escuchar; a partir de [MAX_MISUNDERSTANDINGS] se calla y
+     * espera a que pulse, para no quedarse oyendo la tele sin fin.
      */
     private var misunderstandings = 0
 
@@ -97,43 +103,38 @@ class AssistantController(
         this.mode = mode
         this.catalog = catalog
         misunderstandings = 0
-        listenFirst()
+        listen()
     }
 
-    /** «Probar otra vez» tras un fallo: como la primera orden, sin olvidar lo hablado. */
-    fun retry() = listenFirst()
-
-    /** «Hablar otra vez»: reabre el micrófono sin cambiar de pantalla. */
-    fun speakAgain() = listenFollowUp()
+    /**
+     * «Probar otra vez» o «Hablar otra vez»: escucha otra orden sin olvidar lo
+     * hablado, y vuelve a dejar que pida una repetición.
+     */
+    fun retry() {
+        misunderstandings = 0
+        listen()
+    }
 
     /** «Ya he terminado»: corta la grabación y sigue con lo grabado. */
     fun finishSpeaking() = stopRequested.set(true)
 
-    fun confirm() {
-        val confirm = state as? AssistantState.Confirm ?: return
-        stopFollowUp()
+    /** «Cancelar» mientras dice lo que va a hacer: no se hace nada. */
+    fun cancelAction() {
+        if (state !is AssistantState.Acting) return
+        job?.cancel()
+        job = null
         speaker.stop()
-        state = AssistantState.Idle
-        history.clear()
-        onExecute(confirm.action)
-    }
-
-    fun decline() {
-        if (state !is AssistantState.Confirm) return
-        stopFollowUp()
         answer(res.getString(R.string.assistant_declined))
     }
 
     fun choose(option: ClarifyOption) {
         if (state !is AssistantState.Clarify) return
-        stopFollowUp()
         act(option.action, heard = null)
     }
 
     fun nextStep() {
         val guide = state as? AssistantState.Guide ?: return
         if (guide.isLast) return
-        stopFollowUp()
         show(guide.copy(index = guide.index + 1))
     }
 
@@ -141,16 +142,13 @@ class AssistantController(
     fun repeat() {
         val text = when (val current = state) {
             is AssistantState.Guide -> spokenStep(current)
-            is AssistantState.Confirm -> current.question
             is AssistantState.Clarify -> current.question
             is AssistantState.Answer -> current.text
-            is AssistantState.Failed -> res.getString(current.failure.messageRes)
+            is AssistantState.Failed -> res.getString(current.messageRes)
             else -> return
         }
-        stopFollowUp()
-        val shown = state
         lastSaid = text
-        speaker.speak(text, force = true) { if (state === shown) listenFollowUp() }
+        speaker.speak(text, force = true)
     }
 
     /** «Terminar» o «Entendido»: se cierra el asistente y, si guiaba, se marca el botón. */
@@ -169,25 +167,25 @@ class AssistantController(
         job = null
         speaker.stop()
         level = 0f
-        followUpListening = false
         history.clear()
         state = AssistantState.Idle
     }
 
-    /** Cuando la Activity se destruye: suelta el motor de voz. */
+    /** Cuando la Activity se destruye: suelta el motor de voz y el del pitido. */
     fun release() {
         cancel()
         speaker.shutdown()
+        tone?.release()
+        tone = null
     }
 
     // --- Escuchar -------------------------------------------------------------
 
-    private fun listenFirst() {
+    private fun listen() {
         if (catalog == null) return
         job?.cancel()
         // Callado mientras escucha: su propia voz se grabaría con la orden.
         speaker.stop()
-        followUpListening = false
         level = 0f
         state = AssistantState.Listening
 
@@ -195,38 +193,9 @@ class AssistantController(
             guard {
                 val wav = recordOrder()
                 level = 0f
-                if (wav == null) fail(AssistantFailure.NOT_HEARD) else understand(wav, previous = null)
+                if (wav == null) fail(AssistantFailure.NOT_HEARD) else understand(wav)
             }
         }
-    }
-
-    /**
-     * Reabre el micrófono con la pantalla como está. Si no oye nada, lo apaga y no
-     * pasa nada más: la pregunta sigue ahí, con sus botones y «Hablar otra vez».
-     */
-    private fun listenFollowUp() {
-        if (catalog == null || job?.isActive == true) return
-        speaker.stop()
-        val previous = state
-        followUpListening = true
-        level = 0f
-
-        job = scope.launch {
-            guard {
-                val wav = recordOrder(VoiceTuning.MIN_REPLY_SPEECH_MS)
-                followUpListening = false
-                level = 0f
-                if (wav != null) understand(wav, previous)
-            }
-        }
-    }
-
-    private fun stopFollowUp() {
-        if (!followUpListening) return
-        job?.cancel()
-        job = null
-        followUpListening = false
-        level = 0f
     }
 
     /** Cualquier fallo acaba en una frase llana; nunca en una pantalla colgada. */
@@ -236,80 +205,30 @@ class AssistantController(
         } catch (e: CancellationException) {
             throw e
         } catch (e: AssistantError) {
-            followUpListening = false
             fail(e.failure)
         } catch (_: Exception) {
-            followUpListening = false
             fail(AssistantFailure.UNAVAILABLE)
         }
     }
 
-    /**
-     * De la voz a lo que toca hacer. [previous] es la pantalla a la que se contesta
-     * (la pregunta, el paso...), o null si es la primera orden.
-     */
-    private suspend fun understand(wav: ByteArray, previous: AssistantState?) {
+    /** De la voz a lo que toca hacer. */
+    private suspend fun understand(wav: ByteArray) {
         val catalog = catalog ?: return
-        // En una respuesta, la pregunta sigue en pantalla mientras se transcribe: un
-        // «sí» se resuelve aquí y no tiene sentido hacerla parpadear.
-        if (previous == null) state = AssistantState.Thinking(heard = null)
+        state = AssistantState.Thinking(heard = null)
         val heard = speechToText.transcribe(wav, catalog.vocabulary).trim()
         if (heard.length < MIN_TRANSCRIPT_CHARS) {
-            // Ruido en vez de palabras: en una respuesta se vuelve a la pregunta sin
-            // más; en la primera orden, se dice.
-            if (previous != null) state = previous else fail(AssistantFailure.NOT_HEARD)
+            // Ruido en vez de palabras: como si no hubiera oído nada.
+            fail(AssistantFailure.NOT_HEARD)
             return
         }
-        if (previous != null && answeredHere(previous, heard)) return
-
         state = AssistantState.Thinking(heard)
         val raw = interpreter.interpret(Prompts.system(catalog), history.toList(), heard)
         remember(ChatTurn(fromUser = true, text = heard))
         handle(catalog.parse(raw), heard)
     }
 
-    /**
-     * Respuestas cortas que se entienden sin la IA. Devuelve true si la ha
-     * resuelto. Antes de actuar se repone la pantalla a la que contestaba, porque
-     * las acciones comprueban en qué estado están.
-     */
-    private fun answeredHere(previous: AssistantState, heard: String): Boolean {
-        val handled: () -> Unit = when (previous) {
-            is AssistantState.Confirm -> when (VoiceReplies.confirmation(heard, targetName(previous.action))) {
-                VoiceReplies.Reply.YES -> ::confirm
-                VoiceReplies.Reply.NO -> ::decline
-                else -> return false
-            }
-
-            is AssistantState.Guide -> when (VoiceReplies.guide(heard, previous.isLast)) {
-                VoiceReplies.Reply.NEXT -> ::nextStep
-                VoiceReplies.Reply.REPEAT -> ::repeat
-                VoiceReplies.Reply.DONE -> ::finish
-                else -> return false
-            }
-
-            is AssistantState.Clarify -> {
-                val option = VoiceReplies.option(heard, previous.options) ?: return false
-                ({ choose(option) })
-            }
-
-            is AssistantState.Answer, is AssistantState.Failed ->
-                if (VoiceReplies.isClosing(heard)) ::finish else return false
-
-            else -> return false
-        }
-        state = previous
-        misunderstandings = 0
-        remember(ChatTurn(fromUser = true, text = heard))
-        handled()
-        return true
-    }
-
-    /**
-     * Graba con un pitido delante, y solo si hay permiso. [minSpeechMs] baja al
-     * contestar a una pregunta, para que un «no» seco cuente (D-42).
-     */
-    private suspend fun recordOrder(minSpeechMs: Long = VoiceTuning.MIN_SPEECH_MS): ByteArray? {
+    /** Graba con un pitido delante, y solo si hay permiso. */
+    private suspend fun recordOrder(): ByteArray? {
         if (ContextCompat.checkSelfPermission(appContext, Manifest.permission.RECORD_AUDIO) !=
             PackageManager.PERMISSION_GRANTED
         ) {
@@ -317,9 +236,15 @@ class AssistantController(
             throw AssistantError(AssistantFailure.MICROPHONE)
         }
         if (speaker.screenReaderOn) delay(screenReaderGrace())
+        // El pitido suena con el micrófono ya abriéndose, y no antes: esperar a que
+        // acabara y luego arrancar el micrófono se notaba lento. Lo que coincide con
+        // el pitido se tira al grabar.
         readyBeep()
         return try {
-            recorder.record(stopRequested.also { it.set(false) }, minSpeechMs) { value -> scope.launch { level = value } }
+            recorder.record(
+                stopRequested.also { it.set(false) },
+                ignoreFirstMs = VoiceTuning.READY_BEEP_MS + VoiceTuning.READY_BEEP_TAIL_MS,
+            ) { value -> scope.launch { level = value } }
         } catch (e: SecurityException) {
             throw AssistantError(AssistantFailure.MICROPHONE, e)
         }
@@ -331,18 +256,15 @@ class AssistantController(
             .coerceIn(VoiceTuning.SCREEN_READER_GRACE_MS, VoiceTuning.SCREEN_READER_MAX_GRACE_MS)
 
     /**
-     * Pitido corto de «habla ahora». En una conversación es lo que avisa de que el
-     * micrófono se ha vuelto a abrir. Tampoco debe grabarse: es lo primero que
-     * mediría el ruido de fondo.
+     * Pitido corto de «habla ahora», sin esperar a que acabe. Al repetir, es lo que
+     * avisa de que el micrófono se ha vuelto a abrir. El generador se crea una vez y
+     * se guarda: crearlo en cada escucha también retrasaba el micrófono.
      */
-    private suspend fun readyBeep() {
-        val tone = runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, READY_BEEP_VOLUME) }.getOrNull()
-        try {
-            tone?.startTone(ToneGenerator.TONE_PROP_BEEP, VoiceTuning.READY_BEEP_MS)
-            delay(VoiceTuning.READY_BEEP_MS + 150L)
-        } finally {
-            tone?.release()
-        }
+    private fun readyBeep() {
+        val generator = tone
+            ?: runCatching { ToneGenerator(AudioManager.STREAM_MUSIC, READY_BEEP_VOLUME) }.getOrNull()
+                .also { tone = it }
+        generator?.startTone(ToneGenerator.TONE_PROP_BEEP, VoiceTuning.READY_BEEP_MS)
     }
 
     // --- Contestar ------------------------------------------------------------
@@ -359,12 +281,13 @@ class AssistantController(
                     show(AssistantState.Guide(result.speech, result.steps, index = 0, highlightId = null))
                 }
 
+            // Entre dos personas o dos casillas no se adivina: un botón por cada una.
             is Interpretation.Clarify -> {
                 val allContacts = result.options.none { it is AssistantAction.OpenApp }
                 val question = res.getString(
                     if (allContacts) R.string.assistant_clarify_contact else R.string.assistant_clarify_app,
                 )
-                state = AssistantState.Clarify(question, result.options.map { ClarifyOption(labelOf(it), it) })
+                state = AssistantState.Clarify(question, result.options.map { ClarifyOption(labelOf(it), it) }, heard)
                 say(question)
             }
 
@@ -382,28 +305,54 @@ class AssistantController(
         }
     }
 
-    /** Según el modo: preguntar antes de hacerlo (D-26) o explicar cómo (D-27). */
+    /** Según el modo: decirlo y hacerlo (D-56) o explicar cómo (D-27). */
     private fun act(action: AssistantAction, heard: String?) {
-        if (mode == AssistantMode.ACT) {
-            val (question, yes) = when (action) {
-                is AssistantAction.CallContact ->
-                    res.getString(R.string.assistant_confirm_call, action.contact.name) to
-                        res.getString(R.string.assistant_yes_call)
-
-                is AssistantAction.WhatsAppContact ->
-                    res.getString(R.string.assistant_confirm_whatsapp, action.contact.name) to
-                        res.getString(R.string.assistant_yes_open)
-
-                is AssistantAction.OpenApp ->
-                    res.getString(R.string.assistant_confirm_open, action.app.label) to
-                        res.getString(R.string.assistant_yes_open)
-            }
-            val lastHeard = heard ?: (state as? AssistantState.Thinking)?.heard.orEmpty()
-            state = AssistantState.Confirm(action, question, yes, lastHeard)
-            say(question)
-        } else {
+        if (mode == AssistantMode.GUIDE) {
             val plan = GuideSteps.forAction(res, action, catalog ?: return)
             show(AssistantState.Guide(intro = null, steps = plan.steps, index = 0, highlightId = plan.highlightId))
+            return
+        }
+        val text = when (action) {
+            is AssistantAction.CallContact -> res.getString(R.string.assistant_acting_call, action.contact.name)
+            is AssistantAction.WhatsAppContact ->
+                res.getString(R.string.assistant_acting_whatsapp, action.contact.name)
+            is AssistantAction.OpenApp -> res.getString(R.string.assistant_acting_open, action.app.label)
+        }
+        val lastHeard = heard
+            ?: (state as? AssistantState.Thinking)?.heard
+            ?: (state as? AssistantState.Clarify)?.heard.orEmpty()
+        val acting = AssistantState.Acting(action, text, lastHeard)
+        state = acting
+        lastSaid = text
+        // En la conversación, para que tras «Cancelar» el modelo sepa qué se canceló
+        // y entienda «no, a la otra».
+        remember(ChatTurn(fromUser = false, text = text))
+        job?.cancel()
+        job = scope.launch {
+            // Se hace al acabar la frase, para que dé tiempo a oír a quién llama y a
+            // pulsar «Cancelar» si no es. Si el motor de voz se cuelga, no más del tope.
+            val started = SystemClock.uptimeMillis()
+            val spoken = CompletableDeferred<Unit>()
+            speaker.speak(text) { spoken.complete(Unit) }
+            withTimeoutOrNull(VoiceTuning.ACT_MAX_WAIT_MS) { spoken.await() }
+            // Callado (TalkBack, o sin motor de voz), la frase acaba al instante:
+            // nunca se actúa antes de un mínimo, y con TalkBack, además, lo que tarda
+            // en leerla y en llegar a «Cancelar».
+            val window = if (speaker.screenReaderOn) {
+                screenReaderGrace() + VoiceTuning.ACT_SCREEN_READER_EXTRA_MS
+            } else {
+                VoiceTuning.ACT_MIN_WINDOW_MS
+            }
+            val waited = SystemClock.uptimeMillis() - started
+            delay(maxOf(VoiceTuning.ACT_AFTER_SPEECH_MS, window - waited))
+            if (state !== acting) return@launch
+            if (!isInForeground()) {
+                cancelAction()
+                return@launch
+            }
+            state = AssistantState.Idle
+            history.clear()
+            onExecute(action)
         }
     }
 
@@ -424,25 +373,46 @@ class AssistantController(
         say(text)
     }
 
+    /**
+     * Si no ha entendido u oído la orden, pide que se la repitan y vuelve a escuchar,
+     * una vez. Si falta red, clave o micrófono, reabrir el micrófono no arregla nada.
+     */
     private fun fail(failure: AssistantFailure) {
         level = 0f
-        state = AssistantState.Failed(failure)
-        // Si no la ha entendido, se le deja contestar, pero no sin fin; si falta
-        // red, clave o micrófono, reabrir el micrófono no arregla nada.
-        val listenAgain = failure == AssistantFailure.NOT_UNDERSTOOD &&
-            ++misunderstandings < MAX_MISUNDERSTANDINGS
-        say(res.getString(failure.messageRes), listenAfter = listenAgain)
+        val canRepeat = failure == AssistantFailure.NOT_UNDERSTOOD || failure == AssistantFailure.NOT_HEARD
+        val listensAgain = canRepeat && ++misunderstandings < MAX_MISUNDERSTANDINGS
+        val failed = AssistantState.Failed(failure, listensAgain)
+        state = failed
+        val text = res.getString(failed.messageRes)
+        if (!listensAgain) {
+            say(text)
+            return
+        }
+        lastSaid = text
+        remember(ChatTurn(fromUser = false, text = text))
+        job?.cancel()
+        job = scope.launch {
+            // Como al actuar: si el motor de voz no avisa de que ha acabado, no más
+            // del tope, para no quedarse pidiendo «repítemelo» con el micrófono
+            // cerrado. Callado, la frase acaba al instante y no llegaba ni a verse:
+            // antes de volver a escuchar, el tiempo de leerla.
+            val spoken = CompletableDeferred<Unit>()
+            speaker.speak(text) { spoken.complete(Unit) }
+            withTimeoutOrNull(VoiceTuning.ACT_MAX_WAIT_MS) { spoken.await() }
+            if (speaker.isSilent) delay(screenReaderGrace())
+            if (state === failed) listen()
+        }
     }
 
     /**
-     * Lo dice en voz alta, lo apunta en la conversación y, al acabar de hablar,
-     * reabre el micrófono si la pantalla sigue siendo la misma.
+     * Lo dice en voz alta y lo apunta en la conversación. [then], al acabar de
+     * hablar y solo si la pantalla sigue siendo la misma.
      */
-    private fun say(text: String, listenAfter: Boolean = true) {
+    private fun say(text: String, then: (() -> Unit)? = null) {
         lastSaid = text
         remember(ChatTurn(fromUser = false, text = text))
         val shown = state
-        speaker.speak(text) { if (listenAfter && state === shown) listenFollowUp() }
+        speaker.speak(text) { if (state === shown) then?.invoke() }
     }
 
     private fun remember(turn: ChatTurn) {
@@ -456,8 +426,6 @@ class AssistantController(
         is AssistantAction.OpenApp -> action.app.label
     }
 
-    private fun targetName(action: AssistantAction): String = labelOf(action)
-
     private companion object {
         /** Una transcripción más corta que esto es ruido, no una orden. */
         const val MIN_TRANSCRIPT_CHARS = 2
@@ -468,17 +436,23 @@ class AssistantController(
         /** Turnos de la conversación que se le recuerdan al modelo (cada uno, pregunta y respuesta). */
         const val MAX_HISTORY_TURNS = 6
 
-        /** Malentendidos seguidos tras los que deja de reabrir el micrófono solo. */
+        /** Fallos seguidos tras los que deja de reabrir el micrófono solo: con 2, repite una vez. */
         const val MAX_MISUNDERSTANDINGS = 2
     }
 }
 
-/** La frase llana de cada fallo: dice qué hacer ahora, no qué ha pasado por dentro. */
+/**
+ * La frase llana de un fallo: dice qué hacer ahora, no qué ha pasado por dentro.
+ * Si va a volver a escuchar, pide que se lo repitan; si no, dice qué pulsar.
+ */
 @get:StringRes
-val AssistantFailure.messageRes: Int
-    get() = when (this) {
-        AssistantFailure.NOT_HEARD -> R.string.assistant_failure_not_heard
-        AssistantFailure.NOT_UNDERSTOOD -> R.string.assistant_failure_not_understood
+val AssistantState.Failed.messageRes: Int
+    get() = when (failure) {
+        AssistantFailure.NOT_HEARD ->
+            if (listensAgain) R.string.assistant_failure_not_heard else R.string.assistant_failure_not_heard_again
+        AssistantFailure.NOT_UNDERSTOOD ->
+            if (listensAgain) R.string.assistant_failure_not_understood
+            else R.string.assistant_failure_not_understood_again
         AssistantFailure.NO_INTERNET -> R.string.assistant_failure_no_internet
         AssistantFailure.BUSY -> R.string.assistant_failure_busy
         AssistantFailure.UNAVAILABLE -> R.string.assistant_failure_unavailable
