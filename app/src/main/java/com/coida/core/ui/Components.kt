@@ -356,7 +356,7 @@ fun ScreenHeader(
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleLarge.byParts(),
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.semantics { heading() },
             )
@@ -376,7 +376,7 @@ fun ScreenHeader(
 fun SectionLabel(text: String, modifier: Modifier = Modifier) {
     Text(
         text = text,
-        style = MaterialTheme.typography.labelMedium,
+        style = MaterialTheme.typography.labelMedium.byParts(),
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         modifier = modifier
             .padding(top = 12.dp, start = 4.dp)
@@ -871,13 +871,13 @@ private fun TitleAndSubtitle(title: String, subtitle: String?, modifier: Modifie
     Column(modifier = modifier) {
         Text(
             text = title,
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge.byParts(),
             color = MaterialTheme.colorScheme.onSurface,
         )
         if (subtitle != null) {
             Text(
                 text = subtitle,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.bodySmall.byParts(),
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
@@ -903,7 +903,7 @@ private fun ButtonContent(text: String, @DrawableRes icon: Int?, contentColor: C
         // 200 %, se partía a mitad sin guion.
         Text(
             text = text,
-            style = MaterialTheme.typography.titleSmall.copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph),
+            style = MaterialTheme.typography.titleSmall.byParts(),
             color = contentColor,
             textAlign = TextAlign.Center,
         )
@@ -912,3 +912,11 @@ private fun ButtonContent(text: String, @DrawableRes icon: Int?, contentColor: C
 
 /** Hueco entre el marco de un [ChoiceGroup] y sus opciones. */
 private val SEGMENT_GAP = 6.dp
+
+/**
+ * Parte por sílabas, con guion, la palabra que no cabe en su línea. Sin esto, al
+ * 200 % «Aplicaciones» o «administrador» se partían a mitad y sin guion en una
+ * fila de Ajustes. Solo para títulos, filas y botones: las casillas nunca parten
+ * palabras, encogen la letra (D-54).
+ */
+fun TextStyle.byParts() = copy(hyphens = Hyphens.Auto, lineBreak = LineBreak.Paragraph)

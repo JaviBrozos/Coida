@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
@@ -25,7 +26,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.coida.R
 import com.coida.core.ui.CoidaCard
+import com.coida.core.ui.CoidaDimens
 import com.coida.core.ui.TabularFigures
+import com.coida.core.ui.byParts
 import com.coida.core.ui.IconBadge
 import com.coida.core.ui.NoteCard
 import com.coida.core.ui.OutlineButton
@@ -100,14 +103,14 @@ fun AdminScreen(
                     ) {
                         Text(
                             text = stringResource(if (active) R.string.admin_unlocked else R.string.admin_locked),
-                            style = MaterialTheme.typography.labelLarge,
+                            style = MaterialTheme.typography.labelLarge.byParts(),
                             color = MaterialTheme.colorScheme.onSurface,
                         )
                         Text(
                             text = stringResource(
                                 if (active) R.string.admin_unlocked_detail else R.string.admin_locked_detail,
                             ),
-                            style = MaterialTheme.typography.bodySmall,
+                            style = MaterialTheme.typography.bodySmall.byParts(),
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                         )
                     }
@@ -115,18 +118,38 @@ fun AdminScreen(
 
                 if (active) {
                     val totalSeconds = (remainingMs + 999) / 1000
-                    Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Text(
-                            text = "%d:%02d".format(totalSeconds / 60, totalSeconds % 60),
-                            style = MaterialTheme.typography.displayMedium.copy(fontFeatureSettings = TabularFigures),
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                        Text(
-                            text = stringResource(R.string.admin_countdown_suffix),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.padding(bottom = 10.dp),
-                        )
+                    val time = "%d:%02d".format(totalSeconds / 60, totalSeconds % 60)
+                    val suffix = stringResource(R.string.admin_countdown_suffix)
+                    // Con letra grande, la cifra y la frase no caben en una fila: al
+                    // 200 % la frase se quedaba sin sitio y salía letra a letra. Se
+                    // apilan, y la cifra baja un escalón para caber entera.
+                    if (LocalDensity.current.fontScale >= CoidaDimens.LargeTextScale) {
+                        Column {
+                            Text(
+                                text = time,
+                                style = MaterialTheme.typography.headlineLarge.copy(fontFeatureSettings = TabularFigures),
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Text(
+                                text = suffix,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            )
+                        }
+                    } else {
+                        Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(
+                                text = time,
+                                style = MaterialTheme.typography.displayMedium.copy(fontFeatureSettings = TabularFigures),
+                                color = MaterialTheme.colorScheme.primary,
+                            )
+                            Text(
+                                text = suffix,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(bottom = 10.dp),
+                            )
+                        }
                     }
                     OutlineButton(text = stringResource(R.string.admin_lock_now), onClick = onLock)
                 } else {

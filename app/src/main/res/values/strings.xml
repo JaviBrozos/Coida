@@ -34,6 +34,8 @@
     <string name="back">Volver</string>
     <string name="cd_back_home">Volver a la pantalla de inicio</string>
     <string name="cd_back_settings">Volver a ajustes</string>
+    <string name="cd_back_question">Volver a elegir la pregunta</string>
+    <string name="cd_back_pin">Volver a escribir el PIN</string>
     <string name="cd_pin_progress">%1$d de %2$d cifras</string>
     <string name="cd_pin_checking">Comprobando</string>
     <string name="cd_admin_banner">Abrir los ajustes de Coida</string>

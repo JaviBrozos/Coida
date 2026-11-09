@@ -264,6 +264,8 @@ fun PinGate(
         onExitToHome = onExitToHome,
         showForgotPin = paso == Paso.COMPROBAR && hasRecoveryQuestion && !lock.locked,
         onForgotPin = { paso = Paso.RECUPERAR },
+        // Al cambiar el PIN se vuelve a Ajustes, no al inicio: TalkBack tiene que decirlo.
+        backLabel = stringResource(if (changing) R.string.cd_back_settings else R.string.cd_back_home),
         onBack = onBack,
         // Derivar el PIN son 10.000 vueltas de PBKDF2 (D-49): fuera del hilo
         // de la pantalla, para que no se congele a mitad del fundido, y a la vez
@@ -337,6 +339,7 @@ private fun PinScreen(
     onForgotPin: () -> Unit,
     prepare: (String) -> PreparedPin?,
     onComplete: suspend (String, PreparedPin?) -> Unit,
+    backLabel: String,
     onBack: () -> Unit,
 ) {
     // Al bloquearse, los puntos a medio escribir se vacían.
@@ -375,7 +378,7 @@ private fun PinScreen(
         ScreenHeader(
             title = title,
             subtitle = subtitle,
-            backLabel = stringResource(R.string.cd_back_home),
+            backLabel = backLabel,
             onBack = onBack,
         )
 
@@ -590,7 +593,7 @@ private fun RecoveryAnswerScreen(
         ScreenHeader(
             title = stringResource(R.string.recovery_answer_title),
             subtitle = stringResource(R.string.recovery_answer_subtitle),
-            backLabel = stringResource(R.string.cd_back_settings),
+            backLabel = stringResource(R.string.cd_back_question),
             onBack = onBack,
         )
 
@@ -632,7 +635,7 @@ private fun RecoveryAccessScreen(
         ScreenHeader(
             title = stringResource(R.string.recovery_access_title),
             subtitle = stringResource(R.string.recovery_access_subtitle),
-            backLabel = stringResource(R.string.cd_back_home),
+            backLabel = stringResource(R.string.cd_back_pin),
             onBack = onBack,
         )
 
