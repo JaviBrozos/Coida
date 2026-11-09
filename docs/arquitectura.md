@@ -1,6 +1,6 @@
 # Arquitectura
 
-> **Fuente única de**: cómo está construido Doado por dentro. Si necesitas algo
+> **Fuente única de**: cómo está construido Coida por dentro. Si necesitas algo
 > de aquí en otro sitio, enlaza; no copies. Los valores exactos (claves,
 > constantes, tamaños) los manda el código: si esto no cuadra con él, **gana el
 > código** y hay que corregir esta página.
@@ -33,8 +33,9 @@ No hay librería de navegación: son once pantallas y planas.
   `ASSISTANT` vuelve a donde se abrió (el inicio, o sus ajustes con «Probar el
   asistente»); `ARRANGE` («Colocar las casillas», D-59) vuelve a donde se abrió
   (Ajustes o Aplicaciones); todo lo demás vuelve a `SETTINGS`.
-- `BackHandler` está activo en todas menos en `HOME`. En `ASSISTANT`, además,
-  cancela la escucha.
+- `BackHandler` está siempre activo. En `HOME` no hace nada: así el atrás
+  predictivo (de serie desde targetSdk 36) no anima un «volver al inicio» sobre el
+  propio inicio. En `ASSISTANT`, además, cancela la escucha.
 
 ### Comportamiento de INICIO, ATRÁS y recientes
 
@@ -42,19 +43,19 @@ Esto es lo que distingue un launcher de una app normal, y es donde se rompen:
 
 | Gesto | Qué tiene que pasar | Cómo se consigue |
 | --- | --- | --- |
-| **INICIO** desde otra app | Vuelve a Doado, y además a la pantalla de inicio, no donde se dejó | `launchMode="singleTask"` + `onNewIntent()` pone `screen = HOME` |
-| **INICIO** estando ya en Doado | Vuelve al inicio desde cualquier pantalla de ajustes | Lo mismo: llega un `onNewIntent` |
-| **ATRÁS** en el inicio | No hace nada: no se puede «salir» de la pantalla de inicio | El `BackHandler` está desactivado en `HOME` |
-| **Recientes** | Doado no aparece como tarjeta | `excludeFromRecents="true"` |
+| **INICIO** desde otra app | Vuelve a Coida, y además a la pantalla de inicio, no donde se dejó | `launchMode="singleTask"` + `onNewIntent()` pone `screen = HOME` |
+| **INICIO** estando ya en Coida | Vuelve al inicio desde cualquier pantalla de ajustes | Lo mismo: llega un `onNewIntent` |
+| **ATRÁS** en el inicio | No hace nada: no se puede «salir» de la pantalla de inicio | El `BackHandler` lo intercepta en `HOME` y no hace nada |
+| **Recientes** | Coida no aparece como tarjeta | `excludeFromRecents="true"` |
 | **Irse a otra app** estando en Ajustes | Al volver, los ajustes están cerrados y hay que repetir el PIN | `onStop()` devuelve a `HOME` (RNF-SEG-02) |
 | **Irse a otra app** con el asistente abierto | Deja de escuchar y descarta la petición. La casilla señalada se queda: apagar la pantalla no debe borrarla | `onStop()` llama a `assistant.cancel()` |
 | Asistente abierto y nadie toca | La pantalla no se apaga, para que el tiempo de apagado no cancele una pregunta | `FLAG_KEEP_SCREEN_ON` mientras `screen == ASSISTANT` |
 | **INICIO** con una casilla señalada | Se quita la marca | `onNewIntent()` pone `highlightedId = null` |
-| Volver de algo que abrió Doado | Sigues donde estabas: la tienda, el selector de contactos o los ajustes de Android no te echan | La bandera `salidaPropia` marca esa ida y vuelta |
+| Volver de algo que abrió Coida | Sigues donde estabas: la tienda, el selector de contactos o los ajustes de Android no te echan | La bandera `salidaPropia` marca esa ida y vuelta |
 | Girar la pantalla | No se recrea la Activity | `configChanges` incluye `orientation` y compañía |
 
 `stateNotNeeded="true"` permite que el sistema mate el proceso sin guardar
-estado: al volver, Doado arranca limpio en el inicio, que es lo correcto aquí.
+estado: al volver, Coida arranca limpio en el inicio, que es lo correcto aquí.
 
 ## Dónde vive el estado
 
@@ -79,7 +80,8 @@ Dos cosas se aplican envolviendo toda la app:
 
 ## Qué se guarda
 
-Cuatro ficheros de `SharedPreferences` y, si hay, la foto de fondo. **Una clave ya publicada no se renombra
+Cinco ficheros de `SharedPreferences` y, si hay, la foto de fondo. Los de
+configuración conservan el nombre de cuando la app se llamaba Doado (D-62). **Una clave ya publicada no se renombra
 ni cambia de tipo**: se añade otra y se migra leyendo la antigua.
 
 ### `doado_settings` — `SettingsStore`
@@ -173,12 +175,34 @@ mil combinaciones desde la pantalla es el límite de intentos. Quien pueda leer 
 fichero (una build de depuración con `run-as`, o un móvil con root) puede probarlas
 todas fuera del móvil en poco tiempo.
 
+### `coida_install` — `InstallationId`
+
+| Clave | Tipo | Por defecto |
+| --- | --- | --- |
+| `installation_id` | String (UUID aleatorio) | Se crea en el primer arranque |
+
+Un identificador por instalación. Hoy no se usa ni sale del móvil: queda
+preparado por si un día hay copia o sincronización. No es el del dispositivo ni
+el de publicidad, y cambia al reinstalar.
+
+### `ConfigRepository`
+
+La interfaz lee y guarda lo que configura el familiar (interfaz, asistente,
+contactos y orden de las casillas) a través de `ConfigRepository`, como un
+`CoidaConfig` con `schemaVersion` que va y vuelve de JSON con `org.json`. Su única
+implementación, `LocalConfigRepository`, delega en `SettingsStore`,
+`ContactShortcutsStore` y `FavoritesStore` sin cambiar ninguna clave. Las
+casillas se encienden y se ordenan desde `InstalledAppsRepository`; el PIN, la
+foto de fondo y el estado del móvil (modo administrador, avisos cerrados) se
+quedan fuera a propósito.
+
 ### Copias de seguridad
 
 `res/xml/backup_rules.xml` y `res/xml/data_extraction_rules.xml` declaran
 `doado_favorites`, `doado_contacts` y `doado_settings` con una lista de
 `<include>`. `doado_security` queda fuera **por no estar en la lista**: un
 `<exclude>` explícito no vale, porque lint lo rechaza al no estar incluido.
+`coida_install` también se queda fuera, a propósito: es de esta instalación.
 **Preferencia nueva ⇒ añadirla a los dos ficheros**, y pensar en qué lado va.
 
 ### La foto de fondo — `WallpaperStore`
@@ -201,7 +225,7 @@ Detalles que conviene saber:
   en cada `reload()`, sin caché. Se hace fuera del hilo principal, en
   `loadApps()` de `LauncherActivity` (D-43); el inicio no se pinta hasta la
   primera carga.
-- `loadApps()` también mira si Doado es la pantalla de inicio, para el aviso del
+- `loadApps()` también mira si Coida es la pantalla de inicio, para el aviso del
   inicio y de Ajustes (D-48): desde Android 10 con `RoleManager.isRoleHeld`; antes,
   resolviendo `ACTION_MAIN` + `CATEGORY_HOME`. Desde Android 11 el `PackageManager`
   no ve los otros launchers, así que esa segunda vía allí daría siempre «sí».
@@ -225,7 +249,7 @@ llano. **Ningún intent hacia fuera se lanza a pelo.**
 | Abrir la tienda | Launcher de `com.android.vending` | `play.google.com/store/apps` |
 | Ajustes de Android | `Settings.ACTION_SETTINGS` | — |
 | Elegir pantalla de inicio | `Settings.ACTION_HOME_SETTINGS` | `Settings.ACTION_SETTINGS` |
-| Poner Doado de inicio (aviso del inicio y de Ajustes, D-48) | Desde Android 10, `RoleManager.createRequestRoleIntent(ROLE_HOME)` | Los de «Elegir pantalla de inicio» |
+| Poner Coida de inicio (aviso del inicio y de Ajustes, D-48) | Desde Android 10, `RoleManager.createRequestRoleIntent(ROLE_HOME)` | Los de «Elegir pantalla de inicio» |
 | Elegir foto de fondo | `PickVisualMedia(ImageOnly)`, sin permisos; en Android antiguo, el selector de documentos | Aviso fijo en Interfaz |
 | Sonido y pantalla | `Settings.ACTION_SOUND_SETTINGS` | — |
 | Elegir contacto | `ACTION_PICK` sobre `Phone.CONTENT_URI` | Aviso |
@@ -242,6 +266,8 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
   mayor. Sin el primero, las llamadas caen al marcador; sin el segundo, los
   contactos salen con su inicial, y Ajustes → Contactos ofrece pedirlo otra vez.
   `READ_CONTACTS` solo se usa para la foto de los números guardados (D-57).
+- **Solo en depuración** (`src/debug/AndroidManifest.xml`, D-63): lo que sigue del
+  asistente. La versión publicada no lo lleva.
 - **`RECORD_AUDIO`** también es peligroso y se pide **al encender el asistente**
   en sus ajustes. Si se deniega, el interruptor se queda apagado con una nota. Si
   alguien lo quita después, el asistente lo dice en lenguaje llano en vez de
@@ -256,14 +282,17 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
   para no dejar fuera tablets en Google Play.
 - El nombre y el número salen del selector de contactos, que concede permiso
   solo sobre la fila elegida. No hay `QUERY_ALL_PACKAGES`: el bloque `<queries>`
-  declara únicamente lo que Doado necesita resolver.
+  declara únicamente lo que Coida necesita resolver.
 - La actividad: `singleTask`, `excludeFromRecents`, `stateNotNeeded`, y el
-  intent-filter con `HOME` + `DEFAULT` + `LAUNCHER`.
+  intent-filter con `HOME` + `DEFAULT` + `LAUNCHER`. `LAUNCHER` se queda al
+  publicar: sin él no hay botón «Abrir» en Google Play (D-64).
 
 ## Asistente de voz
 
 Casos de uso CU-04, CU-05 y CU-15; decisiones D-25 a D-30, D-37, D-56 y D-58;
-normas en `.claude/rules/asistente.md`.
+normas en `.claude/rules/asistente.md`. Solo existe en la versión de depuración:
+en release, `BuildConfig.ASSISTANT_ENABLED` es falso, `LauncherActivity` no crea el
+controlador y R8 quita su código (D-63).
 
 ```
 toque en el círculo → LauncherActivity.openAssistant() → AssistantController.start()
@@ -286,20 +315,21 @@ toque en el círculo → LauncherActivity.openAssistant() → AssistantControlle
 | `audio/Speaker` | `TextToSpeech` en español a 0,85. Calla con TalkBack encendido, salvo en «Repetir». Avisa al acabar de hablar (`UtteranceProgressListener`), que es cuando se actúa o se vuelve a escuchar. Callado (`isSilent`), el controlador espera lo que se tarda en leer la pantalla (de 2,5 a 10 s) |
 | `cloud/OpenAiCompatibleClient` | `/audio/transcriptions` y `/chat/completions` con `HttpURLConnection`. Conexión 10 s, lectura 20 s. Traduce cada fallo a un `AssistantFailure` |
 | `ActionCatalog` | Da a cada contacto y casilla un id corto (`c1`, `a1`). Al modelo solo le llegan ids y nombres |
-| `GuideSteps` | Pasos fijos para guiar hacia algo de Doado, con su posición en pantalla |
+| `GuideSteps` | Pasos fijos para guiar hacia algo de Coida, con su posición en pantalla |
 | `VoiceTuning`, `Prompts` | Tiempos de voz y prompt, cada uno en un único sitio |
 
 ### Configuración del proveedor
 
-En `local.properties`, que no entra en git, y de ahí a `BuildConfig`:
+En `local.properties`, que no entra en git, y de ahí a `BuildConfig`, solo en
+depuración (en release van vacías). Se siguen leyendo las antiguas `doado.ai.*`:
 
 | Clave | Por defecto |
 | --- | --- |
-| `doado.ai.baseUrl` | `https://api.groq.com/openai/v1` |
-| `doado.ai.sttModel` | `whisper-large-v3` |
-| `doado.ai.llmModel` | `openai/gpt-oss-120b` |
-| `doado.ai.reasoningEffort` | `low` (vacío = no se envía) |
-| `doado.ai.apiKey` | vacía: sin ella el asistente no se puede encender |
+| `coida.ai.baseUrl` | `https://api.groq.com/openai/v1` |
+| `coida.ai.sttModel` | `whisper-large-v3` |
+| `coida.ai.llmModel` | `openai/gpt-oss-120b` |
+| `coida.ai.reasoningEffort` | `low` (vacío = no se envía) |
+| `coida.ai.apiKey` | vacía: sin ella el asistente no se puede encender |
 
-La clave viaja dentro del APK y se puede extraer. Vale para probar; antes de
-publicar hay que resolver CON-06.
+La clave viaja dentro del APK de depuración y se puede extraer. Vale para
+probar; publicar el asistente exige resolver antes CON-06.

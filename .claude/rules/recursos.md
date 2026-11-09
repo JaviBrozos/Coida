@@ -29,11 +29,11 @@ paths:
   los recoloree.
 - Siluetas reconocibles a tamaño grande. Nada de iconografía fina, abstracta ni
   decorativa, y **nunca emoji**.
-- El isotipo tiene dos versiones (`ic_doado_mark` y `ic_doado_mark_light`) porque
-  el cian no llega a 3:1 sobre blanco. Usa la que toque según el fondo. Son
-  rellenos con el visto en hueco (`fillType="evenOdd"`), D-36.
+- El isotipo tiene dos versiones (`ic_coida_mark` y `ic_coida_mark_light`) porque
+  el cian no llega a 3:1 sobre blanco. Usa la que toque según el fondo. Son de
+  trazo: una C con un visto que asoma por su boca (D-62).
 - Marca, colores e iconos: skill `.claude/skills/doado-brand/`.
-- El icono de la app: `drawable/ic_launcher_foreground.xml` es solo la D, sin
+- El icono de la app: `drawable/ic_launcher_foreground.xml` es solo la C, sin
   inset ni cuadrado; la monocroma es la misma figura. Si cambias la marca,
   regenera también los PNG de `mipmap-*dpi`.
 - Los iconos van sin plato detrás (D-35): `IconBadge` solo lleva plato si se lo

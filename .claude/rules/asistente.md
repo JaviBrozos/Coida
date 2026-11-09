@@ -1,7 +1,7 @@
 ---
 paths:
-  - "app/src/main/java/com/doado/assistant/**"
-  - "app/src/main/java/com/doado/settings/AssistantSettingsScreen.kt"
+  - "app/src/main/java/com/coida/assistant/**"
+  - "app/src/main/java/com/coida/settings/AssistantSettingsScreen.kt"
 ---
 
 # Asistente de voz
@@ -20,7 +20,7 @@ un fallo de interfaz: es una llamada a quien no era. Las decisiones están en
    código, no el modelo. Ya no se pide un «Sí»: la pregunta liaba a las personas
    mayores. Por eso el prompt pide **no adivinar nunca**: ante la duda, aclarar o
    «no entendido».
-2. **Lista blanca**: solo llama o escribe a contactos guardados en Doado y solo
+2. **Lista blanca**: solo llama o escribe a contactos guardados en Coida y solo
    abre casillas del inicio. El número sale de `ContactShortcutsStore`, **nunca de
    lo que diga el modelo**. Un id que no está en `ActionCatalog` es «no te he
    entendido».
@@ -33,7 +33,7 @@ un fallo de interfaz: es una llamada a quien no era. Las decisiones están en
 5. **La clave nunca entra en git ni en un log.** `AssistantConfig.toString()` no la
    enseña; no la imprimas tú.
 6. **Red y audio, fuera del hilo principal**, con tiempo máximo y cancelables:
-   salir de Doado cancela la escucha y la petición (`onStop`).
+   salir de Coida cancela la escucha y la petición (`onStop`).
 7. **El audio no se guarda** en disco ni se reenvía: vive en memoria hasta que se
    transcribe. La conversación (como mucho seis turnos) también vive solo en
    memoria, y `cancel()` la borra.
@@ -69,7 +69,7 @@ un fallo de interfaz: es una llamada a quien no era. Las decisiones están en
 | Prompt del modelo y formato de respuesta | `Prompts.kt`, en español. Ningún prompt fuera de ahí |
 | Tiempos y umbrales de la voz | `VoiceTuning.kt` |
 | Validar lo que devuelve el modelo | `ActionCatalog.kt` |
-| Pasos fijos al guiar hacia algo de Doado | `GuideSteps.kt` |
+| Pasos fijos al guiar hacia algo de Coida | `GuideSteps.kt` |
 | Proveedor y formato HTTP | `cloud/` |
 | Ejecutar la acción (Intents) | `LauncherActivity`, nunca el asistente |
 

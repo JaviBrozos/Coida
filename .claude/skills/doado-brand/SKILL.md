@@ -5,6 +5,12 @@ description: Identidad visual de Doado (logo, icono de la app, colores, iconos, 
 
 # Marca de Doado
 
+> **Aviso (09/11/2026): la app pasa a llamarse Coida (D-62).** El icono ya no es
+> la D: es una C de trazo con un visto que asoma por su boca, y manda
+> `app/src/main/res/drawable/ic_launcher_foreground.xml`. Lo que esta skill dice
+> del nombre, del logo y de la D está pendiente de rehacer; los colores, la letra,
+> los iconos, el tono y el movimiento siguen valiendo.
+
 Doado (en gallego, «sencillo») es una pantalla de inicio de Android para
 personas mayores. La marca tiene que transmitir **calma, claridad y confianza**,
 y nunca puede ganarle a la accesibilidad: es el invariante número uno del

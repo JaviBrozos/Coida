@@ -1,16 +1,16 @@
 ---
 paths:
-  - "app/src/main/java/com/doado/**/*.kt"
+  - "app/src/main/java/com/coida/**/*.kt"
 ---
 
 # UI en Compose
 
 ## Antes de escribir un composable
 
-Mira si ya existe en `core/ui/Components.kt`: `DoadoCard`, `SettingsGroup`,
+Mira si ya existe en `core/ui/Components.kt`: `CoidaCard`, `SettingsGroup`,
 `SettingsRow`, `SwitchRow`, `ChoiceGroup`, `PrimaryButton`, `OutlineButton`,
-`ScreenHeader`, `SectionLabel`, `IconBadge`, `InitialBadge`, `ContactAvatar`, `NoteCard`, `NotHomeNotice`, `FitText`, `DoadoTextField`,
-`SettingsColumn`, `DoadoSwitchVisual`.
+`ScreenHeader`, `SectionLabel`, `IconBadge`, `InitialBadge`, `ContactAvatar`, `NoteCard`, `NotHomeNotice`, `FitText`, `CoidaTextField`,
+`SettingsColumn`, `CoidaSwitchVisual`.
 Casi toda pantalla de ajustes sale de ahí. La tabla de para qué sirve cada uno
 está en `docs/diseno.md`.
 
@@ -20,7 +20,7 @@ está en `docs/diseno.md`.
   `Color.kt` directamente en una pantalla. El mapa de roles está en
   `docs/diseno.md`.
 - **Texto desde `MaterialTheme.typography`.** Ningún `fontSize` suelto.
-- **Medidas desde `DoadoDimens`.** Si necesitas una que no está, añádela al
+- **Medidas desde `CoidaDimens`.** Si necesitas una que no está, añádela al
   objeto en vez de escribir el número en la pantalla.
 - **Las pantallas no conocen Android**: nada de `Context`, `PackageManager`,
   `Intent` ni permisos dentro de un composable. Reciben datos ya resueltos y
@@ -30,7 +30,7 @@ está en `docs/diseno.md`.
   deshabilitado y hay que explicar por qué.
 - **El área pulsable es la pieza entera**, no un botoncito dentro. Una fila con
   interruptor se hace `toggleable` completa, con `Role.Switch`.
-- **Previews con `DoadoTheme(darkTheme = true)`**, que es el tema de fábrica.
+- **Previews con `CoidaTheme(darkTheme = true)`**, que es el tema de fábrica.
 - **Filas de un mismo apartado, en un `SettingsGroup`**, cada una con su
   `GroupPosition`. En una `LazyColumn`, sin `spacedBy` general: el hueco se pone
   entre apartados, no entre filas.
@@ -67,7 +67,7 @@ Los textos del inicio los lee ella; los de ajustes, el familiar.
   Si el familiar los pone aparte (D-46), van en una segunda pantalla del inicio
   con dos pestañas siempre a la vista: deslizar es un atajo, nunca la única forma.
 - Para señalar una casilla (el asistente guiando): relleno `primary`, contenido
-  `onPrimary`, `borderWidth = DoadoDimens.HighlightBorderWidth` y
+  `onPrimary`, `borderWidth = CoidaDimens.HighlightBorderWidth` y
   `stateDescription` para TalkBack. Solo el borde no basta: en claro el contorno ya
   es del color del acento. Nunca moverla, agrandarla ni hacerla parpadear.
 - Con foto de fondo (D-47), todo texto del inicio que no vaya dentro de una
@@ -86,7 +86,7 @@ explica por qué. Cuando el lienzo y el código no cuadran, **manda el código**
 Está en `.claude/skills/apple-design/` y explica cómo diseña Apple: respuesta
 inmediata, movimiento que se puede interrumpir y coherencia espacial. Está
 pensada para la web y para el estilo de Apple. **Aquí mandan las normas de
-Doado**: nada de translucidez ni sombras (D-04), nada de interletrado negativo
+Coida**: nada de translucidez ni sombras (D-04), nada de interletrado negativo
 (D-03), nada de gestos de arrastre ni muelles en lo que usa la persona mayor
 (deslizar entre las dos pantallas de D-46 es un atajo de sus pestañas, no la forma
 de usarlas; arrastrar solo se permite en pantallas del familiar, y siempre con otra

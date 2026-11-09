@@ -1,15 +1,18 @@
-# Doado
+# Coida
 
 **Una app para tus mayores.**
 
-Doado es un *launcher* de Android —la pantalla de inicio del móvil— pensado para
+Coida es un *launcher* de Android —la pantalla de inicio del móvil— pensado para
 personas mayores que se pelean con el teléfono: menos cosas en pantalla, más
 grandes y con mucho más contraste que en un lanzador normal.
 
 La idea de fondo: el móvil lo usa una persona, pero lo configura otra. Así que
-Doado tiene dos caras. Por delante, una pantalla de inicio sin nada que
+Coida tiene dos caras. Por delante, una pantalla de inicio sin nada que
 descubrir. Por detrás, y tras un PIN, todos los ajustes para el familiar que se
 encarga de dejarlo a punto.
+
+Antes se llamaba **Doado** (D-62). La versión 1.0.0 de Google Play sale sin el
+asistente de voz, que sigue en pruebas en la versión de depuración (D-63).
 
 ---
 
@@ -17,7 +20,7 @@ encarga de dejarlo a punto.
 
 | Pantalla de inicio | Entrar en los ajustes |
 | --- | --- |
-| ![Pantalla de inicio de Doado: reloj y cuatro casillas grandes (captura anterior al asistente)](docs/capturas/inicio.png) | ![Pantalla de PIN: cuatro puntos y un teclado numérico grande](docs/capturas/pin.png) |
+| ![Pantalla de inicio de Coida: reloj y cuatro casillas grandes (captura anterior al asistente)](docs/capturas/inicio.png) | ![Pantalla de PIN: cuatro puntos y un teclado numérico grande](docs/capturas/pin.png) |
 
 | Ajustes | Modo administrador |
 | --- | --- |
@@ -83,7 +86,7 @@ le llegan la voz y los nombres, nunca los números de teléfono.
 ### Ajustes, para el familiar
 
 Detrás de un **PIN de cuatro cifras**, que se crea la primera vez que se entra.
-Si Doado aún no es la pantalla de inicio del móvil, el inicio y Ajustes lo avisan
+Si Coida aún no es la pantalla de inicio del móvil, el inicio y Ajustes lo avisan
 arriba, con un botón para ponerlo.
 
 | Apartado | Qué permite |
@@ -99,7 +102,7 @@ arriba, con un botón para ponerlo.
 
 ### Modo administrador
 
-Doado, siendo la pantalla de inicio, cierra sus propias salidas. El modo
+Coida, siendo la pantalla de inicio, cierra sus propias salidas. El modo
 administrador **las abre durante quince minutos**, con cuenta atrás a la vista, y
 se cierra solo cuando acaba el tiempo. Mientras dura se habilitan:
 
@@ -111,7 +114,7 @@ Con el modo activo, la pantalla de inicio enseña un aviso con la hora a la que
 se volverá a cerrar.
 
 > **Lo que este modo no puede hacer:** impedir de verdad que alguien salga a
-> Android. Para eso Doado tendría que ser «propietaria del dispositivo», que es
+> Android. Para eso Coida tendría que ser «propietaria del dispositivo», que es
 > otra liga. Lo que hace es cerrar bajo llave las salidas que ofrece la propia
 > app, que son por donde se sale en la práctica.
 
@@ -156,7 +159,7 @@ XML de layouts. minSdk 24, compileSdk y targetSdk 37.
 Se organiza **por feature, no por capa**:
 
 ```
-app/src/main/java/com/doado/
+app/src/main/java/com/coida/
 ├── launcher/       Pantalla de inicio y la Activity, que lleva la navegación
 │                   y todo lo que abre Intents.
 ├── settings/       Ajustes: PIN, interfaz, contactos, apps y modo administrador.
@@ -165,9 +168,9 @@ app/src/main/java/com/doado/
 └── data/           Apps instaladas, casillas, contactos y ajustes guardados.
 ```
 
-El `namespace` es `com.doado` y el `applicationId`, `com.doado.launcher`. Es a
+El `namespace` es `com.coida` y el `applicationId`, `com.coida.launcher`. Es a
 propósito: así el paquete de feature puede llamarse `launcher` sin acabar en
-`com.doado.launcher.launcher`. La clase `R` es `com.doado.R`.
+`com.coida.launcher.launcher`. La clase `R` es `com.coida.R`.
 
 ### Navegación y estado
 
@@ -207,35 +210,41 @@ ruta del SDK — está en `.gitignore` porque es propio de cada equipo:
 sdk.dir=C\:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk
 
 # Asistente de voz: sin clave no se puede encender. Gratis en console.groq.com.
-doado.ai.apiKey=gsk_...
+coida.ai.apiKey=gsk_...
 # Opcionales; estos son los valores por defecto. Vale cualquier proveedor con
 # la API de OpenAI.
-# doado.ai.baseUrl=https://api.groq.com/openai/v1
-# doado.ai.sttModel=whisper-large-v3
-# doado.ai.llmModel=openai/gpt-oss-120b
-# doado.ai.reasoningEffort=low
+# coida.ai.baseUrl=https://api.groq.com/openai/v1
+# coida.ai.sttModel=whisper-large-v3
+# coida.ai.llmModel=openai/gpt-oss-120b
+# coida.ai.reasoningEffort=low
 ```
 
-La clave acaba dentro del APK: sirve para probar, no para publicar (CON-06 en la
-ERS). En el emulador, para hablarle: *Extended controls → Microphone → Virtual
+La clave acaba dentro del APK de depuración: sirve para probar, no para
+publicar (CON-06 en la ERS). La versión de release no lleva ni la clave ni el
+asistente, ni los permisos de micrófono e internet (D-63). En el emulador, para hablarle: *Extended controls → Microphone → Virtual
 microphone uses host audio input*.
 
 ```bash
 ./gradlew assembleDebug     # compila el APK de depuración
 ./gradlew installDebug      # lo instala en el dispositivo o emulador conectado
 ./gradlew lint              # análisis estático de Android
+./gradlew bundleRelease     # el .aab para Google Play (firma: keystore.properties)
 ```
+
+Para publicar: `publishing/` tiene la política de privacidad, las respuestas de
+«Seguridad de los datos», los permisos, la ficha de la tienda y la lista de
+capturas.
 
 ### Verlo como pantalla de inicio
 
-Instalar no basta: hay que decirle a Android que use Doado.
+Instalar no basta: hay que decirle a Android que use Coida.
 
-- **En el móvil o el emulador**: pulsa el botón de Inicio y elige Doado →
+- **En el móvil o el emulador**: pulsa el botón de Inicio y elige Coida →
   *Siempre*. Si no sale el selector, está en *Ajustes → Aplicaciones →
   Aplicaciones predeterminadas → App principal*.
 - **Desde el ordenador**:
   ```bash
-  adb shell cmd package set-home-activity com.doado.launcher/.LauncherActivity
+  adb shell cmd package set-home-activity com.coida.launcher/.LauncherActivity
   ```
 
 ### Si algo se rompe
@@ -244,7 +253,7 @@ Un launcher roto deja el móvil sin pantalla de inicio. Para recuperarlo:
 
 ```bash
 adb shell cmd package set-home-activity <otro.paquete/.SuActividad>   # devolver el mando
-adb uninstall com.doado.launcher                                      # último recurso
+adb uninstall com.coida.launcher                                      # último recurso
 ```
 
 Desinstalar o borrar los datos de la app pierde el PIN, los contactos y las
@@ -260,7 +269,7 @@ El producto completo son dos piezas:
 | Pieza | Estado |
 | --- | --- |
 | **Launcher** — inicio, ajustes, contactos, apps y modo administrador | implementado |
-| **Asistente de voz** | programado, en pruebas: falta probarlo con voz real |
+| **Asistente de voz** | programado, en pruebas: falta probarlo con voz real. Fuera de la 1.0.0 pública (D-63) |
 
 Probado a mano en emulador (Android 16, Pixel). **No hay pruebas automáticas**
 ni traducciones: la app está solo en español.
@@ -269,14 +278,15 @@ ni traducciones: la app está solo en español.
 
 Lo que hay que arreglar:
 
-- **La clave del servicio de voz va dentro del APK** y se puede extraer. Hay que
-  resolverlo antes de publicar (CON-06).
+- **La clave del servicio de voz va dentro del APK de depuración** y se puede
+  extraer. Hay que resolverlo antes de publicar el asistente (CON-06); la 1.0.0
+  sale sin él.
 
 Asumido, y escrito para no volver a discutirlo:
 
 - El modo administrador no puede impedir salir a Android.
 - La cuenta atrás va contra la hora del sistema: cambiarla altera el desbloqueo.
-- El número de un contacto se congela al añadirlo; si cambia en la agenda, Doado
+- El número de un contacto se congela al añadirlo; si cambia en la agenda, Coida
   sigue con el viejo. La foto sí se actualiza.
 - No hay videollamada: Android no ofrece una forma estándar de iniciarla.
 - Las casillas y los contactos nuevos van al final; luego el familiar los coloca
@@ -295,7 +305,7 @@ Asumido, y escrito para no volver a discutirlo:
 | [`docs/estado.md`](docs/estado.md) | En qué punto está el trabajo. Es el único documento que caduca. |
 | [`design/presentacion/doado-de-un-vistazo.pdf`](design/presentacion/doado-de-un-vistazo.pdf) | El proyecto en diez láminas: perfiles, mapa de pantallas, un flujo por perfil, arquitectura, sistema visual y estado. Para presentar. |
 | `design/presentacion/ver-presentacion.html` | Las mismas diez láminas en el navegador. |
-| `web/index.html` | La web de presentación, por secciones y con un móvil de Doado que se puede tocar. Se abre sin servidor. |
+| `web/index.html` | La web de presentación, por secciones y con un móvil de Coida que se puede tocar. Se abre sin servidor. |
 | `design/video/` | El vídeo de marca de 53 s (1920 × 1080, 60 fps) con su música, y el código para volver a sacarlo. |
 | `design/*.dc.html` | El lienzo donde se diseñó la interfaz antes de escribirla. |
 | `CLAUDE.md` y `.claude/rules/` | El índice del proyecto y las normas de trabajo para quien (o lo que) toque el código. |

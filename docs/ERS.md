@@ -25,6 +25,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.9 | 20/10/2026 | RNF-ACC-02: con tres por fila las casillas son casi cuadradas, de 96 dp de lado como mínimo, y cuatro por fila nunca (D-45). CU-02: los accesos directos pueden ir en una segunda pantalla del inicio, con pestañas (D-46). CU-08 añade la foto de fondo (D-47). CU-14: el inicio y Ajustes avisan si Doado no es la pantalla de inicio y ofrecen ponerlo (D-48) | Javier Brozos Martínez |
 | 0.10 | 21/10/2026 | CU-17 nuevo: la casilla «Emergencias 112», que abre el teléfono con el 112 marcado y la pone el familiar (D-51). CU-04: ante una emergencia, el asistente lleva a esa casilla si está | Gonzalo Gómez Blanco |
 | 0.11 | 28/10/2026 | Tras probar con dos personas mayores. RNF-ACC-02 y RNF-ACC-03: casillas siempre cuadradas, de 1 a 4 por fila, y un tamaño de letra por debajo del de siempre, con el texto encogiéndose sin partir palabras (D-54, D-55). CU-05, CU-04 y CU-15: el asistente dice lo que va a hacer y lo hace sin pedir un «Sí», y solo vuelve a escuchar para que se le repita la orden; de fábrica, «Lo hace» (D-56). RNF-USA-03: tiempos nuevos (D-58). CU-02 y RNF-PRI-01: rótulo «Contactos favoritos» y foto de la agenda (D-57). CU-10: el familiar coloca las casillas (D-59) | Javier Brozos Martínez |
+| 0.12 | 09/11/2026 | El producto pasa a llamarse Coida (D-62). CON-06 sigue abierto, pero ya no bloquea publicar: la versión 1.0.0 de Google Play sale sin asistente (D-63). CU-04, CU-05 y CU-15 siguen «En pruebas», solo en la versión de depuración | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -369,7 +370,7 @@ Una decisión abierta, del asistente. No bloquea las pruebas, pero sí publicar.
 
 | ID | Conflicto | Opciones | Afecta a |
 | --- | --- | --- | --- |
-| CON-06 | Cómo se protege la clave del servicio de IA sin servidor propio | Clave dentro de la app (hoy; se puede extraer del APK) · Un intermediario mínimo (rompe «sin servidor propio») · Que cada familiar ponga su propia clave. Propuesta con costes en [`propuestas/con-06-clave-asistente.md`](propuestas/con-06-clave-asistente.md) | CU-04, CU-05, RNF-PRI-02 |
+| CON-06 | Cómo se protege la clave del servicio de IA sin servidor propio | Clave dentro de la app (hoy; se puede extraer del APK) · Un intermediario mínimo (rompe «sin servidor propio») · Que cada familiar ponga su propia clave. Propuesta con costes en [`propuestas/con-06-clave-asistente.md`](propuestas/con-06-clave-asistente.md). No bloquea la versión 1.0.0, que sale sin asistente (D-63); sí publicar el asistente | CU-04, CU-05, RNF-PRI-02 |
 
 ## Apéndices
 

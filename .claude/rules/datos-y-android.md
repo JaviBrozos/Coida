@@ -1,6 +1,6 @@
 ---
 paths:
-  - "app/src/main/java/com/doado/data/**/*.kt"
+  - "app/src/main/java/com/coida/data/**/*.kt"
   - "app/src/main/AndroidManifest.xml"
   - "gradle/libs.versions.toml"
   - "**/build.gradle.kts"
@@ -34,13 +34,15 @@ paths:
   ni `excludeFromRecents` sin avisar**: un error ahí deja el móvil sin pantalla
   de inicio. El comportamiento esperado de INICIO, ATRÁS y recientes está en
   `docs/arquitectura.md`.
-- **No añadas permisos por iniciativa propia.** Hoy hay cuatro: `CALL_PHONE`,
-  `READ_CONTACTS` (solo para la foto de los contactos guardados, D-57) y
-  `RECORD_AUDIO`, que son peligrosos y se piden con el familiar delante (al añadir
-  un contacto y al encender el asistente), e `INTERNET`, solo para el asistente.
-  La persona mayor nunca ve un diálogo de permisos.
+- **No añadas permisos por iniciativa propia.** La versión publicada tiene dos,
+  `CALL_PHONE` y `READ_CONTACTS` (solo para la foto de los contactos guardados,
+  D-57): son peligrosos y se piden con el familiar delante, al añadir un contacto.
+  Los del asistente, `RECORD_AUDIO` (al encenderlo) e `INTERNET`, solo están en
+  `src/debug/AndroidManifest.xml` (D-63): un permiso nuevo en `main` cambia la
+  política de privacidad y la ficha de Play (`publishing/`). La persona mayor nunca
+  ve un diálogo de permisos.
 - **Solo HTTPS** (`usesCleartextTraffic="false"`).
-- **`TextToSpeech` necesita su `<intent>` de `TTS_SERVICE` en `<queries>`**:
+- **`TextToSpeech` necesita su `<intent>` de `TTS_SERVICE` en `<queries>`** (el de `src/debug/AndroidManifest.xml`):
   desde Android 11, sin él no encuentra el motor de voz y el asistente se queda
   mudo sin dar error.
 
@@ -65,8 +67,9 @@ casilla), que es una sola.
 
 - **Las claves van en `local.properties`** (que está en `.gitignore`) y llegan al
   código por `BuildConfig`. Nunca en un `.kt`, en `strings.xml` ni en un log.
-- Hoy la clave del asistente viaja dentro del APK y se puede extraer: vale para
-  probar, no para publicar (CON-06 en la ERS).
+- Hoy la clave del asistente viaja dentro del APK de depuración y se puede
+  extraer: vale para probar, no para publicar (CON-06 en la ERS). En release los
+  `AI_*` van vacíos (D-63).
 
 ## Gradle
 

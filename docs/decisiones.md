@@ -1040,3 +1040,70 @@ rechazó. Volver a poner el botón de pausa, que Javier pidió quitar.
 **Consecuencia**: la luz y la cinta se repiten sin un botón para pararlas, salvo con
 «reducir movimiento»: WCAG 2.2.2 pide esa forma de parar lo que dura más de 5 s. Si
 cambia el inicio, hay que recomponer las tres imágenes (el montaje no está en el repo).
+
+### D-62 · Doado pasa a llamarse Coida, con `com.coida.launcher` y una C por icono (09/11/2026)
+
+Pedido por Javier. Sustituye a D-36 en el icono.
+**Contexto**: hay otra app llamada Doado, francesa y de salud de la espalda, y el
+nombre no estaba cerrado. Publicar en Google Play fija el `applicationId` para
+siempre, así que había que decidirlo antes de la primera subida.
+**Decisión**:
+- La app se llama **Coida**. `applicationId` = `com.coida.launcher` y
+  `namespace` = `com.coida`. Los paquetes, los identificadores (`CoidaTheme`,
+  `CoidaDimens`…), los recursos y los textos se renombran.
+- Lo guardado en disco **no** se renombra: `doado_settings`, `doado_contacts`,
+  `doado_favorites` y `doado_security` conservan su nombre. No se ven, y cambiarlo
+  solo añade riesgo. `local.properties` acepta `coida.ai.*` y sigue leyendo
+  `doado.ai.*`.
+- El icono es una **C de trazo con un visto que asoma por su boca**, en cian sobre
+  marino (7,36:1). La geometría está en `docs/diseno.md`, «Marca». Revisado con el
+  auditor de marca: la boca se abrió a ±60° para que la punta del visto no se pegue
+  al remate a 48 px, y la figura va 1,5 a la derecha.
+
+**Descartado**: dejar el paquete y los identificadores con el nombre viejo, que es
+más barato pero deja el código diciendo una cosa y la tienda otra. Un relleno con el
+visto en hueco, como la D: en un anillo no cabe. El visto tocando la C: se lee como
+una «e».
+**Consecuencia**: para Android es otra app. La Doado instalada en los móviles de
+prueba no se actualiza: Coida se instala al lado, empieza de cero (sin PIN,
+contactos ni casillas) y hay que ponerla de inicio y quitar la vieja. La web, el
+vídeo, la presentación, el logotipo y la skill de marca siguen con el nombre y la D
+de Doado, pendientes de rehacer. Falta comprobar que nadie usa «Coida» en Play ni
+como marca.
+
+### D-63 · La versión pública sale sin asistente de voz (09/11/2026)
+
+Pedido por Javier, para publicar en Google Play. Hay que hablarlo con Gonzalo: el
+asistente es la principal propuesta de valor y CON-06 es de los dos.
+**Contexto**: el asistente lleva la clave del servicio de IA dentro del APK (CON-06,
+sin resolver), necesita micrófono e internet y aún no se ha probado con voz real.
+Con él dentro, la política de privacidad y «Seguridad de los datos» tendrían que
+declarar que la voz sale del móvil hacia un tercero.
+**Decisión**:
+- `BuildConfig.ASSISTANT_ENABLED` es `true` en depuración y `false` en release.
+  En release no se crea el controlador ni se ven su círculo y su fila de Ajustes,
+  y R8 quita su código. El código no se borra.
+- Los `AI_*` de `BuildConfig` van vacíos en release: ni la clave ni el proveedor
+  llegan al `.aab`.
+- `RECORD_AUDIO`, `INTERNET`, el micrófono y el `<queries>` de `TTS_SERVICE` pasan a
+  `src/debug/AndroidManifest.xml`. La versión publicada solo pide `CALL_PHONE` y
+  `READ_CONTACTS`, y no tiene acceso a internet.
+
+**Descartado**: publicar con la clave dentro, que es extraíble y la pagaríamos
+nosotros. Esperar a cerrar CON-06 para publicar, que retrasa el launcher, ya hecho y
+probado con mayores. Una variante de producto (*flavor*) aparte para el asistente,
+que es más maquinaria para lo mismo.
+**Consecuencia**: CON-06 sigue abierto, pero ya no bloquea publicar el launcher.
+Volver a meter el asistente en la versión pública es mover sus permisos a `main`,
+encender el flag y rehacer la política de privacidad y «Seguridad de los datos».
+
+### D-64 · La categoría `LAUNCHER` se queda en la versión publicada (09/11/2026)
+
+**Contexto**: `CLAUDE.md` decía que `LAUNCHER` era comodidad de desarrollo y que se
+podía quitar al publicar.
+**Decisión**: se queda, junto a `HOME` y `DEFAULT`.
+**Descartado**: quitarla. Sin ella, Google Play no muestra el botón «Abrir» tras
+instalar, la app no sale en el cajón y el familiar no tiene cómo llegar al aviso
+que la pone de inicio (D-48) sin pasar por los ajustes de Android.
+**Consecuencia**: Coida aparece también en el cajón de aplicaciones del launcher
+que se use mientras no sea la de inicio.

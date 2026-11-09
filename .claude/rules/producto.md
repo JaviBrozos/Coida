@@ -1,6 +1,6 @@
-# Producto: qué es Doado y qué no se rediscute
+# Producto: qué es Coida y qué no se rediscute
 
-Doado es la pantalla de inicio de Android para una persona mayor, con unos
+Coida es la pantalla de inicio de Android para una persona mayor, con unos
 ajustes detrás de un PIN para el familiar que se la configura. El asistente de
 voz con IA es la principal propuesta de valor del producto; está programado y en
 pruebas, con sus normas en `.claude/rules/asistente.md`.
@@ -40,7 +40,7 @@ dilo y espera respuesta; no la cambies dentro de otra tarea.
 - Las casillas no se reordenan ni se ocultan cuando una app falta.
 - Los ajustes van tras el PIN; las salidas a Android, tras el modo administrador.
 - El modo administrador **no** promete impedir salir a Android: solo cierra las
-  salidas de Doado. No propongas *device owner* ni *lock task* sin abrir el tema
+  salidas de Coida. No propongas *device owner* ni *lock task* sin abrir el tema
   aparte.
 - Preferencias en `SharedPreferences`; sin base de datos.
 - Sin librería de navegación.
@@ -57,12 +57,13 @@ dilo y espera respuesta; no la cambies dentro de otra tarea.
 
 La ERS, sección 7, recoge las decisiones sin tomar. Hoy queda una, del
 asistente: CON-06, cómo proteger la clave del servicio de IA sin servidor propio.
-No bloquea las pruebas, pero sí publicar.
+No bloquea las pruebas ni la versión 1.0.0, que sale sin asistente (D-63), pero
+sí publicar el asistente.
 
 Si una tarea depende de una de ellas, **para y pregunta**. Son decisiones de
 producto de los dos creadores, no detalles de implementación.
 
-## Lo que Doado no hace
+## Lo que Coida no hace
 
 Sin servidor propio, sin cuentas, sin analítica, sin leer toda la agenda (solo la
 foto de los números guardados, D-57). No

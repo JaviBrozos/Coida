@@ -16,19 +16,19 @@ alrededor. Definidos en `core/ui/Color.kt`.
 
 | Token | Hex | Para qué | Contraste |
 | --- | --- | --- | --- |
-| `DoadoNavy` | `#0B1D2E` | Marca. Texto y bordes en el tema claro | 17,08:1 sobre blanco |
-| `DoadoCyan` | `#29B6F0` | Acento: iconos, estado activo, botón principal | 7,86:1 sobre tinta · **2,32:1 sobre blanco** |
-| `DoadoCyanDeep` | `#10618F` | Texto secundario en el tema claro | 6,71:1 sobre blanco |
-| `DoadoCyanLight` | `#6CCFFA` | Reservado para oscuro | 10,38:1 sobre tinta |
-| `DoadoInk` | `#0A1622` | Fondo del tema oscuro | — |
-| `DoadoSurface` | `#122A3E` | Casilla y fila elevadas | 13:1 con el texto |
-| `DoadoSurfaceHigh` | `#17384F` | Pulsada, y cuadrito tras un icono | — |
-| `DoadoLine` | `#3D7AA6` | Contorno de 2 dp y raya entre filas | 3,18:1 con la casilla · 3,94:1 sobre tinta |
-| `DoadoText` | `#F2F7FB` | Texto principal en oscuro | 16:1 sobre tinta |
-| `DoadoTextMuted` | `#9FC4DC` | Texto secundario en oscuro | 9,9:1 sobre tinta |
-| `DoadoMist` / `DoadoMistDim` | `#E9F3FA` / `#DCEBF5` | Superficies suaves del tema claro | — |
-| `DoadoSteelDeep` | `#54697A` | Contenido apagado **en claro** | 5,71:1 sobre blanco · 5,07:1 sobre Mist |
-| `DoadoSteelLight` | `#A3B8C6` | Contenido apagado **en oscuro** | 7,17:1 sobre la casilla · 8,89:1 sobre tinta |
+| `CoidaNavy` | `#0B1D2E` | Marca. Texto y bordes en el tema claro | 17,08:1 sobre blanco |
+| `CoidaCyan` | `#29B6F0` | Acento: iconos, estado activo, botón principal | 7,86:1 sobre tinta · **2,32:1 sobre blanco** |
+| `CoidaCyanDeep` | `#10618F` | Texto secundario en el tema claro | 6,71:1 sobre blanco |
+| `CoidaCyanLight` | `#6CCFFA` | Reservado para oscuro | 10,38:1 sobre tinta |
+| `CoidaInk` | `#0A1622` | Fondo del tema oscuro | — |
+| `CoidaSurface` | `#122A3E` | Casilla y fila elevadas | 13:1 con el texto |
+| `CoidaSurfaceHigh` | `#17384F` | Pulsada, y cuadrito tras un icono | — |
+| `CoidaLine` | `#3D7AA6` | Contorno de 2 dp y raya entre filas | 3,18:1 con la casilla · 3,94:1 sobre tinta |
+| `CoidaText` | `#F2F7FB` | Texto principal en oscuro | 16:1 sobre tinta |
+| `CoidaTextMuted` | `#9FC4DC` | Texto secundario en oscuro | 9,9:1 sobre tinta |
+| `CoidaMist` / `CoidaMistDim` | `#E9F3FA` / `#DCEBF5` | Superficies suaves del tema claro | — |
+| `CoidaSteelDeep` | `#54697A` | Contenido apagado **en claro** | 5,71:1 sobre blanco · 5,07:1 sobre Mist |
+| `CoidaSteelLight` | `#A3B8C6` | Contenido apagado **en oscuro** | 7,17:1 sobre la casilla · 8,89:1 sobre tinta |
 
 **La regla que explica la paleta**: el cian de marca no vale para texto ni iconos
 sobre fondo claro. Por eso en el tema claro manda el marino, y el cian solo pinta
@@ -51,13 +51,13 @@ funciona en los dos temas. Definido en `core/ui/Theme.kt`.
 | `primary` | Iconos de acento, botón principal, estado activo | Cian | Marino |
 | `onPrimary` | Lo que va encima de `primary` | Tinta | Blanco |
 | `background` / `onBackground` | Fondo de pantalla y su texto | Tinta / Texto | Blanco / Marino |
-| `surfaceContainer` | Fondo de casillas y filas | `DoadoSurface` | Blanco |
-| `surfaceContainerHigh` | Pulsada, y relleno de las notas | `DoadoSurfaceHigh` | Mist |
+| `surfaceContainer` | Fondo de casillas y filas | `CoidaSurface` | Blanco |
+| `surfaceContainerHigh` | Pulsada, y relleno de las notas | `CoidaSurfaceHigh` | Mist |
 | `surfaceContainerLowest` | Plato de las iniciales y del micrófono del asistente (cian 7,86:1, marino 15,18:1) | Tinta | Mist |
 | `onSurface` | Texto sobre una casilla | Texto | Marino |
 | `onSurfaceVariant` | Texto secundario | TextMuted | CyanDeep |
-| `outline` | Contorno | `DoadoLine` | Marino |
-| `outlineVariant` | Contenido apagado | `DoadoSteelLight` | `DoadoSteelDeep` |
+| `outline` | Contorno | `CoidaLine` | Marino |
+| `outlineVariant` | Contenido apagado | `CoidaSteelLight` | `CoidaSteelDeep` |
 
 `surfaceTint` es transparente en los dos: el diseño es plano y **separa por
 borde, no por sombra ni por elevación**.
@@ -80,7 +80,7 @@ baila de lado a cada minuto.
 | --- | --- | --- |
 | `displayMedium` | 52 sp | La cuenta atrás del modo admin |
 | `headlineLarge` | 40 sp | El reloj del inicio (D-38) |
-| `headlineMedium` | 34 sp | El nombre «Doado» cuando el reloj está apagado |
+| `headlineMedium` | 34 sp | El nombre «Coida» cuando el reloj está apagado |
 | `headlineSmall` | 30 sp | Las cifras del teclado del PIN |
 | `titleLarge` | 30 sp | Título de una pantalla de ajustes |
 | `titleSmall` | 22 sp | Texto de botón, nombre de un contacto |
@@ -108,7 +108,7 @@ para cuando hagan falta; no los borres sin mirar.
 
 ## Medidas
 
-`core/ui/DoadoDimens`. Nada de números sueltos en un composable.
+`core/ui/CoidaDimens`. Nada de números sueltos en un composable.
 
 | Token | Valor | Qué es |
 | --- | --- | --- |
@@ -142,21 +142,24 @@ al token.
 
 ## Marca
 
-La D con un visto dentro (D-36). Tres reglas: **el visto es un hueco**, nunca una
-pintura encima; **los colores son los de `Color.kt`**; y el icono de la app
-lleva **solo la D**, sin un segundo cuadrado.
+Una C con un visto que asoma por su boca (D-62; sustituye a la D de D-36). Tres
+reglas: **el visto no toca la C**, o se lee como una «e»; **los colores son los de
+`Color.kt`**; y el icono de la app lleva **solo la C**, sin un segundo cuadrado.
 
-- **Construcción** (rejilla de 64): la D mide 48 × 52 desde (8, 6), con una recta
-  de 22, medio círculo de radio 26 y las esquinas de la recta de radio 6. El visto
-  pasa por (18,8; 32,2), (25; 38,8) y (39,6; 24,6), con un trazo de 5 (el 9,6 %
-  del alto de la D) y puntas y codo redondos. Se sigue viendo a 16 px.
+- **Construcción** (rejilla de 64), de trazo y no de relleno: la C es un anillo de
+  radio 20 con centro en (35,5; 32), trazo de 9 y la boca abierta a la derecha
+  (±60°), con puntas redondas. El visto pasa por (31,5; 33), (38,5; 40) y
+  (52,5; 25), con trazo de 6,5 y puntas y codo redondos. Entre la punta del visto
+  y el remate de arriba de la C quedan 4,7 unidades: menos y se cierra a 48 px.
 - **Icono adaptativo**: fondo `ic_launcher_background` (marino) y delante
-  `drawable/ic_launcher_foreground.xml`, sin inset. La D mide 48 dp de alto en el
-  lienzo de 108, 2,2 dp a la derecha del centro geométrico (centrado a ojo), y
-  queda dentro de la zona segura de 66. La capa monocroma es la misma figura.
-  Para API 24-25, PNG de mdpi a xxxhdpi (48 a 192 px).
-- **Logotipo** (`doado_logo.svg`): el texto sigue en Baloo 2 y Quicksand. Falta
-  pasarlo a Inter Bold convertida a trazos (D-50).
+  `drawable/ic_launcher_foreground.xml`, sin inset. La figura se escala a 0,98 (48 dp
+  de alto en el lienzo de 108), desplazada 1,5 a la derecha para equilibrar la
+  masa del anillo, y queda dentro de la zona segura de 66 (26 dp del centro como
+  mucho). La capa monocroma es la misma figura.
+  Para API 24-25, PNG de mdpi a xxxhdpi (48 a 192 px), y `publishing/icono-512.png`
+  para Google Play. El cian sobre el marino da 7,36:1.
+- **Logotipo** (`doado_logo.svg`): sigue siendo la D y «Doado», en Baloo 2 y
+  Quicksand. Falta rehacerlo con la C y «Coida» en Inter Bold a trazos (D-50, D-62).
 
 ## Iconografía
 
@@ -172,8 +175,8 @@ lleva **solo la D**, sin un segundo cuadrado.
   `primary`, salvo la sirena de «Emergencias 112», que va en `error` (D-51).
 - **Nunca emoji ni dingbats.**
 - El **isotipo** tiene dos versiones porque el cian no llega a 3:1 sobre blanco:
-  `ic_doado_mark` (D cian) para fondo oscuro y `ic_doado_mark_light` (D marina)
-  para fondo claro; en las dos el visto es un hueco. Es marca, no información:
+  `ic_coida_mark` (C cian) para fondo oscuro y `ic_coida_mark_light` (C marina)
+  para fondo claro. Es marca, no información:
   siempre `contentDescription = null`. Desde D-28 ya no sale en el inicio, donde
   está ahora el botón de Ajustes; los ficheros se conservan. Geometría en «Marca».
 - **`ic_assistant` es un micrófono.** Se llama así, y no `ic_mic`, para que
@@ -208,7 +211,7 @@ lleva **solo la D**, sin un segundo cuadrado.
   la izquierda.
 - **Orden**: el que elija el familiar en «Colocar las casillas» (D-59). La casilla
   que se arrastra va rellena de `primary`, como la señalada.
-- **Aviso de pantalla de inicio** (D-48): si Doado no lo es, `NotHomeNotice` arriba,
+- **Aviso de pantalla de inicio** (D-48): si Coida no lo es, `NotHomeNotice` arriba,
   con un `PrimaryButton` que lo pone y una equis redonda de 64 dp (`ic_close`).
 - **Foto de fondo** (D-47): detrás de todo y decorativa, dentro del margen seguro
   (la barra de estado sigue lisa). Lo que no es casilla (reloj, rótulo «Contactos
@@ -243,7 +246,7 @@ apagada, no suena). Las pantallas cambian con un fundido de 180 ms (D-32).
 
 | Componente | Cuándo |
 | --- | --- |
-| `DoadoCard` | Base de todo: casilla, fila, botón, tarjeta. `onClick = null` si no es pulsable. `borderWidth` solo cambia para señalar algo; `dashed`, contorno a trazos para lo que no está |
+| `CoidaCard` | Base de todo: casilla, fila, botón, tarjeta. `onClick = null` si no es pulsable. `borderWidth` solo cambia para señalar algo; `dashed`, contorno a trazos para lo que no está |
 | `SettingsGroup` + `GroupPosition` | Filas de un mismo apartado en un bloque, con una raya entre ellas. Cada fila recibe su posición (`GroupPosition.of`) |
 | `SettingsRow` | Fila que lleva a otra pantalla (icono, título, subtítulo, chevron) |
 | `SwitchRow` | Fila con interruptor. **Toda la fila** es el control, no la bolita |
@@ -257,10 +260,10 @@ apagada, no suena). Las pantallas cambian con un fundido de 180 ms (D-32).
 | `ContactAvatar` | La foto de un contacto en círculo con contorno, o su inicial si no hay (D-57) |
 | `FitText` · `rememberFitScale` · `rememberCommonFitScale` | Texto que baja de tamaño para caber sin partir palabras (D-54); el último, el tamaño común de varios |
 | `NoteCard` | Nota explicativa, no pulsable: relleno y contorno |
-| `NotHomeNotice` | Aviso de que Doado no es la pantalla de inicio (D-48), con su botón y una equis que lo cambia por cómo ponerlo más adelante |
-| `DoadoTextField` | Campo para escribir, con contorno de 2 dp que pasa a acento al escribir y a error si falla |
+| `NotHomeNotice` | Aviso de que Coida no es la pantalla de inicio (D-48), con su botón y una equis que lo cambia por cómo ponerlo más adelante |
+| `CoidaTextField` | Campo para escribir, con contorno de 2 dp que pasa a acento al escribir y a error si falla |
 | `SettingsColumn` | Columna de pantalla de ajustes con el espaciado estándar |
-| `DoadoSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |
+| `CoidaSwitchVisual` | Solo el dibujo del interruptor; la semántica la pone la fila |
 | `AssistantButton` | El círculo del asistente. Vive en `assistant/ui/`, no en `core/ui/`: solo se usa en el inicio |
 
 ## El lienzo de `design/`

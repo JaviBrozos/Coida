@@ -1,4 +1,4 @@
-# Cómo se trabaja en Doado
+# Cómo se trabaja en Coida
 
 ## Idioma y estilo
 
@@ -31,7 +31,7 @@ mano.
 Para verlo como pantalla de inicio de verdad:
 
 ```bash
-adb shell cmd package set-home-activity com.doado.launcher/.LauncherActivity
+adb shell cmd package set-home-activity com.coida.launcher/.LauncherActivity
 ```
 
 Si vas a tocar el manifiesto, ten a mano cómo devolver el mando a otro launcher

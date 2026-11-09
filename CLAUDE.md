@@ -1,14 +1,16 @@
-# Doado
+# Coida
 
 **Una app para tus mayores.**
 
-Doado es un *launcher* (pantalla de inicio) de Android para personas mayores que
+Coida es un *launcher* (pantalla de inicio) de Android para personas mayores que
 se pelean con el móvil: menos cosas en pantalla, más grandes y con más contraste.
 El móvil lo usa una persona y lo configura otra, así que la app tiene dos caras:
 una pantalla de inicio fija y unos ajustes detrás de un PIN.
 
 El producto son dos piezas: el **launcher** (implementado) y el **asistente de
-voz con IA** (programado y en pruebas, y la principal propuesta de valor).
+voz con IA** (programado y en pruebas, y la principal propuesta de valor). La
+versión pública de Google Play (1.0.0) sale **sin asistente**: solo existe en la
+de depuración (D-63). Hasta el 09/11/2026 se llamaba **Doado** (D-62).
 
 ## Obligatorio en cada cambio
 
@@ -41,6 +43,7 @@ Ningún cambio está terminado sin esto, lo haga una persona o Claude:
 | Presentación en diez láminas, con PDF | [`design/presentacion/`](design/presentacion) |
 | Web de presentación, sin servidor (D-52, D-60) | [`web/`](web) |
 | Vídeo de marca de 53 s, con su código (D-53) | [`design/video/`](design/video) |
+| Publicar en Google Play: privacidad, permisos, ficha y capturas | [`publishing/`](publishing) |
 | Vista para alguien de fuera | [`README.md`](README.md) |
 
 Los valores exactos (colores, medidas, claves) los manda el código: si un
@@ -67,11 +70,11 @@ auditar la marca hay otro subagente,
 
 Hay una skill de diseño en el proyecto, `.claude/skills/apple-design/` (de Emil
 Kowalski, licencia MIT): los principios de Apple para interfaces. Sirve de
-inspiración, pero **mandan las normas de Doado**; qué se tomó y qué no, en D-32.
+inspiración, pero **mandan las normas de Coida**; qué se tomó y qué no, en D-32.
 
 ## Producto
 
-### Quién usa Doado
+### Quién usa Coida
 
 | Actor | Qué hace | Dónde vive |
 | --- | --- | --- |
@@ -95,12 +98,12 @@ Si se rompe uno, se rompe el producto.
 5. **Los ajustes van detrás del PIN**, y las salidas a Android detrás del modo
    administrador.
 
-### Lo que Doado no va a hacer
+### Lo que Coida no va a hacer
 
 - Servidor propio, cuentas de usuario ni analítica.
 - Permisos o dependencias nuevas sin acordarlo antes.
 - Leer toda la agenda: solo el contacto que elige el familiar en el selector y,
-  con su permiso, la foto de los números guardados en Doado (D-57).
+  con su permiso, la foto de los números guardados en Coida (D-57).
 - Impedir de verdad salir a Android: exigiría ser propietaria del dispositivo, y
   está descartado.
 
@@ -127,7 +130,7 @@ una tarea depende de uno, **para y pregunta**.
 Por feature, no por capa:
 
 ```
-app/src/main/java/com/doado/
+app/src/main/java/com/coida/
 ├── launcher/   Inicio y la Activity: navegación, permisos e Intents.
 ├── settings/   Ajustes: PIN, interfaz, contactos, apps y modo administrador.
 ├── assistant/  Asistente de voz: grabar, nube (solo en cloud/), hacerlo o guiar.
@@ -135,9 +138,9 @@ app/src/main/java/com/doado/
 └── data/       Apps instaladas, casillas, contactos, ajustes y PIN guardados.
 ```
 
-El `namespace` es `com.doado` y el `applicationId`, `com.doado.launcher`, a
-propósito: así el paquete `launcher` no acaba en `com.doado.launcher.launcher`.
-La clase `R` es `com.doado.R`.
+El `namespace` es `com.coida` y el `applicationId`, `com.coida.launcher`, a
+propósito: así el paquete `launcher` no acaba en `com.coida.launcher.launcher`.
+La clase `R` es `com.coida.R`.
 
 ### Comandos
 
@@ -145,12 +148,12 @@ La clase `R` es `com.doado.R`.
 ./gradlew assembleDebug     # compila el APK de depuración
 ./gradlew installDebug      # lo instala en el dispositivo/emulador conectado
 ./gradlew lint              # análisis estático: se espera 0 errores
-adb shell cmd package set-home-activity com.doado.launcher/.LauncherActivity   # fijarlo como inicio
+adb shell cmd package set-home-activity com.coida.launcher/.LauncherActivity   # fijarlo como inicio
 ```
 
 Hace falta `local.properties` con la ruta del SDK (en `.gitignore`):
 `sdk.dir=C\:\\Users\\<usuario>\\AppData\\Local\\Android\\Sdk`. Para el asistente,
-además `doado.ai.apiKey=…` (Groq); el resto de claves `doado.ai.*` están en
+además `coida.ai.apiKey=…` (Groq); el resto de claves `coida.ai.*` están en
 `docs/arquitectura.md`. **La clave nunca va en git ni en un log.**
 
 ### Si se rompe el launcher
@@ -160,7 +163,7 @@ tocar el manifiesto:
 
 ```bash
 adb shell cmd package set-home-activity <otro.paquete/.SuActividad>   # devolver el mando
-adb uninstall com.doado.launcher                                      # último recurso
+adb uninstall com.coida.launcher                                      # último recurso
 ```
 
 En el móvil: *Ajustes → Aplicaciones → Aplicaciones predeterminadas → App
@@ -173,7 +176,14 @@ recuperación configurada, es la única salida si se olvida el PIN.
   no ve las demás apps. **Favorito nuevo ⇒ declarar su intención ahí.**
 - Los favoritos se definen por **acción** (`ACTION_DIAL`,
   `CATEGORY_APP_MESSAGING`…), no por paquete, para que valgan en cualquier marca.
-- La actividad declara `HOME` + `DEFAULT` y además `LAUNCHER`; esto último es
-  comodidad de desarrollo y se puede quitar al publicar.
+- La actividad declara `HOME` + `DEFAULT` y además `LAUNCHER`. Lo último **no se
+  quita al publicar**: sin él no hay botón «Abrir» en Google Play ni forma de
+  llegar al aviso que la pone de inicio (D-64).
+- El asistente va detrás de `BuildConfig.ASSISTANT_ENABLED` (falso en release) y
+  sus permisos (micrófono, internet) solo en `src/debug/AndroidManifest.xml`
+  (D-63). El manifiesto de `main` es lo que se publica.
+- La release se firma con `keystore.properties` (fuera de git, como el `.jks`).
+  Sin él se firma con la clave de depuración, que Play rechaza.
+  `./gradlew bundleRelease` deja el `.aab` en `app/build/outputs/bundle/release/`.
 - Todo en español: interfaz, comentarios, commits y documentación. Los
   identificadores de código, en inglés.
