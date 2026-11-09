@@ -41,17 +41,30 @@ android {
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 4
         versionName = "1.4"
-
-        buildConfigField("String", "AI_BASE_URL", aiSetting("baseUrl", "https://api.groq.com/openai/v1"))
-        buildConfigField("String", "AI_STT_MODEL", aiSetting("sttModel", "whisper-large-v3"))
-        buildConfigField("String", "AI_LLM_MODEL", aiSetting("llmModel", "openai/gpt-oss-120b"))
-        // Solo para modelos que razonan (gpt-oss): "low" contesta antes. Vacío = no se envía.
-        buildConfigField("String", "AI_REASONING_EFFORT", aiSetting("reasoningEffort", "low"))
-        buildConfigField("String", "AI_API_KEY", aiSetting("apiKey"))
     }
 
     buildTypes {
+        // El asistente solo existe en depuración (D-63): la versión pública sale sin
+        // él, sin su clave y sin los permisos de micrófono e internet, que se
+        // declaran en src/debug/AndroidManifest.xml.
+        debug {
+            buildConfigField("boolean", "ASSISTANT_ENABLED", "true")
+            buildConfigField("String", "AI_BASE_URL", aiSetting("baseUrl", "https://api.groq.com/openai/v1"))
+            buildConfigField("String", "AI_STT_MODEL", aiSetting("sttModel", "whisper-large-v3"))
+            buildConfigField("String", "AI_LLM_MODEL", aiSetting("llmModel", "openai/gpt-oss-120b"))
+            // Solo para modelos que razonan (gpt-oss): "low" contesta antes. Vacío = no se envía.
+            buildConfigField("String", "AI_REASONING_EFFORT", aiSetting("reasoningEffort", "low"))
+            buildConfigField("String", "AI_API_KEY", aiSetting("apiKey"))
+        }
         release {
+            // Vacíos a propósito: ni la clave ni el proveedor llegan al .aab.
+            buildConfigField("boolean", "ASSISTANT_ENABLED", "false")
+            buildConfigField("String", "AI_BASE_URL", "\"\"")
+            buildConfigField("String", "AI_STT_MODEL", "\"\"")
+            buildConfigField("String", "AI_LLM_MODEL", "\"\"")
+            buildConfigField("String", "AI_REASONING_EFFORT", "\"\"")
+            buildConfigField("String", "AI_API_KEY", "\"\"")
+
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(

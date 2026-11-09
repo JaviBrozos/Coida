@@ -19,14 +19,11 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <!--
-        Asistente de voz (D-25). El micrófono se pide al encender el asistente en
-        los ajustes, con el familiar delante; internet, para entender la orden.
+        Este manifiesto es el que se publica: solo esos dos permisos. Lo del
+        asistente de voz (micrófono, internet y el motor de voz) vive en
+        src/debug/AndroidManifest.xml, porque el asistente no sale en la versión
+        pública (D-63).
     -->
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-feature
-        android:name="android.hardware.microphone"
-        android:required="false" />
 
     <!--
         Visibilidad de paquetes (Android 11+ / API 30).
@@ -74,13 +71,6 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="market" />
-        </intent>
-        <!--
-            Motor de voz del asistente. Sin esto, desde Android 11 TextToSpeech no
-            encuentra ningún motor y el asistente se queda mudo sin avisar.
-        -->
-        <intent>
-            <action android:name="android.intent.action.TTS_SERVICE" />
         </intent>
     </queries>
 

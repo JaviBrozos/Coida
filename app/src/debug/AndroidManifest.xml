@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Solo para la versión de depuración, que es la única con asistente de voz
+    (D-63). Gradle lo suma al manifiesto de main; la versión pública no lleva
+    nada de esto.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Asistente de voz (D-25). El micrófono se pide al encender el asistente en
+        los ajustes, con el familiar delante; internet, para entender la orden.
+    -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-feature
+        android:name="android.hardware.microphone"
+        android:required="false" />
+
+    <queries>
+        <!--
+            Motor de voz del asistente. Sin esto, desde Android 11 TextToSpeech no
+            encuentra ningún motor y el asistente se queda mudo sin avisar.
+        -->
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
+</manifest>

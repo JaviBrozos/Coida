@@ -25,12 +25,14 @@ import com.coida.data.AssistantSettings
  *
  * @param notHomeNotice cómo va el aviso de que Coida no es la pantalla de inicio
  *   (D-48); null si lo es o si ya se cerró en esta visita.
+ * @param showAssistant false en la versión pública, que sale sin asistente (D-63).
  */
 @Composable
 fun SettingsScreen(
     contactsOnHome: Int,
     adminActive: Boolean,
     assistant: AssistantSettings,
+    showAssistant: Boolean,
     onBack: () -> Unit,
     onInterface: () -> Unit,
     onContacts: () -> Unit,
@@ -98,19 +100,21 @@ fun SettingsScreen(
                 onClick = onArrange,
                 position = GroupPosition.Middle,
             )
-            SettingsRow(
-                icon = R.drawable.ic_assistant,
-                title = stringResource(R.string.settings_assistant),
-                subtitle = stringResource(
-                    when {
-                        !assistant.enabled -> R.string.settings_assistant_subtitle_off
-                        assistant.mode == AssistantMode.ACT -> R.string.settings_assistant_subtitle_act
-                        else -> R.string.settings_assistant_subtitle_guide
-                    },
-                ),
-                onClick = onAssistant,
-                position = GroupPosition.Middle,
-            )
+            if (showAssistant) {
+                SettingsRow(
+                    icon = R.drawable.ic_assistant,
+                    title = stringResource(R.string.settings_assistant),
+                    subtitle = stringResource(
+                        when {
+                            !assistant.enabled -> R.string.settings_assistant_subtitle_off
+                            assistant.mode == AssistantMode.ACT -> R.string.settings_assistant_subtitle_act
+                            else -> R.string.settings_assistant_subtitle_guide
+                        },
+                    ),
+                    onClick = onAssistant,
+                    position = GroupPosition.Middle,
+                )
+            }
             SettingsRow(
                 icon = R.drawable.ic_volume,
                 title = stringResource(R.string.settings_sound),

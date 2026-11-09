@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.Density
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import com.coida.BuildConfig
 import com.coida.R
 import com.coida.assistant.ActionCatalog
 import com.coida.assistant.AssistantAction
@@ -178,7 +179,12 @@ class LauncherActivity : ComponentActivity() {
     private var photosJob: Job? = null
 
     private val assistantConfig = AssistantConfig.fromBuildConfig()
-    private lateinit var assistant: AssistantController
+
+    /**
+     * null en la versión pública, que sale sin asistente (D-63): ni se crea, ni se
+     * ve su círculo ni su fila de Ajustes. Así R8 puede quitar todo su código.
+     */
+    private var assistant: AssistantController? = null
     private var assistantSettings by mutableStateOf(AssistantSettings())
     private var assistantMicDenied by mutableStateOf(false)
 
@@ -255,16 +261,18 @@ class LauncherActivity : ComponentActivity() {
         contactPhotos = ContactPhotos(this)
         hasWallpaper = wallpaperStore.exists()
         loadWallpaper()
-        val assistantClient = OpenAiCompatibleClient(assistantConfig)
-        assistant = AssistantController(
-            context = this,
-            scope = lifecycleScope,
-            speechToText = assistantClient,
-            interpreter = assistantClient,
-            onExecute = ::executeAssistantAction,
-            onFinish = ::onAssistantFinished,
-            isInForeground = { lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) },
-        )
+        if (BuildConfig.ASSISTANT_ENABLED) {
+            val assistantClient = OpenAiCompatibleClient(assistantConfig)
+            assistant = AssistantController(
+                context = this,
+                scope = lifecycleScope,
+                speechToText = assistantClient,
+                interpreter = assistantClient,
+                onExecute = ::executeAssistantAction,
+                onFinish = ::onAssistantFinished,
+                isInForeground = { lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED) },
+            )
+        }
         reload()
 
         setContent {
@@ -321,7 +329,7 @@ class LauncherActivity : ComponentActivity() {
     /** Pulsar Inicio desde cualquier sitio (también desde Ajustes) vuelve al inicio. */
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        assistant.cancel()
+        assistant?.cancel()
         // Pulsar Inicio es «empezar de cero»: también quita la casilla señalada.
         highlightedId = null
         homeResets++
@@ -342,13 +350,13 @@ class LauncherActivity : ComponentActivity() {
         // Nadie vuelve a una pregunta a medias. La casilla señalada, en cambio, se
         // queda: si la pantalla se apaga mientras lo piensa, no debe desaparecer
         // sola. Se quita al tocar algo o al pulsar Inicio.
-        assistant.cancel()
+        assistant?.cancel()
         if (!salidaPropia && screen != Screen.HOME) screen = Screen.HOME
         salidaPropia = false
     }
 
     override fun onDestroy() {
-        assistant.release()
+        assistant?.release()
         super.onDestroy()
     }
 
@@ -410,7 +418,7 @@ class LauncherActivity : ComponentActivity() {
                 columns = interfaceSettings.columns,
                 showClock = interfaceSettings.showClock,
                 adminUnlockedUntil = adminUnlockedUntil,
-                showAssistant = assistantSettings.enabled && assistantConfig.isConfigured,
+                showAssistant = assistant != null && assistantSettings.enabled && assistantConfig.isConfigured,
                 highlightedId = highlightedId,
                 scrollResetKey = homeResets,
                 contactsLayout = interfaceSettings.contactsLayout,
@@ -487,6 +495,7 @@ class LauncherActivity : ComponentActivity() {
                     contactsOnHome = contacts.count { it.onHome },
                     adminActive = isAdminActive(),
                     assistant = assistantSettings,
+                    showAssistant = assistant != null,
                     onBack = { screen = Screen.HOME },
                     onInterface = { screen = Screen.INTERFACE },
                     onContacts = { screen = Screen.CONTACTS },
@@ -585,19 +594,21 @@ class LauncherActivity : ComponentActivity() {
                     onBack = { screen = Screen.SETTINGS },
                 )
 
-                Screen.ASSISTANT -> AssistantScreen(
-                    state = assistant.state,
-                    level = assistant.level,
-                    onSpeakAgain = assistant::retry,
-                    onDoneSpeaking = assistant::finishSpeaking,
-                    onCancelAction = assistant::cancelAction,
-                    onChoose = assistant::choose,
-                    onNext = assistant::nextStep,
-                    onRepeat = assistant::repeat,
-                    onRetry = assistant::retry,
-                    onFinish = assistant::finish,
-                    onClose = ::closeAssistant,
-                )
+                Screen.ASSISTANT -> assistant?.let { assistant ->
+                    AssistantScreen(
+                        state = assistant.state,
+                        level = assistant.level,
+                        onSpeakAgain = assistant::retry,
+                        onDoneSpeaking = assistant::finishSpeaking,
+                        onCancelAction = assistant::cancelAction,
+                        onChoose = assistant::choose,
+                        onNext = assistant::nextStep,
+                        onRepeat = assistant::repeat,
+                        onRetry = assistant::retry,
+                        onFinish = assistant::finish,
+                        onClose = ::closeAssistant,
+                    )
+                }
 
                 Screen.ASSISTANT_SETTINGS -> AssistantSettingsScreen(
                     settings = assistantSettings,
@@ -782,6 +793,7 @@ class LauncherActivity : ComponentActivity() {
     // --- Asistente de voz -------------------------------------------------------
 
     private fun openAssistant(from: Screen) {
+        val assistant = assistant ?: return
         highlightedId = null
         assistantReturn = from
         screen = Screen.ASSISTANT
@@ -798,7 +810,7 @@ class LauncherActivity : ComponentActivity() {
     }
 
     private fun closeAssistant() {
-        assistant.cancel()
+        assistant?.cancel()
         screen = assistantReturn
     }
 
