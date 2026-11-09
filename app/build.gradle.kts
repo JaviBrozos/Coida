@@ -20,6 +20,16 @@ fun aiSetting(name: String, default: String = ""): String {
     return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }
 
+/*
+ * Firma de la versión que se sube a Google Play. La ruta del keystore y las
+ * contraseñas viven en keystore.properties, en la raíz y fuera de git, igual que
+ * el propio .jks. Claves: storeFile, storePassword, keyAlias y keyPassword.
+ */
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     // Compilador de Compose. Kotlin en sí NO se declara aquí: desde AGP 9 viene
@@ -39,8 +49,21 @@ android {
         applicationId = "com.coida.launcher"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 4
-        versionName = "1.4"
+        // Empieza de cero con el applicationId nuevo: es otra app para Android y
+        // para Play, así que no choca con la 1.4 de las pruebas (D-62).
+        versionCode = 1
+        versionName = "1.0.0"
+    }
+
+    signingConfigs {
+        if (!keystoreProperties.isEmpty) {
+            create("release") {
+                storeFile = rootProject.file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("storePassword")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+            }
+        }
     }
 
     buildTypes {
@@ -64,6 +87,16 @@ android {
             buildConfigField("String", "AI_LLM_MODEL", "\"\"")
             buildConfigField("String", "AI_REASONING_EFFORT", "\"\"")
             buildConfigField("String", "AI_API_KEY", "\"\"")
+
+            // Sin keystore.properties se firma con la clave de depuración, solo para
+            // probar R8 en el emulador. Google Play rechaza esos paquetes, así que
+            // no hay riesgo de subir uno por error.
+            signingConfig = if (keystoreProperties.isEmpty) {
+                logger.warn("Coida: no hay keystore.properties; la release se firma con la clave de depuración y no vale para Google Play.")
+                signingConfigs.getByName("debug")
+            } else {
+                signingConfigs.getByName("release")
+            }
 
             isMinifyEnabled = true
             isShrinkResources = true

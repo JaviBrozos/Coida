@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.unit.Density
@@ -280,8 +281,10 @@ class LauncherActivity : ComponentActivity() {
             val dark = settings.theme == ThemeMode.DARK
 
             // El tema lo elige quien configura, no el sistema: los iconos de las
-            // barras tienen que seguirle o saldrían blancos sobre blanco.
-            LaunchedEffect(dark) {
+            // barras tienen que seguirle o saldrían blancos sobre blanco. Se vuelve a
+            // aplicar si cambia la pantalla sin recrear la actividad (configChanges:
+            // un plegable que se abre, otra densidad), porque Android lo restablece.
+            LaunchedEffect(dark, LocalConfiguration.current) {
                 val transparent = android.graphics.Color.TRANSPARENT
                 val style = if (dark) SystemBarStyle.dark(transparent)
                 else SystemBarStyle.light(transparent, transparent)
@@ -362,8 +365,15 @@ class LauncherActivity : ComponentActivity() {
 
     @Composable
     private fun CurrentScreen() {
-        BackHandler(enabled = screen != Screen.HOME) {
-            if (screen == Screen.ASSISTANT) closeAssistant() else screen = parentOf(screen)
+        // Siempre activo, también en el inicio, donde ATRÁS no hace nada. Con el
+        // atrás predictivo (activado de serie desde targetSdk 36), dejárselo al
+        // sistema le haría animar un «volver al inicio» encima del propio inicio.
+        BackHandler {
+            when (screen) {
+                Screen.HOME -> Unit
+                Screen.ASSISTANT -> closeAssistant()
+                else -> screen = parentOf(screen)
+            }
         }
 
         // Con el asistente abierto la pantalla no se apaga: apagarla cancelaría la
