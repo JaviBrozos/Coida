@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    Icono adaptativo (API 26+). Fondo marino de marca y delante solo la D, ya
+    Icono adaptativo (API 26+). Fondo marino de marca y delante solo la C, ya
     dibujada dentro de la zona segura: sin inset y sin un segundo cuadrado. Para
     API 24-25 están los PNG de mipmap-*dpi.
 -->
