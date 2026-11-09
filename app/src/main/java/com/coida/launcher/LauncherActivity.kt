@@ -66,14 +66,16 @@ import com.coida.data.AssistantSettings
 import com.coida.data.ContactAction
 import com.coida.data.ContactPhotos
 import com.coida.data.ContactShortcut
-import com.coida.data.ContactShortcutsStore
+import com.coida.data.ConfigRepository
 import com.coida.data.DefaultFavorites
 import com.coida.data.EMERGENCY_FAVORITE_ID
 import com.coida.data.FavoriteApp
 import com.coida.data.FavoritesStore
 import com.coida.data.InstalledApp
+import com.coida.data.InstallationId
 import com.coida.data.InstalledAppsRepository
 import com.coida.data.InterfaceSettings
+import com.coida.data.LocalConfigRepository
 import com.coida.data.PinStore
 import com.coida.data.SettingsStore
 import com.coida.data.ThemeMode
@@ -114,7 +116,7 @@ class LauncherActivity : ComponentActivity() {
 
     private lateinit var repository: InstalledAppsRepository
     private lateinit var settingsStore: SettingsStore
-    private lateinit var contactsStore: ContactShortcutsStore
+    private lateinit var config: ConfigRepository
     private lateinit var pinStore: PinStore
     private lateinit var wallpaperStore: WallpaperStore
     private lateinit var contactPhotos: ContactPhotos
@@ -256,7 +258,10 @@ class LauncherActivity : ComponentActivity() {
 
         repository = InstalledAppsRepository(this)
         settingsStore = SettingsStore(this)
-        contactsStore = ContactShortcutsStore(this)
+        config = LocalConfigRepository(this)
+        // Se crea ya, aunque hoy no se use: así cada instalación tiene el suyo desde
+        // el primer arranque.
+        InstallationId(this).get()
         pinStore = PinStore(this)
         wallpaperStore = WallpaperStore(this)
         contactPhotos = ContactPhotos(this)
@@ -529,7 +534,7 @@ class LauncherActivity : ComponentActivity() {
                     settings = interfaceSettings,
                     onChange = {
                         interfaceSettings = it
-                        settingsStore.saveInterfaceSettings(it)
+                        config.saveInterface(it)
                     },
                     onBack = { screen = Screen.SETTINGS },
                     wallpaper = wallpaper,
@@ -671,17 +676,18 @@ class LauncherActivity : ComponentActivity() {
     }
 
     private fun saveContactOrder(ids: List<String>) {
-        contactsStore.saveHomeOrder(ids)
-        contacts = contactsStore.all()
+        contacts = config.saveContactOrder(ids)
     }
 
     private fun reload() {
-        interfaceSettings = settingsStore.interfaceSettings()
-        assistantSettings = settingsStore.assistantSettings()
+        val saved = config.load()
+        interfaceSettings = saved.interfaceSettings
+        assistantSettings = saved.assistant
+        contacts = saved.contacts
+        homeIds = saved.homeAppIds
+        // Estado de este móvil, no configuración: se queda en SettingsStore.
         adminUnlockedUntil = settingsStore.adminUnlockedUntil()
         homeNoticeDismissed = settingsStore.homeNoticeDismissed()
-        contacts = contactsStore.all()
-        homeIds = repository.homeIds()
         loadApps(withInstalled = screen == Screen.APPS)
         loadPhotos()
     }
@@ -755,7 +761,7 @@ class LauncherActivity : ComponentActivity() {
     }
 
     private fun saveContacts(updated: List<ContactShortcut>) {
-        contactsStore.save(updated)
+        config.saveContacts(updated)
         contacts = updated
     }
 
@@ -869,7 +875,7 @@ class LauncherActivity : ComponentActivity() {
 
     private fun saveAssistantSettings(settings: AssistantSettings) {
         assistantSettings = settings
-        settingsStore.saveAssistantSettings(settings)
+        config.saveAssistant(settings)
     }
 
     /**

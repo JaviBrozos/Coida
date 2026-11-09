@@ -12,6 +12,9 @@
 
         La foto de fondo del inicio (files/home_wallpaper.jpg) tampoco está: es
         privada y pesa, y en el móvil nuevo se vuelve a elegir (D-47).
+
+        Ni "coida_install", el identificador de esta instalación: si viajara a
+        otro móvil, los dos tendrían el mismo.
     -->
     <include domain="sharedpref" path="doado_favorites.xml" />
     <include domain="sharedpref" path="doado_contacts.xml" />
