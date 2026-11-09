@@ -29,7 +29,7 @@ skill en el mismo commit.
 ## Logo
 
 Una **D con un visto dentro** (D-36): la D dice el nombre y el visto dice
-«hecho», lo que hace el asistente tras el «Sí».
+«hecho», lo que hace el asistente.
 
 - **Construcción** (rejilla de 64): D de 48 × 52 desde (8, 6), con una recta de
   22, medio círculo de radio 26 y las esquinas de la recta de radio 6. El visto

@@ -295,7 +295,7 @@ Asumido, y escrito para no volver a discutirlo:
 | [`docs/estado.md`](docs/estado.md) | En qué punto está el trabajo. Es el único documento que caduca. |
 | [`design/presentacion/doado-de-un-vistazo.pdf`](design/presentacion/doado-de-un-vistazo.pdf) | El proyecto en diez láminas: perfiles, mapa de pantallas, un flujo por perfil, arquitectura, sistema visual y estado. Para presentar. |
 | `design/presentacion/ver-presentacion.html` | Las mismas diez láminas en el navegador. |
-| `web/index.html` | La web de presentación: una página con un móvil de Doado que se puede tocar. Se abre sin servidor. |
+| `web/index.html` | La web de presentación, por secciones y con un móvil de Doado que se puede tocar. Se abre sin servidor. |
 | `design/video/` | El vídeo de marca de 53 s (1920 × 1080, 60 fps) con su música, y el código para volver a sacarlo. |
 | `design/*.dc.html` | El lienzo donde se diseñó la interfaz antes de escribirla. |
 | `CLAUDE.md` y `.claude/rules/` | El índice del proyecto y las normas de trabajo para quien (o lo que) toque el código. |

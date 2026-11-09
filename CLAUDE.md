@@ -39,7 +39,7 @@ Ningún cambio está terminado sin esto, lo haga una persona o Claude:
 | Qué hay hecho, qué falta y quién hizo qué | [`docs/estado.md`](docs/estado.md) |
 | Propuestas en discusión, antes de decidirlas (hoy, CON-06) | [`docs/propuestas/`](docs/propuestas) |
 | Presentación en diez láminas, con PDF | [`design/presentacion/`](design/presentacion) |
-| Web de presentación, una página sin servidor (D-52) | [`web/`](web) |
+| Web de presentación, sin servidor (D-52, D-60) | [`web/`](web) |
 | Vídeo de marca de 53 s, con su código (D-53) | [`design/video/`](design/video) |
 | Vista para alguien de fuera | [`README.md`](README.md) |
 

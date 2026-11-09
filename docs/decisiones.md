@@ -984,3 +984,59 @@ arrastre, que sería una dependencia nueva.
 pantallas del familiar, nunca en lo que usa la persona mayor, y siempre con otra
 forma de hacerlo. Las casillas siguen sin moverse solas: solo las mueve el
 familiar.
+
+### D-60 · La web va por secciones, con un móvil en 3D y movimiento de una sola vez (30/10/2026)
+
+Pedido por Javier. Revisa la forma de D-52; lo demás de D-52 sigue en pie.
+**Contexto**: la web era una sola página muy larga y muy animada, seguía contando
+la 1.3 y no vendía como producto.
+**Decisión**:
+- Siete secciones en el mismo fichero, una a la vez, con la dirección (`#asistente`)
+  diciendo cuál: funcionan el botón de atrás y los enlaces compartidos, sin servidor.
+  Sin script se ve todo seguido.
+- Cabecera con las secciones a la izquierda y desplegables, la marca en el centro y
+  las acciones a la derecha, sin inicio de sesión. En móvil, el menú de las tres rayas.
+- El hero, siempre oscuro, lleva un móvil en 3D renderizado una vez con three.js en
+  Chrome sin interfaz y guardado como imagen. Su pantalla es una maqueta del inicio
+  con los colores y medidas de la app: una captura traía el logo de otra app.
+- Los móviles se quedan anclados mientras se lee su sección: el comparador en «Por
+  qué Doado» y el móvil que se puede tocar, que pasa de hero a «El asistente».
+- Movimiento de una sola vez: la D se dibuja y se abre hacia el hero al entrar, y un
+  aparecer corto al bajar. Sin nada que se repita, sobra el botón «Pausar movimiento».
+- Solo se dice lo que hay: la web no habla de precio, porque aún no está decidido, y
+  el asistente sigue marcado «En pruebas».
+
+**Descartado**:
+- three.js en la web, que da un móvil que gira a cambio de una dependencia y de
+  cientos de KB que un móvil modesto paga en cada visita. Blender, que no está
+  instalado.
+- Mantener el panel «Pruébalo tú» y la conversación de ejemplo, que recargaban la
+  página, igual que la cinta, las luces de fondo y el contador de cifras.
+- El comando de `adb` en la web: el público es la familia, no quien programa.
+
+**Consecuencia**: el render no se actualiza solo. Si cambia el inicio, hay que
+rehacer la maqueta y volver a renderizar (la escena no está en el repo).
+
+### D-61 · La web vuelve a deslizarse entera, y el móvil del inicio acompaña al deslizamiento (30/10/2026)
+
+Pedido por Javier. Sustituye a D-60 en las secciones de una en una, en el móvil en 3D
+del inicio y en el movimiento mínimo; la cabecera y lo de no hablar de precio siguen.
+**Contexto**: con una sección cada vez, sobre todo en el móvil, se perdía el
+deslizamiento de antes, y a la web le faltaba vida.
+**Decisión**:
+- Una sola página continua. El menú salta a cada sección y la barra marca dónde se
+  está. «Inicio» es una entrada más, también en escritorio.
+- El inicio usa un mockup que aportó Javier, con la app encajada en perspectiva. Son
+  tres imágenes ya compuestas (inicio, «Te escucho» y «Llamo a María.»).
+- El hero se queda anclado: al deslizar, el texto se aparta, el móvil va al centro,
+  crece, gira un poco y las pantallas se funden con un rótulo.
+- Vuelven las animaciones del principio: el titular por palabras, la luz de fondo, la
+  cinta, las cifras que cuentan y el barrido del comparador.
+- Los textos no presuponen el género de quien usa el móvil: «tus mayores».
+
+**Descartado**: mover el mockup en 3D de verdad, que es una imagen plana y exigiría
+modelarlo. Bajar el titular y dejar que el móvil asome cortado al entrar, que ya se
+rechazó. Volver a poner el botón de pausa, que Javier pidió quitar.
+**Consecuencia**: la luz y la cinta se repiten sin un botón para pararlas, salvo con
+«reducir movimiento»: WCAG 2.2.2 pide esa forma de parar lo que dura más de 5 s. Si
+cambia el inicio, hay que recomponer las tres imágenes (el montaje no está en el repo).
