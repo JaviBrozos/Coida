@@ -12,8 +12,11 @@ val localProperties = Properties().apply {
     if (file.exists()) file.inputStream().use { load(it) }
 }
 
+// Las claves eran doado.ai.* antes del cambio de nombre (D-62): se siguen leyendo
+// para que un local.properties sin tocar no apague el asistente sin avisar.
 fun aiSetting(name: String, default: String = ""): String {
-    val value = localProperties.getProperty("doado.ai.$name", default).trim()
+    val value = (localProperties.getProperty("coida.ai.$name")
+        ?: localProperties.getProperty("doado.ai.$name", default)).trim()
     return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }
 
@@ -25,14 +28,15 @@ plugins {
 }
 
 android {
-    // namespace = paquete raíz del código (com.doado.launcher, com.doado.data, ...).
+    // namespace = paquete raíz del código (com.coida.launcher, com.coida.data, ...).
     // Es distinto del applicationId a propósito: así el paquete de feature del
-    // launcher puede llamarse "launcher" sin quedar como com.doado.launcher.launcher.
-    namespace = "com.doado"
+    // launcher puede llamarse "launcher" sin quedar como com.coida.launcher.launcher.
+    namespace = "com.coida"
     compileSdk = libs.versions.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.doado.launcher"
+        // Definitivo: una vez en Google Play no se puede cambiar (D-62).
+        applicationId = "com.coida.launcher"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
         versionCode = 4

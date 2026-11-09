@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Doado</string>
+    <string name="app_name">Coida</string>
     <string name="app_tagline">Una app para tus mayores</string>
 
     <!-- Apps favoritas de fábrica -->
@@ -17,8 +17,8 @@
     <string name="contact_action_whatsapp">WhatsApp</string>
     <string name="home_page_apps">Aplicaciones</string>
     <string name="home_page_contacts">Contactos favoritos</string>
-    <string name="home_not_default">Doado aún no es la pantalla de inicio de este móvil. Ponlo para que salga al pulsar Inicio.</string>
-    <string name="not_home_later">Si más adelante quieres que Doado sea la pantalla de inicio, entra en Ajustes, abre Modo administrador, desbloquéalo y pulsa «Elegir pantalla de inicio».</string>
+    <string name="home_not_default">Coida aún no es la pantalla de inicio de este móvil. Ponla para que salga al pulsar Inicio.</string>
+    <string name="not_home_later">Si más adelante quieres que Coida sea la pantalla de inicio, entra en Ajustes, abre Modo administrador, desbloquéalo y pulsa «Elegir pantalla de inicio».</string>
     <string name="cd_close_notice">Cerrar este aviso</string>
     <string name="contact_whatsapp_missing_short">Falta WhatsApp</string>
 
@@ -36,7 +36,7 @@
     <string name="cd_back_settings">Volver a ajustes</string>
     <string name="cd_pin_progress">%1$d de %2$d cifras</string>
     <string name="cd_pin_checking">Comprobando</string>
-    <string name="cd_admin_banner">Abrir los ajustes de Doado</string>
+    <string name="cd_admin_banner">Abrir los ajustes de Coida</string>
     <string name="cd_disabled_admin">%1$s: hace falta desbloquear antes el modo administrador</string>
     <string name="cd_pin_delete">Borrar la última cifra</string>
     <string name="cd_assistant_button">Hablar con el asistente</string>
@@ -49,7 +49,7 @@
     <string name="error_contact_pick">No se ha podido leer ese contacto</string>
 
     <!-- PIN -->
-    <string name="pin_title">Ajustes de Doado</string>
+    <string name="pin_title">Ajustes de Coida</string>
     <string name="pin_subtitle">Introduce el PIN de 4 cifras</string>
     <string name="pin_create_title">Crea un PIN</string>
     <string name="pin_create_subtitle">4 cifras que solo sepa quien configura el móvil</string>
@@ -113,8 +113,8 @@
     <string name="settings_section_advanced">Avanzado</string>
     <string name="settings_interface">Interfaz</string>
     <string name="settings_interface_subtitle">Letra, casillas, fondo, tema y reloj</string>
-    <string name="settings_not_home_note">Doado no es la pantalla de inicio de este móvil: al pulsar Inicio se abre otra.</string>
-    <string name="settings_make_home">Poner Doado como pantalla de inicio</string>
+    <string name="settings_not_home_note">Coida no es la pantalla de inicio de este móvil: al pulsar Inicio se abre otra.</string>
+    <string name="settings_make_home">Poner Coida como pantalla de inicio</string>
     <string name="settings_contacts">Contactos</string>
     <plurals name="settings_contacts_subtitle">
         <item quantity="one">%1$d acceso directo en el inicio</item>
@@ -127,7 +127,7 @@
     <string name="settings_sound">Sonido y pantalla</string>
     <string name="settings_sound_subtitle">Volumen, brillo y vibración de Android</string>
     <string name="settings_admin">Modo administrador</string>
-    <string name="settings_admin_subtitle">Salir de Doado para instalar apps</string>
+    <string name="settings_admin_subtitle">Salir de Coida para instalar apps</string>
     <string name="settings_admin_subtitle_active">Desbloqueado ahora mismo</string>
     <string name="settings_pin">PIN de ajustes</string>
     <string name="settings_pin_subtitle">Cambiar las 4 cifras</string>
@@ -153,7 +153,7 @@
     <string name="assistant_settings_guide_note">Explica los pasos de uno en uno y, al acabar, marca en el inicio el botón que hay que pulsar.</string>
     <string name="assistant_settings_try">Probar el asistente</string>
     <string name="assistant_settings_try_disabled">Para probarlo, enciende antes el botón del asistente.</string>
-    <string name="assistant_settings_not_configured">Esta copia de Doado no tiene configurado el servicio de voz, así que el asistente no se puede encender. Hace falta poner la clave al compilar la app.</string>
+    <string name="assistant_settings_not_configured">Esta copia de Coida no tiene configurado el servicio de voz, así que el asistente no se puede encender. Hace falta poner la clave al compilar la app.</string>
 
     <!--
         Pantalla del asistente. La lee y la oye la persona mayor: frases cortas,
@@ -192,7 +192,7 @@
     <string name="assistant_failure_unavailable">Ahora no puedo ayudarte. Pide a tu familiar que lo mire.</string>
     <string name="assistant_failure_microphone">No puedo usar el micrófono. Pide a tu familiar que lo mire.</string>
 
-    <!-- Pasos fijos al guiar hacia algo de Doado (GuideSteps). -->
+    <!-- Pasos fijos al guiar hacia algo de Coida (GuideSteps). -->
     <string name="guide_side_left">a la izquierda</string>
     <string name="guide_side_center">en el centro</string>
     <string name="guide_side_right">a la derecha</string>
@@ -247,7 +247,7 @@
 
     <!-- Ajustes → Contactos -->
     <string name="contacts_subtitle">Salen en el inicio, debajo de las apps, en «Contactos favoritos».</string>
-    <string name="contacts_photos_note">Para que en el inicio salga la foto que cada persona tiene en la agenda, Doado necesita permiso para ver los contactos. Solo mira los de esta lista, y las fotos no salen del móvil. Si al pulsar el botón no sale nada, abre Modo administrador, luego Ajustes de Android, y dale a Doado permiso de contactos.</string>
+    <string name="contacts_photos_note">Para que en el inicio salga la foto que cada persona tiene en la agenda, Coida necesita permiso para ver los contactos. Solo mira los de esta lista, y las fotos no salen del móvil. Si al pulsar el botón no sale nada, abre Modo administrador, luego Ajustes de Android, y dale a Coida permiso de contactos.</string>
     <string name="contacts_photos_allow">Ver las fotos</string>
     <string name="contacts_empty">Todavía no hay contactos. Añade a las personas a las que más se llama.</string>
     <string name="contacts_add">Añadir contacto</string>
@@ -285,15 +285,15 @@
     <string name="arrange_empty">Todavía no hay casillas en el inicio. Ponlas en Aplicaciones o en Contactos.</string>
 
     <!-- Ajustes → Modo administrador -->
-    <string name="admin_locked">Doado está al mando</string>
+    <string name="admin_locked">Coida está al mando</string>
     <string name="admin_locked_detail">La tienda y los ajustes de Android están bajo llave</string>
     <string name="admin_unlocked">Móvil desbloqueado</string>
-    <string name="admin_unlocked_detail">Puedes salir de Doado e instalar lo que haga falta</string>
+    <string name="admin_unlocked_detail">Puedes salir de Coida e instalar lo que haga falta</string>
     <string name="admin_countdown_suffix">hasta que se cierre solo</string>
     <string name="admin_unlock">Desbloquear %1$d minutos</string>
     <string name="admin_lock_now">Bloquear ya</string>
     <string name="admin_open_store">Abrir la tienda de apps</string>
     <string name="admin_open_android_settings">Ajustes de Android</string>
     <string name="admin_choose_home">Elegir pantalla de inicio</string>
-    <string name="admin_note">Mientras está desbloqueado puedes salir de Doado para instalar o cambiar lo que haga falta. A los %1$d minutos se vuelve a cerrar solo.</string>
+    <string name="admin_note">Mientras está desbloqueado puedes salir de Coida para instalar o cambiar lo que haga falta. A los %1$d minutos se vuelve a cerrar solo.</string>
 </resources>

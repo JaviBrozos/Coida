@@ -4,8 +4,8 @@
         Fondo de la ventana antes de que Compose dibuje: evita el "flash" de otro
         color. Es el tinta del tema oscuro, que es el de fábrica.
     -->
-    <color name="doado_window_background">#FF0A1622</color>
-    <color name="doado_window_background_night">#FF0A1622</color>
+    <color name="coida_window_background">#FF0A1622</color>
+    <color name="coida_window_background_night">#FF0A1622</color>
 
     <!-- Azul marino de la marca, usado como fondo del icono adaptativo. -->
     <color name="ic_launcher_background">#FF0B1D2E</color>

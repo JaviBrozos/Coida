@@ -20,5 +20,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Doado"
+rootProject.name = "Coida"
 include(":app")

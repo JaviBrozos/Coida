@@ -1,0 +1,87 @@
+package com.coida.core.ui
+
+import androidx.compose.ui.graphics.Color
+
+/**
+ * Paleta de Coida.
+ *
+ * Regla de la casa: nada por debajo de 4.5:1 de contraste, y para texto y bordes
+ * apuntamos a 7:1 (nivel AAA de WCAG). Por eso el color "protagonista" de la marca
+ * en superficies claras es el azul marino y no el cian: el cian de la marca sobre
+ * blanco se queda en 2,32:1, insuficiente para texto o iconos, así que se reserva
+ * para acentos grandes y para el modo oscuro.
+ */
+
+// --- Marca -----------------------------------------------------------------
+
+/** Azul marino del logotipo. Sobre blanco da 17,08:1. */
+val CoidaNavy = Color(0xFF0B1D2E)
+
+/** Cian del logotipo. Solo para áreas grandes, nunca para texto sobre blanco. */
+val CoidaCyan = Color(0xFF29B6F0)
+
+/** Cian oscurecido: 6,71:1 sobre blanco, apto para texto secundario. */
+val CoidaCyanDeep = Color(0xFF10618F)
+
+/** Cian aclarado para el modo oscuro: 11,94:1 sobre negro, 10,38:1 sobre [CoidaInk]. */
+val CoidaCyanLight = Color(0xFF6CCFFA)
+
+// --- Neutros ---------------------------------------------------------------
+
+val CoidaWhite = Color(0xFFFFFFFF)
+val CoidaBlack = Color(0xFF000000)
+
+/** Fondo de tarjeta en claro: azul muy tenue, mantiene 15,18:1 con el texto marino. */
+val CoidaMist = Color(0xFFE9F3FA)
+val CoidaMistDim = Color(0xFFDCEBF5)
+
+/** Superficie de tarjeta en oscuro. */
+val CoidaInk = Color(0xFF0A1622)
+
+/*
+ * Gris de "apagado": el color de una app que no está instalada, de un contacto
+ * sin WhatsApp y de un botón bloqueado. Es decir, el color de todo lo que
+ * **explica por qué algo no funciona**, así que tiene que leerse.
+ *
+ * Hay dos porque el mismo gris no sirve en los dos temas. El anterior
+ * (#7A93A6, uno solo para ambos) se quedaba en 3,21:1 sobre el blanco del tema
+ * claro: por debajo del mínimo de 4,5:1, y justo en la pantalla que elige quien
+ * peor ve. Medido contra el fondo real sobre el que cae el texto, que es la
+ * casilla, no el fondo de pantalla.
+ */
+
+/** Apagado en claro: 5,71:1 sobre blanco, 5,07:1 sobre [CoidaMist]. */
+val CoidaSteelDeep = Color(0xFF54697A)
+
+/** Apagado en oscuro: 7,17:1 sobre [CoidaSurface], 8,89:1 sobre [CoidaInk]. */
+val CoidaSteelLight = Color(0xFFA3B8C6)
+
+// --- Estado ----------------------------------------------------------------
+
+val CoidaError = Color(0xFFB3261E)
+val CoidaErrorLight = Color(0xFFFFB4AB)
+val CoidaOnErrorLight = Color(0xFF690005)
+
+// --- Superficies del tema oscuro -------------------------------------------
+//
+// El tema oscuro es el de fábrica. El cian se reserva para acentos (iconos,
+// estado activo, botón principal) y no se usa como relleno de casillas: los
+// bloques de color macizo daban un aspecto de juguete.
+
+/** Casilla elevada sobre [CoidaInk]. El blanco azulado encima da ~13:1. */
+val CoidaSurface = Color(0xFF122A3E)
+
+/** Casilla pulsada o seleccionada, y fondo de los cuadritos de icono. */
+val CoidaSurfaceHigh = Color(0xFF17384F)
+
+/**
+ * Contorno de casillas y botones en oscuro: 3,18:1 contra [CoidaSurface],
+ * por encima del 3:1 que piden las WCAG para límites de componentes.
+ */
+val CoidaLine = Color(0xFF3D7AA6)
+
+/** Texto principal en oscuro: ~16:1 sobre [CoidaInk]. */
+val CoidaText = Color(0xFFF2F7FB)
+
+/** Texto secundario en oscuro: ~9.9:1 sobre [CoidaInk]. */
+val CoidaTextMuted = Color(0xFF9FC4DC)

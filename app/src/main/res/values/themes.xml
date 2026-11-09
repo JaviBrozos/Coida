@@ -5,8 +5,8 @@
         tipografía (ver core/ui/Theme.kt). Aquí solo se define el fondo de la
         ventana y se piden barras transparentes para dibujar a pantalla completa.
     -->
-    <style name="Theme.Doado" parent="android:Theme.Material.Light.NoActionBar">
-        <item name="android:windowBackground">@color/doado_window_background</item>
+    <style name="Theme.Coida" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/coida_window_background</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>

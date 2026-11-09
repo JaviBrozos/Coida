@@ -12,7 +12,7 @@
         android:required="false" />
 
     <!--
-        La foto que cada contacto guardado en Doado tiene en la agenda (D-57). Se
+        La foto que cada contacto guardado en Coida tiene en la agenda (D-57). Se
         pide al añadir un contacto, con el familiar delante, y solo se consultan los
         números guardados aquí, nunca la agenda entera. Sin él, salen las iniciales.
     -->
@@ -32,7 +32,7 @@
         Visibilidad de paquetes (Android 11+ / API 30).
         Sin este bloque el PackageManager no nos deja ver el resto de apps del
         dispositivo y el grid de favoritos saldría vacío. Declaramos solo lo que
-        Doado necesita resolver, en lugar de pedir QUERY_ALL_PACKAGES.
+        Coida necesita resolver, en lugar de pedir QUERY_ALL_PACKAGES.
     -->
     <queries>
         <!-- Todas las apps que se pueden abrir desde un lanzador. -->
@@ -65,7 +65,7 @@
         </intent>
         <!--
             Apps recomendadas y la tienda. Ya las cubre la consulta de LAUNCHER de
-            arriba, pero se declaran para que quede claro que Doado las busca.
+            arriba, pero se declaran para que quede claro que Coida las busca.
         -->
         <package android:name="com.whatsapp" />
         <package android:name="com.sofascore.results" />
@@ -91,15 +91,15 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Doado"
+        android:theme="@style/Theme.Coida"
         android:usesCleartextTraffic="false">
 
         <!--
             Actividad de inicio.
-            · HOME + DEFAULT  -> el sistema ofrece Doado como pantalla de inicio.
+            · HOME + DEFAULT  -> el sistema ofrece Coida como pantalla de inicio.
             · LAUNCHER        -> además aparece en el cajón de aplicaciones, lo que
                                  resulta cómodo mientras se desarrolla. Se puede
-                                 quitar cuando Doado sea el lanzador definitivo.
+                                 quitar cuando Coida sea el lanzador definitivo.
             · singleTask + stateNotNeeded + excludeFromRecents es la configuración
               habitual de un lanzador: pulsar Inicio siempre vuelve a esta misma
               instancia y no deja tarjeta en "recientes".
@@ -111,7 +111,7 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:stateNotNeeded="true"
-            android:theme="@style/Theme.Doado">
+            android:theme="@style/Theme.Coida">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.HOME" />
