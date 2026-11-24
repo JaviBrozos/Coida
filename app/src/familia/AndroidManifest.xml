@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Solo para la variante «familia», la APK que se manda a mano fuera de Google
+    Play (D-66). Gradle lo suma al manifiesto de main.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        La bola roja con las llamadas perdidas de la casilla «Llamadas». Se pide al
+        encenderla en Ajustes → Aplicaciones, con el familiar delante. No va en main
+        porque Google Play no deja leer el registro de llamadas a un launcher: la
+        versión pública sale sin bola.
+    -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
+</manifest>

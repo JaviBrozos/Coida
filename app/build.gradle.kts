@@ -51,8 +51,8 @@ android {
         targetSdk = libs.versions.targetSdk.get().toInt()
         // Empieza de cero con el applicationId nuevo: es otra app para Android y
         // para Play, así que no choca con la 1.4 de las pruebas (D-62).
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 2
+        versionName = "1.0.1"
     }
 
     signingConfigs {
@@ -72,6 +72,9 @@ android {
         // declaran en src/debug/AndroidManifest.xml.
         debug {
             buildConfigField("boolean", "ASSISTANT_ENABLED", "true")
+            // La bola roja de llamadas perdidas (D-66): su permiso, READ_CALL_LOG, va
+            // en src/debug y src/familia, nunca en main.
+            buildConfigField("boolean", "MISSED_CALLS_ENABLED", "true")
             buildConfigField("String", "AI_BASE_URL", aiSetting("baseUrl", "https://api.groq.com/openai/v1"))
             buildConfigField("String", "AI_STT_MODEL", aiSetting("sttModel", "whisper-large-v3"))
             buildConfigField("String", "AI_LLM_MODEL", aiSetting("llmModel", "openai/gpt-oss-120b"))
@@ -82,6 +85,8 @@ android {
         release {
             // Vacíos a propósito: ni la clave ni el proveedor llegan al .aab.
             buildConfigField("boolean", "ASSISTANT_ENABLED", "false")
+            // Google Play no deja a un launcher leer el registro de llamadas (D-66).
+            buildConfigField("boolean", "MISSED_CALLS_ENABLED", "false")
             buildConfigField("String", "AI_BASE_URL", "\"\"")
             buildConfigField("String", "AI_STT_MODEL", "\"\"")
             buildConfigField("String", "AI_LLM_MODEL", "\"\"")
@@ -104,6 +109,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+        }
+        // La que se manda a mano a la familia, fuera de Google Play (D-66): la release
+        // tal cual (sin asistente, con R8 y la misma firma) más la bola roja de
+        // llamadas perdidas, cuyo permiso declara src/familia/AndroidManifest.xml.
+        // ./gradlew assembleFamilia
+        create("familia") {
+            initWith(getByName("release"))
+            matchingFallbacks += "release"
+            buildConfigField("boolean", "MISSED_CALLS_ENABLED", "true")
         }
     }
 

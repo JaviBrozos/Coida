@@ -37,7 +37,7 @@ class InstalledAppsRepository(context: Context) {
                     id = template.id,
                     label = appContext.getString(template.labelRes),
                     icon = AppIcon.Vector(template.iconRes),
-                    packageName = resolve(template.intent)?.activityInfo?.packageName,
+                    packageName = resolvedIntent(template)?.let(::resolve)?.activityInfo?.packageName,
                 )
 
                 id.startsWith(FavoritesStore.PACKAGE_PREFIX) ->
@@ -75,7 +75,7 @@ class InstalledAppsRepository(context: Context) {
     fun launchIntentFor(app: FavoriteApp): Intent? {
         val template = DefaultFavorites.firstOrNull { it.id == app.id }
         val intent = when {
-            template != null -> template.intent.takeIf { resolve(it) != null }?.let(::Intent)
+            template != null -> resolvedIntent(template)?.let(::Intent)
             app.id.startsWith(FavoritesStore.PACKAGE_PREFIX) ->
                 packageManager.getLaunchIntentForPackage(
                     app.id.removePrefix(FavoritesStore.PACKAGE_PREFIX),
@@ -90,7 +90,9 @@ class InstalledAppsRepository(context: Context) {
 
     /** Paquetes que atienden las casillas de fábrica en este móvil (el marcador, la cámara...). */
     fun defaultFavoritePackages(): Set<String> =
-        DefaultFavorites.mapNotNull { resolve(it.intent)?.activityInfo?.packageName }.toSet()
+        DefaultFavorites.mapNotNull { template ->
+            resolvedIntent(template)?.let(::resolve)?.activityInfo?.packageName
+        }.toSet()
 
     fun isInstalled(packageName: String): Boolean =
         packageManager.getLaunchIntentForPackage(packageName) != null
@@ -145,6 +147,13 @@ class InstalledAppsRepository(context: Context) {
             packageName = packageName,
         )
     }
+
+    /**
+     * La intención de una casilla de fábrica que este móvil sabe atender: la suya o,
+     * si nadie la atiende, su reserva. Es la plantilla compartida, sin copiar.
+     */
+    private fun resolvedIntent(template: FavoriteTemplate): Intent? =
+        listOfNotNull(template.intent, template.fallback).firstOrNull { resolve(it) != null }
 
     // El PackageManager cambió de firma en Android 13; envolvemos la diferencia
     // aquí para no repartir @Suppress("DEPRECATION") por todo el repositorio.

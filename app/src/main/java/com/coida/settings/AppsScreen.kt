@@ -46,6 +46,18 @@ data class BasicAppRow(
     val note: String? = null,
 )
 
+/**
+ * El interruptor de la bola roja de llamadas perdidas (D-66).
+ *
+ * @param enabled encendido y con el permiso concedido.
+ * @param denied el familiar denegó el permiso: debajo se explica qué hacer.
+ */
+data class MissedCallsRow(
+    val enabled: Boolean,
+    val denied: Boolean,
+    val onToggle: (Boolean) -> Unit,
+)
+
 /** Cualquier otra app instalada que se puede añadir al inicio. */
 data class OtherAppRow(val app: InstalledApp, val onHome: Boolean)
 
@@ -63,6 +75,7 @@ fun AppsScreen(
     onToggle: (id: String, onHome: Boolean) -> Unit,
     onBack: () -> Unit,
     onArrange: () -> Unit = {},
+    missedCalls: MissedCallsRow? = null,
 ) {
     // Sin hueco general entre elementos: las filas de un mismo apartado van
     // pegadas en un grupo, y el aire se pone a mano entre apartados.
@@ -100,6 +113,24 @@ fun AppsScreen(
                 leading = { IconBadge(row.icon) },
                 position = GroupPosition.of(index, basics.size),
             )
+        }
+
+        // Solo en las variantes que traen el permiso (D-66). El permiso se pide al
+        // encenderlo, aquí, con el familiar delante: la persona mayor nunca lo ve.
+        if (missedCalls != null) {
+            item { SectionLabel(stringResource(R.string.apps_section_missed), Modifier.padding(top = 14.dp, bottom = 10.dp)) }
+            item(key = "missed-calls") {
+                SwitchRow(
+                    title = stringResource(R.string.apps_missed_title),
+                    subtitle = stringResource(
+                        if (missedCalls.denied) R.string.apps_missed_denied else R.string.apps_missed_note,
+                    ),
+                    checked = missedCalls.enabled,
+                    onCheckedChange = missedCalls.onToggle,
+                    leading = { IconBadge(R.drawable.ic_call) },
+                    position = GroupPosition.of(0, 1),
+                )
+            }
         }
 
         if (others.isNotEmpty()) {

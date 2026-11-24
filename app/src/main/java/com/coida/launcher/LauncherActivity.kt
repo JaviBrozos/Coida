@@ -5,9 +5,13 @@ import android.app.role.RoleManager
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.database.ContentObserver
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.provider.CallLog
 import android.provider.ContactsContract
 import android.provider.Settings
 import android.telephony.PhoneNumberUtils
@@ -76,6 +80,7 @@ import com.coida.data.InstallationId
 import com.coida.data.InstalledAppsRepository
 import com.coida.data.InterfaceSettings
 import com.coida.data.LocalConfigRepository
+import com.coida.data.MissedCallsRepository
 import com.coida.data.PinStore
 import com.coida.data.SettingsStore
 import com.coida.data.ThemeMode
@@ -89,6 +94,7 @@ import com.coida.settings.AssistantSettingsScreen
 import com.coida.settings.BasicAppRow
 import com.coida.settings.ContactsScreen
 import com.coida.settings.InterfaceScreen
+import com.coida.settings.MissedCallsRow
 import com.coida.settings.OtherAppRow
 import com.coida.settings.PinGate
 import com.coida.settings.SettingsScreen
@@ -120,6 +126,7 @@ class LauncherActivity : ComponentActivity() {
     private lateinit var pinStore: PinStore
     private lateinit var wallpaperStore: WallpaperStore
     private lateinit var contactPhotos: ContactPhotos
+    private lateinit var missedCalls: MissedCallsRepository
 
     private var screen by mutableStateOf(Screen.HOME)
     private var interfaceSettings by mutableStateOf(InterfaceSettings())
@@ -130,6 +137,25 @@ class LauncherActivity : ComponentActivity() {
     private var whatsappInstalled by mutableStateOf(false)
     private var installedApps by mutableStateOf(emptyList<InstalledApp>())
     private var defaultPackages by mutableStateOf(emptySet<String>())
+
+    /** Llamadas perdidas sin ver, para la bola de la casilla «Llamadas» (D-66). */
+    private var missedCallCount by mutableIntStateOf(0)
+
+    /** La bola está encendida y Android deja leer el registro. */
+    private var missedCallsOn by mutableStateOf(false)
+
+    /** El familiar denegó el permiso del registro: Ajustes explica qué hacer. */
+    private var missedCallsDenied by mutableStateOf(false)
+    private var missedCallsJob: Job? = null
+    private var callLogObserverRegistered = false
+
+    /**
+     * Avisa cuando cambia el registro de llamadas con Coida en pantalla: entra una
+     * perdida y la bola sale al momento, sin esperar a salir y volver.
+     */
+    private val callLogObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
+        override fun onChange(selfChange: Boolean) = loadMissedCalls()
+    }
 
     /** Las fotos de la agenda de los contactos guardados, por número (D-57). Solo en memoria. */
     private var photos by mutableStateOf(emptyMap<String, ImageBitmap>())
@@ -243,6 +269,18 @@ class LauncherActivity : ComponentActivity() {
             }
         }
 
+    // Se pide al encender la bola de llamadas perdidas en Ajustes → Aplicaciones,
+    // con el familiar delante (D-66).
+    private val requestCallLogPermission =
+        registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+            missedCallsDenied = !granted
+            if (granted) {
+                settingsStore.saveMissedCallsBadge(true)
+                registerCallLogObserver()
+            }
+            loadMissedCalls()
+        }
+
     // Se pide al encender el asistente, con el familiar delante (CU-15).
     private val requestMicPermission =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
@@ -265,6 +303,7 @@ class LauncherActivity : ComponentActivity() {
         pinStore = PinStore(this)
         wallpaperStore = WallpaperStore(this)
         contactPhotos = ContactPhotos(this)
+        missedCalls = MissedCallsRepository(this)
         hasWallpaper = wallpaperStore.exists()
         loadWallpaper()
         if (BuildConfig.ASSISTANT_ENABLED) {
@@ -353,8 +392,17 @@ class LauncherActivity : ComponentActivity() {
      * para instalar algo, el selector de contactos, los ajustes de Android—,
      * porque ahí el familiar sigue a lo suyo y echarle sería absurdo.
      */
+    override fun onStart() {
+        super.onStart()
+        registerCallLogObserver()
+    }
+
     override fun onStop() {
         super.onStop()
+        if (callLogObserverRegistered) {
+            contentResolver.unregisterContentObserver(callLogObserver)
+            callLogObserverRegistered = false
+        }
         // Nadie vuelve a una pregunta a medias. La casilla señalada, en cambio, se
         // queda: si la pantalla se apaga mientras lo piensa, no debe desaparecer
         // sola. Se quita al tocar algo o al pulsar Inicio.
@@ -447,6 +495,7 @@ class LauncherActivity : ComponentActivity() {
                 },
                 onMakeHome = ::requestDefaultHome,
                 onCloseNotHome = ::closeHomeNotice,
+                missedCalls = if (missedCallsOn) missedCallCount else 0,
                 onAppClick = {
                     highlightedId = null
                     openApp(it)
@@ -584,6 +633,15 @@ class LauncherActivity : ComponentActivity() {
                     },
                     onBack = { screen = Screen.SETTINGS },
                     onArrange = { openArrange(from = Screen.APPS) },
+                    missedCalls = if (missedCalls.isAvailable) {
+                        MissedCallsRow(
+                            enabled = missedCallsOn,
+                            denied = missedCallsDenied,
+                            onToggle = ::setMissedCallsBadge,
+                        )
+                    } else {
+                        null
+                    },
                 )
 
                 Screen.ARRANGE -> ArrangeScreen(
@@ -690,6 +748,48 @@ class LauncherActivity : ComponentActivity() {
         homeNoticeDismissed = settingsStore.homeNoticeDismissed()
         loadApps(withInstalled = screen == Screen.APPS)
         loadPhotos()
+        loadMissedCalls()
+    }
+
+    /**
+     * Las llamadas perdidas sin ver (D-66), aparte de las casillas y en
+     * `Dispatchers.IO`: es una consulta al registro de llamadas. Se repite al volver
+     * al inicio y cada vez que el registro cambia ([callLogObserver]).
+     */
+    private fun loadMissedCalls() {
+        if (!missedCalls.isAvailable) return
+        missedCallsJob?.cancel()
+        missedCallsJob = lifecycleScope.launch {
+            val (on, count) = withContext(Dispatchers.IO) {
+                val on = settingsStore.missedCallsBadge() && missedCalls.hasPermission()
+                on to if (on) missedCalls.missedCount() else 0
+            }
+            missedCallsOn = on
+            missedCallCount = count
+        }
+    }
+
+    /** El interruptor de Ajustes → Aplicaciones. Encender pide el permiso si falta. */
+    private fun setMissedCallsBadge(enabled: Boolean) {
+        if (enabled && !missedCalls.hasPermission()) {
+            requestCallLogPermission.launch(Manifest.permission.READ_CALL_LOG)
+            return
+        }
+        missedCallsDenied = false
+        settingsStore.saveMissedCallsBadge(enabled)
+        if (enabled) registerCallLogObserver()
+        loadMissedCalls()
+    }
+
+    /**
+     * Se apunta al registro de llamadas mientras Coida está a la vista, si se puede
+     * leer. Sin permiso Android lo rechaza; entonces no se apunta y ya está.
+     */
+    private fun registerCallLogObserver() {
+        if (callLogObserverRegistered || !missedCalls.isAvailable || !missedCalls.hasPermission()) return
+        callLogObserverRegistered = runCatching {
+            contentResolver.registerContentObserver(CallLog.Calls.CONTENT_URI, true, callLogObserver)
+        }.isSuccess
     }
 
     /**

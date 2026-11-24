@@ -84,6 +84,7 @@ import com.coida.data.ContactAction
 import com.coida.data.ContactShortcut
 import com.coida.data.ContactsLayout
 import com.coida.data.FavoriteApp
+import com.coida.data.PHONE_FAVORITE_ID
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -127,6 +128,8 @@ data class HomeContact(
  *   desde el primer fotograma.
  * @param notHomeNotice cómo va el aviso de que Coida aún no es la pantalla de
  *   inicio (D-48); null si lo es o si el familiar ya lo cerró.
+ * @param missedCalls llamadas perdidas sin ver: solo la casilla «Llamadas» lo
+ *   enseña, con su bola roja (D-66). 0 si no hay o si no se puede saber.
  */
 @Composable
 fun HomeScreen(
@@ -149,6 +152,7 @@ fun HomeScreen(
     notHomeNotice: NotHomeNoticeStage? = null,
     onMakeHome: () -> Unit = {},
     onCloseNotHome: () -> Unit = {},
+    missedCalls: Int = 0,
 ) {
     // Las franjas lisas se deciden con saber que hay foto, sin esperar a leerla:
     // si aparecieran después, toda la rejilla bajaría bajo el dedo.
@@ -243,6 +247,7 @@ fun HomeScreen(
                             scrollResetKey = scrollResetKey,
                             showContactsLabel = false,
                             onPhoto = onPhoto,
+                            missedCalls = missedCalls,
                             onAppClick = onAppClick,
                             onContactClick = onContactClick,
                             modifier = Modifier.fillMaxSize(),
@@ -258,6 +263,7 @@ fun HomeScreen(
                         scrollResetKey = scrollResetKey,
                         showContactsLabel = true,
                         onPhoto = onPhoto,
+                        missedCalls = missedCalls,
                         onAppClick = onAppClick,
                         onContactClick = onContactClick,
                         modifier = Modifier.weight(1f),
@@ -451,6 +457,7 @@ private fun HomeGrid(
     scrollResetKey: Int,
     showContactsLabel: Boolean,
     onPhoto: Boolean,
+    missedCalls: Int,
     onAppClick: (FavoriteApp) -> Unit,
     onContactClick: (ContactShortcut) -> Unit,
     modifier: Modifier = Modifier,
@@ -555,6 +562,8 @@ private fun HomeGrid(
                     highlighted = app.id == highlightedId,
                     onClick = { onAppClick(app) },
                     labelScale = appScale,
+                    // Solo «Llamadas» lleva bola: en las demás sería ruido (D-66).
+                    missedCalls = if (app.id == PHONE_FAVORITE_ID) missedCalls else 0,
                 )
             }
 
@@ -729,7 +738,7 @@ private fun HomeScreenPreview() {
     CoidaTheme(darkTheme = true) {
         HomeScreen(
             apps = listOf(
-                FavoriteApp("phone", "Llamar", AppIcon.Vector(R.drawable.ic_call), "com.android.dialer"),
+                FavoriteApp("phone", "Llamadas", AppIcon.Vector(R.drawable.ic_call), "com.android.dialer"),
                 FavoriteApp("messages", "Mensajes", AppIcon.Vector(R.drawable.ic_messages), "com.android.mms"),
                 FavoriteApp("camera", "Cámara", AppIcon.Vector(R.drawable.ic_camera), "com.android.camera"),
                 FavoriteApp("contacts", "Contactos", AppIcon.Vector(R.drawable.ic_contacts), null),

@@ -60,7 +60,7 @@ fun rememberFitScale(lines: List<FitLine>, maxWidthPx: Int, maxHeightPx: Int, ga
  * El mayor factor con el que caben **todos** los [groups] a la vez, cada uno en su
  * hueco de [maxWidthPx] por [maxHeightPx]: el de la que más lo necesita. Lo usa la
  * rejilla del inicio para que todas las casillas lleven la letra igual de grande;
- * si cada una eligiera la suya, «Llamar» saldría enorme al lado de «Mensajes».
+ * si cada una eligiera la suya, «Cámara» saldría enorme al lado de «Mensajes».
  */
 @Composable
 fun rememberCommonFitScale(groups: List<List<FitLine>>, maxWidthPx: Int, maxHeightPx: Int, gapPx: Int = 0): Float {

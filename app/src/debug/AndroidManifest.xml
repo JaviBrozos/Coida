@@ -16,6 +16,12 @@
         android:name="android.hardware.microphone"
         android:required="false" />
 
+    <!--
+        La bola roja de llamadas perdidas (D-66), como en src/familia. No va en
+        main: Google Play no deja leer el registro de llamadas a un launcher.
+    -->
+    <uses-permission android:name="android.permission.READ_CALL_LOG" />
+
     <queries>
         <!--
             Motor de voz del asistente. Sin esto, desde Android 11 TextToSpeech no

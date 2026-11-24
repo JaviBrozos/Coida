@@ -2,6 +2,7 @@ package com.coida.data
 
 import android.content.Intent
 import android.net.Uri
+import android.provider.CallLog
 import android.provider.MediaStore
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -22,9 +23,11 @@ internal data class FavoriteTemplate(
     val intent: Intent,
     /** Si sale en el inicio de un móvil recién estrenado, o solo si la pone el familiar. */
     val onHomeByDefault: Boolean = true,
+    /** Lo que se abre si en este móvil nadie atiende [intent]; null para pintarla apagada. */
+    val fallback: Intent? = null,
 )
 
-/** Id de la casilla «Llamar»: el asistente la señala al guiar una llamada. */
+/** Id de la casilla «Llamadas»: el asistente la señala al guiar una llamada. */
 const val PHONE_FAVORITE_ID = "phone"
 
 /** Id de la casilla «Emergencias 112» (D-51). */
@@ -37,11 +40,18 @@ const val EMERGENCY_FAVORITE_ID = "emergency"
  * del AndroidManifest, o en Android 11+ no se podrá resolver.
  */
 internal val DefaultFavorites: List<FavoriteTemplate> = listOf(
+    // El historial y no el teclado (D-65): lo primero que quiere ver es quién le ha
+    // llamado, y desde ahí se devuelve la llamada con un toque. Si la app de
+    // teléfono de este móvil no tiene historial que abrir así, el teclado de antes.
+    // Con la dirección y el tipo, no solo el tipo: Google Phone solo atiende el
+    // historial con dirección content://, y con el tipo a secas se lo quedaba una
+    // pantalla de Contactos para tablets que se cerraba sin enseñar nada.
     FavoriteTemplate(
         id = PHONE_FAVORITE_ID,
         labelRes = R.string.app_phone,
         iconRes = R.drawable.ic_call,
-        intent = Intent(Intent.ACTION_DIAL),
+        intent = Intent(Intent.ACTION_VIEW).setDataAndType(CallLog.Calls.CONTENT_URI, CallLog.Calls.CONTENT_TYPE),
+        fallback = Intent(Intent.ACTION_DIAL),
     ),
     FavoriteTemplate(
         id = "messages",

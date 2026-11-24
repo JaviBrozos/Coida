@@ -31,6 +31,14 @@ object CoidaDimens {
     val TilePaddingMin = 4.dp
     val TilePaddingMax = 16.dp
 
+    /**
+     * La bola roja de llamadas perdidas de la casilla «Llamadas» (D-66): 0,6 del
+     * icono, entre estos dos. Con menos de 20 dp la cifra no se leía; la casilla la
+     * escribe además debajo del nombre.
+     */
+    val MissedBadgeMin = 20.dp
+    val MissedBadgeMax = 44.dp
+
     /** Alto de la casilla de una por fila, que va en horizontal. Fijo: no se estira. */
     val TileRowHeight = 112.dp
 

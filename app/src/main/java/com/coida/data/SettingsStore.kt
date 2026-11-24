@@ -68,6 +68,16 @@ class SettingsStore(context: Context) {
     }
 
     /**
+     * El familiar encendió la bola roja de llamadas perdidas (D-66). Solo cuenta en
+     * las variantes que traen el permiso, y si Android lo tiene concedido.
+     */
+    fun missedCallsBadge(): Boolean = prefs.getBoolean(KEY_MISSED_CALLS_BADGE, false)
+
+    fun saveMissedCallsBadge(enabled: Boolean) {
+        prefs.edit { putBoolean(KEY_MISSED_CALLS_BADGE, enabled) }
+    }
+
+    /**
      * La letra se guarda en una clave nueva desde que hay un nivel por debajo del
      * antiguo «Normal» (D-55). Si solo está la vieja, se traduce un escalón hacia
      * arriba: quien ya usaba Coida conserva exactamente el tamaño que tenía.
@@ -114,5 +124,6 @@ class SettingsStore(context: Context) {
         const val KEY_ASSISTANT_ENABLED = "assistant_enabled"
         const val KEY_ASSISTANT_MODE = "assistant_mode"
         const val KEY_HOME_NOTICE_DISMISSED = "home_notice_dismissed"
+        const val KEY_MISSED_CALLS_BADGE = "missed_calls_badge"
     }
 }

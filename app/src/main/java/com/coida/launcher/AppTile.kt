@@ -1,8 +1,17 @@
 package com.coida.launcher
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import com.coida.core.ui.FitText
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
@@ -79,6 +88,10 @@ import com.coida.data.FavoriteApp
  *   Interfaz y «Colocar las casillas», donde el toque lo lleva quien la envuelve.
  * @param labelScale el tamaño de letra común de su rejilla ([rememberTileLabelScale]);
  *   null para que lo calcule ella sola.
+ * @param missedCalls llamadas perdidas sin ver. Solo se lo pasa el inicio a la
+ *   casilla «Llamadas» (D-66): con más de 0 lleva la bola roja con el número en la
+ *   esquina del icono y, escrito debajo del nombre, «2 perdidas». Apagada o señalada,
+ *   no.
  */
 @Composable
 fun AppTile(
@@ -88,7 +101,9 @@ fun AppTile(
     modifier: Modifier = Modifier,
     highlighted: Boolean = false,
     labelScale: Float? = null,
+    missedCalls: Int = 0,
 ) {
+    val missed = if (app.isAvailable && !highlighted) missedCalls.coerceAtLeast(0) else 0
     val colors = MaterialTheme.colorScheme
     // Señalada: rellena de acento. Así se distingue también en gris y en el tema
     // claro, donde el contorno normal ya es del mismo marino que el acento.
@@ -114,7 +129,8 @@ fun AppTile(
     val openLabel = stringResource(R.string.cd_open_app, app.label)
     val unavailableLabel = stringResource(R.string.cd_app_unavailable, app.label)
     val highlightedLabel = stringResource(R.string.cd_highlighted)
-    val detail = appTileDetail(app)
+    val missedLabel = pluralStringResource(R.plurals.cd_missed_calls, missed, missed)
+    val detail = appTileDetail(app, missed)
 
     TileFrame(
         onClick = onClick,
@@ -129,8 +145,19 @@ fun AppTile(
                 contentDescription = unavailableLabel
             }
             if (highlighted) stateDescription = highlightedLabel
+            // El nombre a secas: si no, TalkBack leía «2 perdidas» de debajo y además
+            // el estado, «2 llamadas perdidas».
+            if (missed > 0) {
+                contentDescription = app.label
+                stateDescription = missedLabel
+            }
         },
-        icon = { size -> TileIcon(app, iconTint, size) },
+        icon = { size ->
+            Box {
+                TileIcon(app, iconTint, size)
+                if (missed > 0) MissedCallsBadge(missed, size, Modifier.align(Alignment.TopEnd))
+            }
+        },
         labels = { align, labelModifier ->
             TileLabels(app.label, detail, contentColor, contentColor, align, labelModifier, labelScale)
         },
@@ -372,10 +399,58 @@ private fun tileLines(name: String, detail: String?): List<FitLine> {
     }
 }
 
-/** Lo que va debajo del nombre de una casilla de app: nada, o «No disponible». */
+/**
+ * La bola roja de las llamadas perdidas, en la esquina de arriba a la derecha del
+ * icono, un poco por fuera para no taparlo (D-66).
+ *
+ * `error` con el número en `onError`: 6,54:1 en claro y 7,72:1 en oscuro. La bola
+ * contra la casilla, 6,54:1 y 8,67:1, y un aro del color de la casilla la separa del
+ * icono. No depende del color: lleva la cifra, y la casilla además la escribe debajo
+ * del nombre, porque con cuatro por fila la de la bola es pequeña.
+ */
 @Composable
-internal fun appTileDetail(app: FavoriteApp): String? =
-    if (app.isAvailable) null else stringResource(R.string.app_unavailable)
+private fun MissedCallsBadge(count: Int, iconSize: Dp, modifier: Modifier = Modifier) {
+    val colors = MaterialTheme.colorScheme
+    val badge = (iconSize * BADGE_RATIO).coerceIn(CoidaDimens.MissedBadgeMin, CoidaDimens.MissedBadgeMax)
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = modifier
+            .offset(x = badge * BADGE_OUTSET_X, y = -badge * BADGE_OUTSET_Y)
+            .size(badge)
+            .clip(CircleShape)
+            .background(colors.error)
+            .border(CoidaDimens.BorderWidth, colors.surfaceContainer, CircleShape),
+    ) {
+        // Decorativa para TalkBack: el número ya lo dice la casilla entera.
+        FitText(
+            text = if (count > BADGE_MAX_COUNT) "$BADGE_MAX_COUNT+" else count.toString(),
+            style = MaterialTheme.typography.labelSmall,
+            color = colors.onError,
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            modifier = Modifier.clearAndSetSemantics { },
+        )
+    }
+}
+
+/**
+ * Lo que va debajo del nombre de una casilla de app: «No disponible», las llamadas
+ * perdidas de «Llamadas» («2 perdidas», D-66) o nada.
+ */
+@Composable
+internal fun appTileDetail(app: FavoriteApp, missedCalls: Int = 0): String? = when {
+    !app.isAvailable -> stringResource(R.string.app_unavailable)
+    missedCalls > 0 -> pluralStringResource(R.plurals.missed_calls_short, missedCalls, missedCalls)
+    else -> null
+}
+
+/** La bola mide esta parte del icono, y asoma por fuera de él lo que dicen los otros dos. */
+private const val BADGE_RATIO = 0.6f
+private const val BADGE_OUTSET_X = 0.4f
+private const val BADGE_OUTSET_Y = 0.25f
+
+/** A partir de aquí, «9+»: con dos cifras no se leía en la bola pequeña. */
+private const val BADGE_MAX_COUNT = 9
 
 /**
  * Lo que va debajo del nombre de un contacto: lo que hace, o qué falta. Solo se
@@ -450,7 +525,7 @@ private val ROW_SPACING = 20.dp
 private fun AppTilePreview() {
     CoidaTheme(darkTheme = true) {
         AppTile(
-            app = FavoriteApp("phone", "Llamar", AppIcon.Vector(R.drawable.ic_call), "com.android.dialer"),
+            app = FavoriteApp("phone", "Llamadas", AppIcon.Vector(R.drawable.ic_call), "com.android.dialer"),
             horizontal = false,
             onClick = {},
             modifier = Modifier.width(200.dp),

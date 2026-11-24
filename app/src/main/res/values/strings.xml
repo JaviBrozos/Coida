@@ -4,7 +4,7 @@
     <string name="app_tagline">Una app para tus mayores</string>
 
     <!-- Apps favoritas de fábrica -->
-    <string name="app_phone">Llamar</string>
+    <string name="app_phone">Llamadas</string>
     <string name="app_messages">Mensajes</string>
     <string name="app_camera">Cámara</string>
     <string name="app_contacts">Contactos</string>
@@ -27,6 +27,15 @@
     <string name="app_unavailable">No disponible</string>
     <string name="app_removed_label">App desinstalada</string>
     <string name="cd_app_unavailable">%1$s no está instalada en este móvil</string>
+    <!-- Debajo del nombre de la casilla «Llamadas», junto a su bola roja (D-66). -->
+    <plurals name="missed_calls_short">
+        <item quantity="one">%d perdida</item>
+        <item quantity="other">%d perdidas</item>
+    </plurals>
+    <plurals name="cd_missed_calls">
+        <item quantity="one">%d llamada perdida</item>
+        <item quantity="other">%d llamadas perdidas</item>
+    </plurals>
     <string name="cd_contact_action">%1$s a %2$s</string>
     <string name="cd_contact_unavailable">%1$s: no disponible, falta WhatsApp</string>
     <string name="cd_open_settings">Abrir ajustes, protegidos con PIN</string>
@@ -213,7 +222,7 @@
     <string name="guide_tile_where_one">Busca la casilla «%1$s». Es la número %2$d, empezando por arriba.</string>
     <string name="guide_tile_press">Púlsala y se abrirá.</string>
     <string name="guide_emergency_press">Púlsala y se abrirá el teléfono con el 112 marcado. Después pulsa el botón verde de llamar.</string>
-    <string name="guide_call_search">Busca a %1$s en la lista y pulsa su nombre para llamar.</string>
+    <string name="guide_call_search">Busca a %1$s en la lista de llamadas y pulsa su nombre para llamar. Si no sale, búscalo en los contactos del teléfono.</string>
     <string name="guide_whatsapp_search">Busca la conversación de %1$s y púlsala.</string>
     <string name="guide_ask_family_call">Ahora mismo no tienes un botón para llamar a %1$s. Pide a tu familiar que lo ponga en el inicio.</string>
     <string name="guide_ask_family_whatsapp">Ahora mismo no tienes un botón para escribir a %1$s. Pide a tu familiar que lo ponga en el inicio.</string>
@@ -269,6 +278,10 @@
     <string name="apps_section_others">Otras apps de este móvil</string>
     <string name="apps_emergency_note">Abre el teléfono con el 112 ya marcado. Para llamar hay que pulsar el botón verde: así no se llama sin querer.</string>
     <string name="apps_arrange">Colocar en el inicio</string>
+    <string name="apps_section_missed">Llamadas perdidas</string>
+    <string name="apps_missed_title">Avisar de llamadas perdidas</string>
+    <string name="apps_missed_note">Pone un número rojo en la casilla Llamadas cuando hay llamadas sin ver. Hay que dar permiso para ver el historial de llamadas.</string>
+    <string name="apps_missed_denied">Sin ese permiso no se puede avisar. Pulsa otra vez y elige «Permitir». Si ya no sale la pregunta, dalo en los ajustes de Android: Aplicaciones, Coida, Permisos.</string>
     <string name="apps_note">Las apps nuevas se instalan desde la tienda, en Modo administrador. Cuando terminan de instalarse, aparecen en esta lista.</string>
 
     <!-- Ajustes → Colocar las casillas (D-59). Lo usa el familiar. -->
