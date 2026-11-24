@@ -151,19 +151,21 @@ reglas: **el visto no toca la C**, o se lee como una «e»; **los colores son lo
   radio 20 con centro en (35,5; 32), trazo de 9 y la boca abierta a la derecha
   (±60°), con puntas redondas. El visto pasa por (31,5; 33), (38,5; 40) y
   (52,5; 25), con trazo de 6,5 y puntas y codo redondos. Entre la punta del visto
-  y el remate de arriba de la C quedan 4,7 unidades: menos y se cierra a 48 px.
+  y el remate de arriba de la C quedan 4,7 unidades, y entre el codo del visto y el
+  interior del anillo, 3,71: es el hueco más estrecho, y por eso la marca no baja de
+  24 px de alto.
 - **Icono adaptativo**: fondo `ic_launcher_background` (marino) y delante
   `drawable/ic_launcher_foreground.xml`, sin inset. La figura se escala a 0,98 (48 dp
-  de alto en el lienzo de 108), desplazada 1,5 a la derecha para equilibrar la
-  masa del anillo, y queda dentro de la zona segura de 66 (26 dp del centro como
+  de alto en el lienzo de 108), centrada en el lienzo (la caja de la figura cae
+  1,35 dp a la derecha por su propia forma, lo que equilibra la masa del anillo), y queda dentro de la zona segura de 66 (26 dp del centro como
   mucho). La capa monocroma es la misma figura.
   Para API 24-25, PNG de mdpi a xxxhdpi (48 a 192 px), y `publishing/icono-512.png`
   para Google Play. El cian sobre el marino da 7,36:1.
 - **Logotipo** (`coida_logo.svg` y los de `.claude/skills/coida-brand/assets/`): la
   C y «Coida» en Inter Bold pasada a trazos (D-68). La C mide 1,25 veces la altura
-  de la mayúscula, centrada con ella, y el hueco hasta la palabra es un tercio del
-  ancho de la C. Hay una versión marina para fondo claro y otra con la C en cian y
-  el texto en `#F2F7FB` para fondo oscuro.
+  de la mayúscula, centrada con ella, y el hueco hasta la palabra es 0,27 del ancho
+  de la C, medido en la punta del visto. Hay una versión marina para fondo claro y
+  otra con la C en cian y el texto en `#F2F7FB` para fondo oscuro.
 - **Piezas para fuera** (D-68): la cabecera del README (`docs/img/cabecera.png`),
   el gráfico destacado de Play y la imagen de LinkedIn (en `publishing/`). Llevan
   fondo tinta o marino, el lema en `#F2F7FB` y el texto secundario en `#9FC4DC`

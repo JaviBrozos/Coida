@@ -69,10 +69,14 @@ y el visto dice «hecho, ya está», que es lo que busca la persona mayor.
 - **Logotipo**: la C y la palabra «Coida» en **Inter Bold pasada a trazos**, que
   no depende de tener la letra instalada.
   - La C mide 1,25 veces la altura de la mayúscula y va centrada con ella.
-  - El hueco entre la C y la palabra es un tercio del ancho de la C.
+  - El hueco entre la C y la palabra es 0,27 del ancho de la C, medido en la punta
+    del visto: por la boca abierta, a media altura se ve más ancho.
   - «Coida» no tiene I ni l, así que `ss04` no cambia nada en el logotipo.
 - **Zona de respeto**: alrededor de la C, como mínimo la mitad de su ancho.
-  **Tamaño mínimo**: 16 px el isotipo y 24 px de alto el logotipo.
+  **Tamaño mínimo**: 24 px de alto, el isotipo y el logotipo. El hueco más
+  estrecho, entre el codo del visto y el interior del anillo, mide 3,71 unidades de
+  64: por debajo de 24 px se empasta y se lee como una «e». Para un favicon, el
+  isotipo solo, sin el cuadrado.
 - **Nunca**:
   - la C en cian sobre blanco (2,32:1);
   - estirarla, girarla o ponerle sombras, degradados o contornos;
