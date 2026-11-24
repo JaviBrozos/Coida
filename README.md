@@ -132,6 +132,67 @@ mira [Probar el asistente con tu propia clave](#probar-el-asistente-con-tu-propi
   (accesibilidad, marca y presentación del repositorio) y la skill de marca, para
   que quien toque el código, persona o agente de IA, siga las mismas reglas.
 
+## Cómo lo hemos hecho con Claude Code
+
+Casi todo el proyecto lo hemos escrito trabajando con
+[Claude Code](https://claude.com/claude-code): casi todos los commits llevan su
+firma (`Co-Authored-By`). Pero no es *vibecoding*, eso de pedir algo, aceptar lo
+que salga y seguir. Le hemos montado un **arnés**: contexto escrito, normas,
+revisores y comprobaciones, para que trabaje como un ingeniero más del equipo. Las
+decisiones de producto las tomamos nosotros y las personas mayores que lo probaron;
+Claude propone, ejecuta y demuestra que funciona.
+
+### Las piezas del arnés
+
+| Pieza | Qué hace |
+| --- | --- |
+| [`CLAUDE.md`](CLAUDE.md) | El índice del proyecto: qué es Coida, los cinco invariantes que no se rompen, lo que no va a hacer nunca, los comandos y cómo recuperar el móvil si el launcher falla. Incluye lo obligatorio en cada cambio. |
+| [`.claude/rules/`](.claude/rules) | Siete normas. Tres se cargan siempre (accesibilidad, producto y flujo de trabajo); las otras cuatro solo al abrir un fichero de su zona (Compose, datos y manifiesto, recursos, asistente). Así el contexto es corto y relevante. |
+| [`.claude/agents/`](.claude/agents) | Tres subagentes con un papel fijo. El de **accesibilidad** (WCAG 2.2 AA, Android y Material 3) y el **auditor de marca** solo leen y proponen; toda pantalla nueva pasa por el primero. El **presentador** escribió este README con una condición: cada cifra, con su fuente. |
+| [`.claude/skills/`](.claude/skills) | La marca de Coida (`coida-brand`), un marco para auditar identidades visuales y los principios de diseño de Apple, este último como inspiración. Cuando chocan, mandan las normas de Coida. |
+| [`docs/`](docs) | La memoria del proyecto: la ERS es la fuente única de los casos de uso, `decisiones.md` guarda 68 decisiones con lo que se descartó y `estado.md` se actualiza en cada cambio. |
+
+### Contra las alucinaciones
+
+- **El código manda.** Si un documento y el código no cuadran, gana el código y el
+  documento se corrige en el mismo commit. Si no da tiempo, se borra la frase:
+  vacío es mejor que falso.
+- **Una sola fuente para cada cosa.** Los requisitos solo viven en la ERS, los
+  colores en `Color.kt` y las medidas en `Dimens.kt`. Si un documento repite una
+  cifra y no cuadra, se corrige el documento.
+- **Nada inventado.** No hay pruebas automáticas y las normas lo dicen, para que
+  nadie se invente un comando de test. Antes de proponer sintaxis de Gradle, se lee
+  el catálogo de versiones: AGP 9 no se parece a lo que hay en internet.
+- **Lo que dice un agente se comprueba.** Al preparar esta publicación, un
+  subagente aseguró que la APK lista para subir era otra variante. Comparamos el
+  hash y los permisos con `aapt`: era la correcta y el agente se equivocaba. No se
+  actuó sobre su palabra.
+- **Decisiones cerradas y abiertas.** Las cerradas no se reabren dentro de otra
+  tarea. Si una tarea depende de un conflicto abierto de la ERS, Claude para y
+  pregunta, porque es una decisión de los dos creadores.
+
+### Revisión en vez de vibecoding
+
+- **Plan antes de tocar nada.** En los cambios grandes, Claude audita el código,
+  escribe un plan por fases y nos pregunta lo que solo podemos decidir nosotros,
+  como el nombre, el `applicationId` o el alcance. Con el plan aprobado, se ejecuta.
+- **Hecho quiere decir comprobado.** Una pantalla está terminada cuando compila,
+  `lint` da 0 errores, cumple los criterios de su caso de uso en la ERS, pasa el
+  repaso de accesibilidad y se ha visto funcionando en el emulador, no solo
+  compilando.
+- **Pruebas de verdad, a mano.** Capturas en el emulador, letra del sistema al
+  200 %, giro, modo avión, matar el proceso y reiniciar. Además, el manifiesto
+  fusionado de la release y un `grep` del `dex` para demostrar que no lleva la
+  clave ni el código del asistente.
+- **Cambios pequeños y trazables.** Un commit por fase, el código y la
+  documentación por separado, y mensajes en español que explican el porqué.
+- **Nada hacia fuera sin permiso.** Hacer público el repositorio, subir o
+  publicar algo siempre lo confirma una persona. Antes de abrir el repo se
+  revisó el historial entero en busca de claves.
+
+El punto débil sigue ahí y lo decimos: sin pruebas automáticas, la red de seguridad
+es esta revisión manual.
+
 ## Quiénes somos
 
 Somos dos estudiantes de Ingeniería Informática:
