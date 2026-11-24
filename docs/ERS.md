@@ -1,11 +1,11 @@
-# DOADO — Especificación de Requisitos
+# Coida — Especificación de Requisitos
 
-Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y deja marcado lo que falta por definir.
+Borrador inicial de la ERS de Coida: recoge lo ya construido en el repositorio y deja marcado lo que falta por definir.
 
 | Campo | Valor |
 | --- | --- |
-| Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.13 (borrador) |
+| Proyecto | Coida — launcher de Android para personas mayores (antes Doado) |
+| Versión | 0.14 (borrador) |
 | Fecha | 11/11/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
@@ -27,12 +27,13 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.11 | 28/10/2026 | Tras probar con dos personas mayores. RNF-ACC-02 y RNF-ACC-03: casillas siempre cuadradas, de 1 a 4 por fila, y un tamaño de letra por debajo del de siempre, con el texto encogiéndose sin partir palabras (D-54, D-55). CU-05, CU-04 y CU-15: el asistente dice lo que va a hacer y lo hace sin pedir un «Sí», y solo vuelve a escuchar para que se le repita la orden; de fábrica, «Lo hace» (D-56). RNF-USA-03: tiempos nuevos (D-58). CU-02 y RNF-PRI-01: rótulo «Contactos favoritos» y foto de la agenda (D-57). CU-10: el familiar coloca las casillas (D-59) | Javier Brozos Martínez |
 | 0.12 | 09/11/2026 | El producto pasa a llamarse Coida (D-62). CON-06 sigue abierto, pero ya no bloquea publicar: la versión 1.0.0 de Google Play sale sin asistente (D-63). CU-04, CU-05 y CU-15 siguen «En pruebas», solo en la versión de depuración | Javier Brozos Martínez |
 | 0.13 | 11/11/2026 | CU-01: la casilla del teléfono se llama «Llamadas» y abre el historial de llamadas, no el teclado (D-65). CU-18 nuevo: bola roja con las llamadas perdidas sin ver en esa casilla, solo en la variante «familia» y en la de depuración, nunca en la de Google Play (D-66). RNF-PRI-03 nuevo | Javier Brozos Martínez |
+| 0.14 | 24/11/2026 | El asistente deja de presentarse como la principal propuesta de valor: a las personas mayores que lo probaron no les resultó útil y no entra en la versión pública (D-67). CU-04, CU-05 y CU-15 siguen «En pruebas», solo en depuración. Capturas nuevas (D-68) | Javier Brozos Martínez |
 
 ## 1. Introducción
 
-DOADO es un launcher (pantalla de inicio) de Android para personas mayores que tienen dificultades con el móvil. Reduce lo que hay en pantalla, lo agranda y sube el contraste, y separa dos caras: una pantalla de inicio fija para la persona mayor y unos ajustes protegidos por PIN para el familiar que la configura.
+Coida (antes Doado) es un launcher (pantalla de inicio) de Android para personas mayores que tienen dificultades con el móvil. Reduce lo que hay en pantalla, lo agranda y sube el contraste, y separa dos caras: una pantalla de inicio fija para la persona mayor y unos ajustes protegidos por PIN para el familiar que la configura.
 
-El producto completo tiene dos piezas: el launcher (implementado) y un asistente de voz con IA que guía al usuario y actúa en el móvil (pendiente, y la principal propuesta de valor).
+El producto se pensó en dos piezas: el launcher (implementado y publicado) y un asistente de voz con IA que guía al usuario y actúa en el móvil. El asistente se diseñó como la principal propuesta de valor y está programado, pero a las personas mayores que lo probaron no les resultó útil, así que la versión pública sale sin él y solo existe en la de depuración (D-63, D-67).
 
 Este documento tiene dos objetivos:
 
@@ -41,7 +42,7 @@ Este documento tiene dos objetivos:
 
 ## 2. Participantes en el proyecto
 
-DOADO es un proyecto personal de dos creadores, que comparten por igual el diseño, el desarrollo, el repositorio y este documento.
+Coida es un proyecto personal de dos creadores, que comparten por igual el diseño, el desarrollo, el repositorio y este documento.
 
 | Nombre | Rol |
 | --- | --- |
@@ -69,7 +70,7 @@ Hoy una persona mayor con un Android tiene soluciones sueltas: launchers simplif
 | [Gemini en Android](https://support.google.com/gemini/answer/15574928?hl=es) | Asistente de voz generalista | Llama y envía mensajes de WhatsApp con órdenes en lenguaje natural | No está pensado para mayores: hay que configurar permisos y conexiones, y no lee mensajes ni envía imágenes por WhatsApp. No convive con una interfaz simplificada |
 | [ElliQ](https://www.fundacionbankinter.org/noticias/elliq-la-ia-que-combate-la-soledad-y-revoluciona-el-cuidado-de-los-mayores/) | Robot de compañía con IA | IA proactiva: conversa, propone actividades, recuerda la medicación y facilita el contacto con la familia | Es un dispositivo aparte que no maneja el móvil, y no está claro que se venda en España |
 
-### Qué aporta DOADO
+### Qué aporta Coida
 
 1. **Las tres piezas en un solo producto**: interfaz simplificada, control del familiar y asistente de IA. Hoy hay que combinar un launcher, un asistente generalista y, a veces, un móvil específico.
 2. **Un asistente hecho para mayores**: limitado a lo que el familiar ha configurado, que dice lo que va a hacer antes de hacerlo y que puede guiar paso a paso en vez de solo ejecutar. Gemini hace lo contrario: es abierto y da por hecho que el usuario sabe configurarlo.
@@ -77,7 +78,7 @@ Hoy una persona mayor con un Android tiene soluciones sueltas: launchers simplif
 4. **Accesibilidad como requisito medible**: no solo iconos grandes, sino contraste mínimo 7:1 en texto, objetivos de 48 dp o más, sin color dinámico y sin iconos que cambien de sitio (sección 4.2).
 5. **Bloqueado de verdad para la persona mayor**: PIN para los ajustes y modo administrador temporal para las salidas a Android, que se cierra solo a los 15 minutos. Se evita que el móvil quede abierto porque alguien olvidó volver a bloquearlo.
 
-**Lo que otros tienen y DOADO todavía no**: botón SOS que manda la ubicación (BIG Launcher, Doro; DOADO tiene desde la 0.10 una casilla para llamar al 112, CU-17, pero sin ubicación), configuración a distancia por el familiar (Doro) y recordatorios de medicación (algunos launchers, ElliQ). Son candidatos a nuevos casos de uso.
+**Lo que otros tienen y Coida todavía no**: botón SOS que manda la ubicación (BIG Launcher, Doro; Coida tiene desde la 0.10 una casilla para llamar al 112, CU-17, pero sin ubicación), configuración a distancia por el familiar (Doro) y recordatorios de medicación (algunos launchers, ElliQ). Son candidatos a nuevos casos de uso.
 
 Fuentes consultadas el 29/09/2026. La lista de launchers de Google Play procede de un artículo de diciembre de 2021, así que precios y funciones pueden haber cambiado.
 
@@ -97,7 +98,7 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 
 ### 4.1.2 Casos de uso del sistema
 
-15 casos de uso: 11 ya funcionan en el launcher y 4 están «En pruebas»: los 3 del asistente, programados y compilados y pendientes de probar con voz real, y la casilla de emergencias (CU-17), compilada y pendiente de probar con el asistente. La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: los huecos de CU-03 y CU-13 son casos retirados del alcance.
+16 casos de uso: 11 ya funcionan en el launcher y 5 están «En pruebas»: los 3 del asistente, programados y fuera de la versión pública (D-63, D-67); la casilla de emergencias (CU-17), compilada y pendiente de probar con el asistente, y la bola de llamadas perdidas (CU-18), solo en la variante «familia». La fuente «Código» indica que el caso se ha extraído del repositorio. Los identificadores no se renumeran: los huecos de CU-03 y CU-13 son casos retirados del alcance.
 
 | ID | Caso de uso | Actor | Importancia | Estado | Fuente |
 | --- | --- | --- | --- | --- | --- |
@@ -139,7 +140,7 @@ Se detallan los casos que más condicionan el diseño. El resto se describirá c
 **Secuencia normal**
 
 1. El usuario pulsa el acceso directo del contacto.
-2. Si la acción es llamar y DOADO tiene permiso de llamada, el sistema llama directamente.
+2. Si la acción es llamar y Coida tiene permiso de llamada, el sistema llama directamente.
 3. Si la acción es WhatsApp, el sistema convierte el número a formato internacional y abre el chat.
 
 **Excepciones**
@@ -147,7 +148,7 @@ Se detallan los casos que más condicionan el diseño. El resto se describirá c
 - 2: Sin permiso de llamada, el sistema abre el marcador con el número escrito y el usuario pulsa llamar.
 - 3: Si WhatsApp no está instalado, el acceso directo aparece apagado y no se puede pulsar.
 
-Comentario: el número se copia al añadir el contacto; si cambia en la agenda, DOADO conserva el antiguo (límite asumido). La foto, en cambio, se vuelve a leer cada vez que se vuelve al inicio.
+Comentario: el número se copia al añadir el contacto; si cambia en la agenda, Coida conserva el antiguo (límite asumido). La foto, en cambio, se vuelve a leer cada vez que se vuelve al inicio.
 
 ##### CU-06. Acceder a los ajustes con PIN
 
@@ -171,14 +172,14 @@ Comentario: el número se copia al añadir el contacto; si cambia en la agenda, 
 - 3: PIN incorrecto: el sistema lo indica y vuelve a pedirlo. Desde el cuarto fallo seguido en la misma visita muestra una nota grande con un botón para volver al inicio; desde el quinto, bloquea la puerta un tiempo creciente (RNF-SEG-03).
 - 1..3: El usuario puede volver al inicio sin entrar.
 
-Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en un fichero propio que no entra en la copia de seguridad (RNF-SEG-01), y salir de Doado cierra los ajustes (RNF-SEG-02). Como el PIN ya no se puede leer de ningún sitio, un PIN olvidado se recupera con la pregunta que el familiar fija al crearlo o cambiarlo (CU-16); sin pregunta configurada, la única salida es borrar los datos de la app. Desde el 30/09/2026 el PIN y la respuesta comparten un límite de intentos con bloqueo progresivo (RNF-SEG-03) que solo afecta a esta puerta: el inicio sigue funcionando.
+Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en un fichero propio que no entra en la copia de seguridad (RNF-SEG-01), y salir de Coida cierra los ajustes (RNF-SEG-02). Como el PIN ya no se puede leer de ningún sitio, un PIN olvidado se recupera con la pregunta que el familiar fija al crearlo o cambiarlo (CU-16); sin pregunta configurada, la única salida es borrar los datos de la app. Desde el 30/09/2026 el PIN y la respuesta comparten un límite de intentos con bloqueo progresivo (RNF-SEG-03) que solo afecta a esta puerta: el inicio sigue funcionando.
 
 ##### CU-12. Activar y desactivar el modo administrador
 
 | Campo | Valor |
 | --- | --- |
 | Actor | ACT-02 Familiar o cuidador |
-| Descripción | El familiar abre durante 15 minutos las salidas que DOADO mantiene cerradas: tienda, ajustes de Android y cambio de pantalla de inicio. |
+| Descripción | El familiar abre durante 15 minutos las salidas que Coida mantiene cerradas: tienda, ajustes de Android y cambio de pantalla de inicio. |
 | Precondición | Haber entrado en los ajustes (CU-06). |
 | Postcondición | Las salidas quedan habilitadas hasta que se cierre el modo o pase el tiempo. |
 | Importancia | Media |
@@ -194,7 +195,7 @@ Comentario: desde el 29/09/2026 el PIN se guarda derivado con PBKDF2 y sal, en u
 
 - 4: El usuario puede cerrarlo antes manualmente.
 
-Comentario: el modo no impide salir a Android de verdad; solo cierra las salidas propias de DOADO. La cuenta atrás depende de la hora del sistema.
+Comentario: el modo no impide salir a Android de verdad; solo cierra las salidas propias de Coida. La cuenta atrás depende de la hora del sistema.
 
 ##### CU-05. Realizar una acción por voz
 
@@ -231,7 +232,7 @@ El sistema recuerda lo hablado mientras el asistente está abierto: si se le rep
 - 3: Orden fuera de lo permitido (comprar, marcar un número dictado…): el sistema explica que no puede hacerlo.
 - 3: Sin conexión, o el servicio falla: mensaje en lenguaje llano que dice qué hacer; el inicio sigue funcionando (RNF-DIS-01).
 - 4: El usuario pulsa «Cancelar» mientras el sistema dice lo que va a hacer: no hace nada y lo dice.
-- 1..5: El usuario pulsa «Cancelar» o sale de Doado: el sistema deja de escuchar y descarta la petición. Mientras el asistente está abierto, la pantalla no se apaga sola.
+- 1..5: El usuario pulsa «Cancelar» o sale de Coida: el sistema deja de escuchar y descarta la petición. Mientras el asistente está abierto, la pantalla no se apaga sola.
 - 2: Con TalkBack, el sistema espera a que TalkBack anuncie «Te escucho» y da un pitido antes de grabar. En el paso 4 espera lo que tarda TalkBack en leer la frase antes de actuar.
 
 Comentario: desde el 28/10/2026 no se pide un «Sí» (D-56, que sustituye a D-26 y D-31): en la prueba con dos personas mayores, la pregunta las liaba. Las órdenes se procesan en la nube (D-25).
@@ -258,7 +259,7 @@ Comentario: desde el 28/10/2026 no se pide un «Sí» (D-56, que sustituye a D-2
 - 3: Pregunta médica, legal o de dinero: el sistema no responde y sugiere hablarlo con la familia o el médico.
 - 3: Emergencia: si el inicio tiene la casilla «Emergencias 112» (CU-17), el sistema la abre tras decirlo o guía hasta ella, según el modo; si no, indica cómo llamar al 112. Nunca marca él ningún número.
 
-Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se sigue CU-05 en modo «Explica cómo», con pasos fijos y la casilla marcada. Si es sobre el móvil en general, los pasos los redacta el modelo y pueden no cuadrar con cada marca.
+Comentario: si la duda es sobre algo de Coida («¿cómo llamo a María?»), se sigue CU-05 en modo «Explica cómo», con pasos fijos y la casilla marcada. Si es sobre el móvil en general, los pasos los redacta el modelo y pueden no cuadrar con cada marca.
 
 ##### CU-15. Configurar el asistente
 
@@ -334,7 +335,7 @@ Comentario: Google Play solo deja leer el registro de llamadas a la app de telé
 
 ### 4.2 Requisitos no funcionales
 
-En DOADO los no funcionales son el núcleo del producto, no un añadido: la accesibilidad es lo que lo diferencia de un launcher normal. Cada requisito lleva un criterio que se puede comprobar.
+En Coida los no funcionales son el núcleo del producto, no un añadido: la accesibilidad es lo que lo diferencia de un launcher normal. Cada requisito lleva un criterio que se puede comprobar.
 
 | ID | Categoría | Requisito | Criterio de aceptación | Fuente |
 | --- | --- | --- | --- | --- |
@@ -349,9 +350,9 @@ En DOADO los no funcionales son el núcleo del producto, no un añadido: la acce
 | RNF-USA-02 | Usabilidad | La persona mayor no puede desconfigurar el móvil sin querer | Los ajustes y las salidas a Android solo son accesibles tras el PIN o el modo administrador | README |
 | RNF-USA-03 | Usabilidad | El asistente no corta a quien habla despacio ni oye la casa entera | Espera hasta 10 s a que empiece a hablar, da la frase por acabada tras 1,2 s de silencio y corta a los 10 s. Lo que suena bastante más flojo que la voz de quien habla (la tele, alguien al fondo) cuenta como silencio (D-58). Siempre hay un botón «Ya he terminado». Todo lo que dice en voz alta se ve escrito, con «Repetir». Valores de partida en `VoiceTuning.kt`, a ajustar con personas reales | Propuesta |
 | RNF-SEG-01 | Seguridad | El PIN se guarda protegido | PIN derivado con PBKDF2 y sal aleatoria, en un fichero de preferencias propio que queda fuera de las reglas de copia de seguridad. Cumplido desde el 29/09/2026 | README (límite conocido) |
-| RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Salir de Doado cierra los ajustes: al volver hay que repetir el PIN. Se exceptúa la ida y vuelta que inicia el propio Doado (tienda, selector de contactos, ajustes de Android). Cumplido desde el 29/09/2026 | README (límite conocido) |
+| RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Salir de Coida cierra los ajustes: al volver hay que repetir el PIN. Se exceptúa la ida y vuelta que inicia el propio Coida (tienda, selector de contactos, ajustes de Android). Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-SEG-03 | Seguridad | No se puede probar el PIN a ciegas | Un solo contador de fallos para el PIN y la respuesta de recuperación. Los fallos 1 a 4 no bloquean y, desde el cuarto de la misma visita, se ofrece volver al inicio con un botón grande; el 5.º bloquea 30 s, el 6.º 1 min, el 7.º 5 min, el 8.º 15 min y del 9.º en adelante 1 h. El bloqueo sobrevive a cerrar la app, a cambiar la hora y a reiniciar, y no afecta al inicio. Cumplido desde el 30/09/2026 | Propuesta (D-24) |
-| RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | El nombre y el número salen del contacto elegido en el selector. Con el permiso de contactos (D-57), solo se busca la foto de los números guardados en Doado, uno a uno; nunca se recorre la agenda. Las fotos no salen del móvil ni se guardan en disco | Código |
+| RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | El nombre y el número salen del contacto elegido en el selector. Con el permiso de contactos (D-57), solo se busca la foto de los números guardados en Coida, uno a uno; nunca se recorre la agenda. Las fotos no salen del móvil ni se guardan en disco | Código |
 | RNF-PRI-03 | Privacidad | Acceso mínimo al registro de llamadas | Solo en las versiones de la familia y de depuración, y si el familiar lo enciende (CU-18). Solo se cuentan las perdidas sin ver: no se leen números, nombres ni duraciones, y nada sale del móvil ni se guarda | Propuesta |
 | RNF-PRI-02 | Privacidad | Tratamiento de datos del asistente conforme al RGPD | Al servicio externo solo salen el audio de cada frase, su transcripción, las últimas frases de la conversación en curso y los nombres de contactos y casillas; nunca los números de teléfono. Ni el audio ni la conversación se guardan en el móvil: se olvidan al cerrar el asistente. El familiar lo acepta al activar el asistente, tras leer la nota. Pendiente antes de publicar: base legal formal y contrato con el proveedor | Propuesta |
 | RNF-DIS-01 | Disponibilidad | Las funciones básicas funcionan sin conexión | Abrir apps y llamar no dependen de internet. Sin conexión, el asistente dice en lenguaje llano que la necesita y que los botones siguen funcionando | Propuesta |
@@ -388,7 +389,7 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | Launcher | Pantalla de inicio de Android: la app que se abre al pulsar Inicio y desde la que se lanzan las demás. |
 | Casilla | Botón cuadrado del inicio que abre una app (con una por fila, una fila de alto fijo). Su sitio lo elige el familiar y no cambia solo. |
 | Acceso directo de persona | Botón del inicio con el nombre de un contacto que le llama o abre su WhatsApp. |
-| Modo administrador | Periodo de 15 minutos en el que DOADO habilita la tienda, los ajustes de Android y el cambio de pantalla de inicio. |
+| Modo administrador | Periodo de 15 minutos en el que Coida habilita la tienda, los ajustes de Android y el cambio de pantalla de inicio. |
 | PIN de ajustes | Código de 4 cifras que protege los ajustes del familiar. |
 | Asistente | Componente de IA que recibe órdenes habladas y actúa o guía dentro del móvil. |
 | dp / sp | Unidades de Android independientes de la densidad de pantalla; sp además escala con el tamaño de letra del sistema. |
@@ -411,4 +412,4 @@ Cada reunión entre los creadores se registra con el formato de acta (código AC
 
 ### Anexo B. Prototipos de pantallas
 
-Las pantallas del launcher ya están diseñadas en la carpeta [design](../design) del repositorio y capturadas en [docs/capturas](capturas). El asistente se programó sin prototipo previo; sus capturas quedan pendientes, y las del inicio se han quedado viejas (Ajustes ya no es una barra, D-28).
+Las pantallas del launcher ya están diseñadas en la carpeta [design](../design) del repositorio y capturadas en [docs/capturas](capturas), con las ocho pantallas de la versión 1.0.1 de release (D-68). El asistente se programó sin prototipo previo y, como no está en la versión pública, no tiene capturas.

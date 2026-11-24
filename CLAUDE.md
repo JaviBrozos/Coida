@@ -7,10 +7,11 @@ se pelean con el móvil: menos cosas en pantalla, más grandes y con más contra
 El móvil lo usa una persona y lo configura otra, así que la app tiene dos caras:
 una pantalla de inicio fija y unos ajustes detrás de un PIN.
 
-El producto son dos piezas: el **launcher** (implementado) y el **asistente de
-voz con IA** (programado y en pruebas, y la principal propuesta de valor). La
-versión pública de Google Play (1.0.0) sale **sin asistente**: solo existe en la
-de depuración (D-63). Hasta el 09/11/2026 se llamaba **Doado** (D-62).
+El producto que se publica es el **launcher**. El **asistente de voz con IA** se
+diseñó como la principal propuesta de valor y está programado, pero en las pruebas
+a las personas mayores no les resultó útil: la versión pública (Google Play y la APK
+de GitHub) sale **sin asistente**, que solo existe en la de depuración (D-63, D-67).
+Hasta el 09/11/2026 se llamaba **Doado** (D-62). El repositorio es público (D-68).
 
 ## Obligatorio en cada cambio
 

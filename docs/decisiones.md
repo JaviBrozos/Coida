@@ -1156,3 +1156,61 @@ cambia. Hoy, sin `keystore.properties`, la familia se firma con la clave de
 depuración. Cuando exista el keystore de Play pasará a firmarse con él, y **no podrá
 instalarse encima de una APK firmada con la de depuración**: habrá que desinstalar, y
 se pierden PIN, contactos y casillas.
+
+### D-67 · El asistente se queda fuera de la versión pública porque a los mayores no les resultó útil (24/11/2026)
+
+Pedido por Javier. Completa a D-63, que solo daba las razones técnicas, sin
+reescribirla. Hay que contárselo a Gonzalo.
+**Contexto**: el asistente de voz se diseñó como la principal propuesta de valor y
+está programado entero. En las pruebas con las personas mayores (D-54 a D-59) **no
+les resultó útil**: lo que usan son las casillas y los contactos del inicio, que ya
+conocen. La confirmación hablada ya las liaba (D-56).
+**Decisión**:
+- La versión pública (Google Play y la APK de GitHub) sale sin asistente, como
+  dice D-63, y **no se presenta como parte del producto**: ni en la ficha, ni en la
+  web, ni en el README, ni en las redes. Donde se cuente, se dice tal cual: se
+  programó, se probó con mayores, no les resultó útil y se quitó.
+- El código se queda en la versión de depuración y CU-04, CU-05 y CU-15 siguen «En
+  pruebas». Quien quiera probarlo pone su propia clave en `local.properties`
+  (`coida.ai.apiKey`).
+
+**Descartado**: borrar el código, que tira un trabajo terminado que puede servir
+con otro planteamiento. Seguir enseñándolo como el centro del producto, que promete
+algo que la versión pública no tiene y que los usuarios no pidieron.
+**Consecuencia**: el producto que se enseña es el launcher. `CLAUDE.md`,
+`.claude/rules/producto.md`, la ERS, el README, la web y la presentación dejan de
+llamarlo «la principal propuesta de valor». CON-06 sigue abierto, pero solo importa
+si el asistente vuelve.
+
+### D-68 · Marca completa con la C, repositorio público y APK descargable desde GitHub (24/11/2026)
+
+Pedido por Javier, para enseñar el proyecto en LinkedIn. Completa a D-62, que dejó
+pendientes el logotipo y las piezas.
+**Contexto**: tras el cambio de nombre seguían con la D y con Doado el logotipo,
+la skill de marca, la web, la presentación y las capturas. El repositorio era
+privado, y no había forma de probar Coida sin compilarla.
+**Decisión**:
+- **Marca**: la skill pasa a `.claude/skills/coida-brand/`. El logotipo es la C y
+  «Coida» en Inter Bold pasada a trazos, en versión marina y clara. Hay piezas
+  nuevas: la cabecera del README (también la *social preview* de GitHub), el
+  gráfico destacado de Play y la imagen de LinkedIn. Las ocho capturas se sacan de la
+  release con datos inventados. La web y la presentación pasan a Coida, sin
+  asistente y sin los testimonios de ejemplo, que eran inventados.
+- **Repositorio**: pasa a llamarse `JaviBrozos/Coida` y se hace público. Antes se
+  comprobó que la clave de Groq no estaba en ningún commit; `local.properties`
+  solo lee ya las claves `coida.ai.*` (fuera la lectura de `doado.ai.*` de D-62).
+- **APK**: la de **release** va como adjunto de una Release de GitHub, nunca en git.
+  Es la misma que irá a Play, sin asistente ni internet, firmada con la clave de
+  depuración mientras no exista el keystore.
+
+**Descartado**:
+- Adjuntar la APK de depuración, que lleva la clave dentro.
+- Commitear la APK, que engorda el historial para siempre.
+- Rehacer ahora el vídeo, que gira en torno al asistente: se queda en
+  `design/video/` como pieza de Doado.
+
+**Consecuencia**:
+- La Release y la versión de Play tendrán firmas distintas. Para pasar de una a
+  otra hay que desinstalar, y se pierden el PIN, los contactos y las casillas.
+- La *social preview* se sube a mano en los ajustes de GitHub.
+- Sin `LICENSE`, el código público tiene todos los derechos reservados.

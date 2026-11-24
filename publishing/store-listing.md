@@ -63,5 +63,5 @@ Coida está en español y funciona en Android 7.0 o posterior, en móviles y tab
 - **Categoría**: Personalización.
 - **Etiquetas**: pantalla de inicio, accesibilidad, personas mayores.
 - **Correo de contacto**: [por rellenar].
-- **Web**: [por rellenar]. Ojo: `doadoapp.com` sigue con el nombre viejo.
+- **Web**: `https://github.com/JaviBrozos/Coida` mientras no haya dominio de Coida.
 - **Política de privacidad**: URL pública de `privacy-policy.md` [por rellenar].

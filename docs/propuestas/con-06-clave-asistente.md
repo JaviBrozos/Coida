@@ -10,7 +10,7 @@ con comentarios: [documento en Claude](https://claude.ai/code/artifact/75639ac1-
 
 Antes de publicar en Google Play hay que sacar la clave de Groq de la app: hoy viaja dentro del APK y cualquiera puede extraerla. **Propongo un intermediario mínimo en la nube, pagado con una suscripción de 1,99 a 2,99 € al mes para el asistente**, con el launcher gratis.
 
-Cuesta unos 0,30 € al mes por usuario intenso y deja entre 1,10 y 1,80 € de margen. A cambio, Doado deja de ser «sin servidor propio» y pasamos a ser responsables del tratamiento según el RGPD. Lo tenemos que decidir los dos: es CON-06 en la ERS.
+Cuesta unos 0,30 € al mes por usuario intenso y deja entre 1,10 y 1,80 € de margen. A cambio, Coida deja de ser «sin servidor propio» y pasamos a ser responsables del tratamiento según el RGPD. Lo tenemos que decidir los dos: es CON-06 en la ERS.
 
 ## El problema
 
@@ -76,7 +76,7 @@ El coste técnico es pequeño; lo que pesa son las obligaciones de vender y de t
 
 | Ámbito | Qué cambia | Qué hay que hacer |
 | --- | --- | --- |
-| Reglas de Doado | «Sin servidor propio» pasa a «un intermediario mínimo que no guarda datos». «Sin cuentas» se mantiene | Decisión nueva en `docs/decisiones.md` y corregir `CLAUDE.md`, ERS y normas |
+| Reglas de Coida | «Sin servidor propio» pasa a «un intermediario mínimo que no guarda datos». «Sin cuentas» se mantiene | Decisión nueva en `docs/decisiones.md` y corregir `CLAUDE.md`, ERS y normas |
 | RGPD | Pasamos a ser responsables del tratamiento de la voz | Política de privacidad, acuerdo de tratamiento de datos con Groq, y que el intermediario no registre audio ni texto |
 | Google Play | Cobro con Google Play Billing y formulario de «Seguridad de los datos» | Cuenta de comerciante verificada; declarar que el audio se comparte con un tercero |
 | Fiscal | Vender es actividad económica | Darnos de alta (autónomos o sociedad) y facturar; consultarlo con una gestoría |

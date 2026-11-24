@@ -2,8 +2,10 @@
 
 Coida es la pantalla de inicio de Android para una persona mayor, con unos
 ajustes detrás de un PIN para el familiar que se la configura. El asistente de
-voz con IA es la principal propuesta de valor del producto; está programado y en
-pruebas, con sus normas en `.claude/rules/asistente.md`.
+voz con IA se diseñó como la principal propuesta de valor y está programado, con sus
+normas en `.claude/rules/asistente.md`. A las personas mayores que lo probaron no
+les resultó útil, así que no entra en la versión pública ni se enseña como parte del
+producto (D-63, D-67): vive en la versión de depuración.
 
 ## Vocabulario
 
