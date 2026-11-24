@@ -7,6 +7,12 @@
 **[Descargar la APK (v1.0.1)](https://github.com/JaviBrozos/Coida/releases/latest)** ·
 Android 7.0 o posterior · Sin anuncios, sin cuentas y sin acceso a internet
 
+> **En camino a Google Play.** Estamos preparando su lanzamiento en la Play Store,
+> gratis y sin anuncios. La ficha, la política de privacidad y las respuestas de
+> privacidad ya están preparadas ([`publishing/`](publishing)); falta la prueba
+> cerrada que exige Google antes de publicar. Mientras tanto, se instala con la APK
+> de arriba.
+
 Coida es un *launcher*: cambia la pantalla de inicio del móvil por una con pocas
 cosas, grandes y con mucho contraste. El móvil lo usa una persona mayor y lo
 configura otra, así que tiene dos caras: un inicio en el que nada cambia de sitio
@@ -147,10 +153,59 @@ quieres comentarnos algo, abre un *issue* en este repositorio.
 4. Toca el engranaje de la esquina para entrar en Ajustes: la primera vez te pide
    crear el PIN.
 
+Cuando llegue a Google Play, bastará con buscar «Coida» e instalarla desde allí.
+
 Hace falta **Android 7.0 o posterior**. Es la misma versión que irá a Google Play:
 sin asistente, sin internet y con dos permisos. Va **firmada para pruebas** (con
 la clave de depuración), así que si luego quieres la de Google Play tendrás que
 desinstalar esta antes, y se pierden el PIN, los contactos y las casillas.
+
+## Cómo dejárselo configurado a tu mayor
+
+Coida la configura el familiar una vez, con el móvil en la mano, y después la
+persona mayor solo usa el inicio. Se tarda unos diez minutos. Hazlo tú, no
+delante de ella: los permisos de Android se piden en este rato, y así nunca ve
+un diálogo que no entiende.
+
+1. **Ponla como pantalla de inicio.** Instala Coida y pulsa el aviso de arriba,
+   «Coida aún no es la pantalla de inicio de este móvil», o pulsa Inicio y elige
+   Coida → *Siempre*. A partir de ahí, el botón Inicio siempre lleva a Coida.
+2. **Crea el PIN.** Toca el engranaje de la esquina. La primera vez te pide cuatro
+   cifras que solo sepas tú. Después, pon una **pregunta de recuperación**: si
+   olvidas el PIN, con ella pones uno nuevo sin perder nada. Sin ella, la única
+   salida es borrar los datos de la app.
+3. **Añade sus personas** en *Ajustes → Contactos → Añadir contacto*. Eliges a
+   cada una de la agenda y, para cada una, enciendes su botón de **Llamadas**, el
+   de **WhatsApp** o los dos. Aquí Android te pide dos permisos: llamar con un
+   toque y ver la foto que tiene en la agenda. Si dices que no, sigue
+   funcionando: abre el marcador y pone la inicial.
+4. **Elige qué casillas salen** en *Ajustes → Aplicaciones*. Las básicas son
+   Llamadas, Mensajes, Cámara y Contactos. **Emergencias 112** viene apagada:
+   enciéndela si quieres que tenga a mano el teléfono con el 112 ya marcado (para
+   llamar hay que pulsar el botón verde, así no se llama sin querer). Debajo, en
+   «Otras apps de este móvil», subes al inicio cualquier otra, como WhatsApp o la
+   radio.
+5. **Colócalas** en *Ajustes → Colocar las casillas*: arrastra cada casilla y
+   cada contacto, o usa los botones, hasta dejarlos donde los vaya a buscar. Pon
+   arriba lo que más use. Después no lo cambies: la posición es memoria muscular.
+6. **Ajusta cómo se ve** en *Ajustes → Interfaz*, donde los cambios se ven al
+   momento:
+   - **Tamaño de la letra**: Normal, Grande, Muy grande o Enorme. Se suma al que
+     tenga puesto Android.
+   - **Casillas por fila**: de 1 a 4. Con menos, más grandes. Con 4 cabe más,
+     pero pruébalo con ella antes.
+   - **Contactos en el inicio**: debajo de las apps o en una segunda pantalla con
+     sus pestañas.
+   - **Tema** claro u oscuro, una **foto de fondo** si le hace ilusión y si se ve
+     o no el **reloj**.
+7. **Antes de irte**, en *Ajustes → Modo administrador*, pulsa «Desbloquear 15
+   minutos» si necesitas instalar una app desde la tienda o tocar los ajustes de
+   Android. Se vuelve a cerrar solo. Para el volumen y el brillo, *Ajustes →
+   Sonido y pantalla* lleva directo a los de Android.
+
+Luego dale el móvil y enséñale tres cosas: dónde está cada casilla, que el botón
+Inicio siempre la trae de vuelta y que el engranaje es tuyo. Si entra sin querer,
+la pantalla del PIN tiene un botón grande para volver al inicio.
 
 ### Si algo se rompe
 

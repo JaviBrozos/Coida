@@ -48,5 +48,6 @@ vieja (`com.doado.launcher`) de los móviles de prueba.
 
 | Fecha | Autor | Cambio |
 | --- | --- | --- |
+| 24/11 | Javier | README: aviso de que va camino de Google Play y guía para que el familiar lo configure; también en la Release y el post |
 | 24/11 | Javier | Repo listo para LinkedIn: público como `JaviBrozos/Coida`, Release v1.0.1 con la APK (D-68). Asistente fuera de lo público porque a los mayores no les resultó útil (D-67). Skill `coida-brand`, logotipo a trazos, piezas y capturas nuevas; web y presentación a Coida; README reescrito con el agente `presentador-repo`. Fuera la lectura de `doado.ai.*` y la clave de `local.properties` |
 | 11/11 | Javier | Coida 1.0.1. «Llamadas» abre el historial (D-65). Bola de perdidas solo en la variante `familia` (CU-18, D-66). Probado en el emulador |

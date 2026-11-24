@@ -7,7 +7,7 @@ corrígelo aquí antes de publicar.
 
 ## Post principal
 
-1.544 caracteres, hashtags incluidos.
+1.609 caracteres, hashtags incluidos.
 
 <<<
 Lo mejor que hicimos con nuestra app fue quitarle la función estrella.
@@ -24,7 +24,7 @@ Lo probamos con dos personas mayores y cambiamos seis cosas. Les sobraba tamaño
 
 Por dentro: Kotlin y Jetpack Compose, dos permisos, sin acceso a internet, el PIN derivado con PBKDF2, contrastes medidos y 68 decisiones documentadas con lo que descartamos y por qué.
 
-Todo es público, y la APK se instala en cualquier Android 7.0 o posterior:
+Estamos preparando su lanzamiento en Google Play. Mientras tanto, todo es público y la APK se instala en cualquier Android 7.0 o posterior:
 Repositorio: https://github.com/JaviBrozos/Coida
 APK: https://github.com/JaviBrozos/Coida/releases/latest
 
