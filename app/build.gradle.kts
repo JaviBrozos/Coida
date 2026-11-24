@@ -12,11 +12,8 @@ val localProperties = Properties().apply {
     if (file.exists()) file.inputStream().use { load(it) }
 }
 
-// Las claves eran doado.ai.* antes del cambio de nombre (D-62): se siguen leyendo
-// para que un local.properties sin tocar no apague el asistente sin avisar.
 fun aiSetting(name: String, default: String = ""): String {
-    val value = (localProperties.getProperty("coida.ai.$name")
-        ?: localProperties.getProperty("doado.ai.$name", default)).trim()
+    val value = localProperties.getProperty("coida.ai.$name", default).trim()
     return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
 }
 

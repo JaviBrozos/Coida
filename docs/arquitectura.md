@@ -324,7 +324,7 @@ toque en el círculo → LauncherActivity.openAssistant() → AssistantControlle
 ### Configuración del proveedor
 
 En `local.properties`, que no entra en git, y de ahí a `BuildConfig`, solo en
-depuración (en release van vacías). Se siguen leyendo las antiguas `doado.ai.*`:
+depuración (en release van vacías):
 
 | Clave | Por defecto |
 | --- | --- |

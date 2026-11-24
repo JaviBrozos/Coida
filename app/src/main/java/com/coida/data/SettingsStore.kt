@@ -112,7 +112,8 @@ class SettingsStore(context: Context) {
         // se encoge para caber entero (D-54).
         const val MAX_COLUMNS = 4
 
-        // Coincide con el fichero declarado en res/xml/backup_rules.xml.
+        // Coincide con el fichero declarado en res/xml/backup_rules.xml. Conserva el
+        // nombre de Doado a propósito: cambiarlo borraría lo guardado (D-62).
         const val PREFS_NAME = "doado_settings"
         const val KEY_THEME = "theme"
         const val KEY_TEXT_SIZE_LEGACY = "text_size"
