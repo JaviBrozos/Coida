@@ -33,8 +33,8 @@ discrepancia es en sí misma un hallazgo.
 
 ## Qué revisas
 
-1. **Sistema de logo.** Qué piezas existen (`doado_logo.svg`,
-   `doado_logo.png`, `doado_icono.png`, `ic_coida_mark*.xml`, mipmaps).
+1. **Sistema de logo.** Qué piezas existen (`coida_logo.svg`,
+   `coida_logo.png`, `coida_icono.png`, los SVG de la skill, `ic_coida_mark*.xml`, mipmaps).
    Comprueba si hay marca principal, wordmark, símbolo y monograma. Mira la
    legibilidad a 16-48 px, la versión a una tinta, la silueta y la construcción.
 2. **Icono adaptativo.** Capas foreground, background y monochrome, la zona

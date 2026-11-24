@@ -1,16 +1,16 @@
 # Capturas e imágenes para Google Play
 
-Las capturas de `docs/capturas/` son antiguas: se hicieron antes del asistente y
-del cambio de nombre. Hay que sacarlas de nuevo con la **versión de release**, para
-que no aparezca el círculo del asistente (D-63).
+Las ocho capturas de móvil están en `docs/capturas/` (24/11/2026): sacadas de la
+**versión de release** 1.0.1 en el emulador (API 37, 1080 × 2400), con los datos de
+ejemplo de abajo y la barra de estado en modo demo. Son PNG de 24 bits, sin alfa.
 
 ## Lo que pide Play
 
 | Pieza | Formato | ¿Obligatoria? | Estado |
 | --- | --- | --- | --- |
 | Icono | PNG de 32 bits, 512 × 512 px, hasta 1 MB, a sangre (Play redondea las esquinas) | Sí | Hecho: `publishing/icono-512.png` |
-| Gráfico destacado | JPG o PNG de 24 bits sin transparencia, 1024 × 500 px | Sí | Por hacer |
-| Capturas de móvil | De 2 a 8, JPG o PNG de 24 bits, lados entre 320 y 3840 px y el largo no más del doble del corto. Para recomendaciones, al menos 4 de 1080 px o más | Sí, 2 como poco | Por hacer |
+| Gráfico destacado | JPG o PNG de 24 bits sin transparencia, 1024 × 500 px | Sí | Hecho: `publishing/grafico-destacado.png` |
+| Capturas de móvil | De 2 a 8, JPG o PNG de 24 bits, lados entre 320 y 3840 px y el largo no más del doble del corto. Para recomendaciones, al menos 4 de 1080 px o más | Sí, 2 como poco | Hecho: `docs/capturas/` |
 | Capturas de tableta de 7″ y 10″ | Igual que las de móvil | No, pero recomendadas: la app funciona en tabletas | Por hacer |
 
 ## Lista de capturas de móvil (en este orden)
@@ -20,22 +20,22 @@ idioma del sistema en español y la letra del sistema al 100 %. Sin notificacion
 en la barra de estado. Con contactos de ejemplo, nunca reales: «María», «Juan» y
 «Centro de salud», con números inventados.
 
-- [ ] **1. El inicio, tema oscuro** (el de fábrica): reloj, 2 por fila, las cuatro
-      casillas básicas y dos contactos favoritos con foto.
-- [ ] **2. El inicio, tema claro**, con 3 por fila y la casilla de Emergencias
+- [x] **1. El inicio, tema oscuro** (el de fábrica): reloj, 2 por fila, las cuatro
+      casillas básicas y tres contactos favoritos (con su inicial: el emulador no tiene fotos).
+- [x] **2. El inicio, tema claro**, con 3 por fila y la casilla de Emergencias
       encendida.
-- [ ] **3. Letra «Enorme»**, para enseñar que todo se agranda.
-- [ ] **4. El PIN** de los ajustes.
-- [ ] **5. Ajustes**, el índice, con los apartados a la vista.
-- [ ] **6. Interfaz**: tamaño de letra y casillas por fila.
-- [ ] **7. Contactos**: una persona con sus botones de llamada y WhatsApp.
-- [ ] **8. Modo administrador** desbloqueado, con la cuenta atrás.
+- [x] **3. Letra «Enorme»**, con 1 por fila, para enseñar que todo se agranda.
+- [x] **4. El PIN** de los ajustes.
+- [x] **5. Ajustes**, el índice, con los apartados a la vista.
+- [x] **6. Interfaz**: tamaño de letra y casillas por fila.
+- [x] **7. Contactos**: una persona con sus botones de llamada y WhatsApp.
+- [x] **8. Modo administrador** desbloqueado, con la cuenta atrás.
 
 Antes de subirlas:
 
-- [ ] En ninguna sale el círculo del micrófono ni la fila «Asistente de voz».
-- [ ] En ninguna sale «Doado».
-- [ ] Ningún dato personal real: ni nombres, ni números, ni fotos de la agenda propia.
+- [x] En ninguna sale el círculo del micrófono ni la fila «Asistente de voz».
+- [x] En ninguna sale «Doado».
+- [x] Ningún dato personal real: ni nombres, ni números, ni fotos de la agenda propia.
 - [ ] Un pie corto por captura si se añade texto encima («Casillas grandes que no
       se mueven», «Sus personas a un toque»…), en Inter, con los colores de marca y
       el texto con 4,5:1 de contraste como mínimo.
@@ -48,7 +48,7 @@ Antes de subirlas:
 
 ## Gráfico destacado (1024 × 500)
 
-- [ ] Fondo marino `#0B1D2E`, la C en cian `#29B6F0` y «Coida» en Inter Bold, con el
+- [x] Fondo marino `#0B1D2E`, la C en cian `#29B6F0` y «Coida» en Inter Bold, con el
       lema «Una app para tus mayores». Sin capturas dentro, que Play lo recorta en
       algunos sitios. Nada importante a menos de 15 % del borde.
 - [ ] Pasarlo por el auditor de marca (`.claude/agents/auditor-marca.md`).

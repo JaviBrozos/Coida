@@ -9,6 +9,8 @@
 | `release-notes.md` | Las notas de la 1.0.0 |
 | `capturas.md` | La lista de capturas, el gráfico destacado y cómo sacarlas |
 | `icono-512.png` | El icono para la ficha (512 px, 32 bits) |
+| `grafico-destacado.png` | El gráfico destacado de la ficha (1024 × 500, 24 bits) |
+| `linkedin.md` y `linkedin.png` | El post para presentar el proyecto en LinkedIn, con su imagen |
 
 ## 1. Generar la clave de subida (una vez, a mano)
 

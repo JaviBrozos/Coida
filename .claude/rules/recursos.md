@@ -32,7 +32,7 @@ paths:
 - El isotipo tiene dos versiones (`ic_coida_mark` y `ic_coida_mark_light`) porque
   el cian no llega a 3:1 sobre blanco. Usa la que toque según el fondo. Son de
   trazo: una C con un visto que asoma por su boca (D-62).
-- Marca, colores e iconos: skill `.claude/skills/doado-brand/`.
+- Marca, colores e iconos: skill `.claude/skills/coida-brand/`.
 - El icono de la app: `drawable/ic_launcher_foreground.xml` es solo la C, sin
   inset ni cuadrado; la monocroma es la misma figura. Si cambias la marca,
   regenera también los PNG de `mipmap-*dpi`.

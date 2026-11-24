@@ -159,8 +159,15 @@ reglas: **el visto no toca la C**, o se lee como una «e»; **los colores son lo
   mucho). La capa monocroma es la misma figura.
   Para API 24-25, PNG de mdpi a xxxhdpi (48 a 192 px), y `publishing/icono-512.png`
   para Google Play. El cian sobre el marino da 7,36:1.
-- **Logotipo** (`doado_logo.svg`): sigue siendo la D y «Doado», en Baloo 2 y
-  Quicksand. Falta rehacerlo con la C y «Coida» en Inter Bold a trazos (D-50, D-62).
+- **Logotipo** (`coida_logo.svg` y los de `.claude/skills/coida-brand/assets/`): la
+  C y «Coida» en Inter Bold pasada a trazos (D-68). La C mide 1,25 veces la altura
+  de la mayúscula, centrada con ella, y el hueco hasta la palabra es un tercio del
+  ancho de la C. Hay una versión marina para fondo claro y otra con la C en cian y
+  el texto en `#F2F7FB` para fondo oscuro.
+- **Piezas para fuera** (D-68): la cabecera del README (`docs/img/cabecera.png`),
+  el gráfico destacado de Play y la imagen de LinkedIn (en `publishing/`). Llevan
+  fondo tinta o marino, el lema en `#F2F7FB` y el texto secundario en `#9FC4DC`
+  (9,91:1 sobre tinta).
 
 ## Iconografía
 

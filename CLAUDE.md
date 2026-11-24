@@ -61,7 +61,7 @@ algo desde cero, ábrelas tú:
 Para auditar accesibilidad hay un subagente: `.claude/agents/accesibilidad.md`.
 Toda UI nueva pasa por él antes de darse por hecha.
 
-La marca está en la skill `.claude/skills/doado-brand/`: logo, icono de la app,
+La marca está en la skill `.claude/skills/coida-brand/`: logo, icono de la app,
 colores, iconos, letra, tono y movimiento, con los ficheros de la marca en
 `assets/`. Úsala en cualquier pieza que se vea, dentro o fuera de la app. Para
 auditar la marca hay otro subagente,
