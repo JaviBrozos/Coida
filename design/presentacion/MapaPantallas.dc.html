@@ -3,12 +3,16 @@
 <head>
   <meta charset="utf-8">
   <script src="./support.js"></script>
+  <style id="fuente">
+    @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_semibold.ttf) format("truetype"); font-weight: 100 650; }
+    @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_bold.ttf) format("truetype"); font-weight: 651 900; }
+  </style>
 </head>
 <body>
 <x-dc>
 <helmet>
   <style>
-    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+    body { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
     a { color: #10618F; } a:hover { color: #0B1D2E; }
     .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
     .cab { display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
@@ -22,18 +26,18 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">02 · El programa de un vistazo</div>
-      <h1 class="tit">Ocho pantallas y un candado en medio</h1>
+      <h1 class="tit">El inicio y ocho pantallas tras un candado</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1;">
-    <svg viewBox="0 0 1152 452" width="1152" height="452" style="font-family: 'Segoe UI', system-ui, sans-serif;" aria-label="Mapa de pantallas: del inicio, pasando por el PIN, a los ajustes y sus seis apartados">
+    <svg viewBox="0 0 1152 452" width="1152" height="452" style="font-family: 'Coida Inter', Roboto, system-ui, sans-serif; font-feature-settings: 'ss04';" aria-label="Mapa de pantallas: del inicio, pasando por el PIN, a los ajustes y sus siete apartados">
       <!-- Inicio -->
       <rect x="0" y="160" width="212" height="132" rx="18" fill="#0B1D2E"></rect>
       <text x="106" y="205" text-anchor="middle" fill="#FFFFFF" font-size="23" font-weight="700">Pantalla de inicio</text>
-      <text x="106" y="234" text-anchor="middle" fill="#9FC4DC" font-size="16">reloj · contactos</text>
-      <text x="106" y="256" text-anchor="middle" fill="#9FC4DC" font-size="16">casillas de apps</text>
+      <text x="106" y="234" text-anchor="middle" fill="#9FC4DC" font-size="16">reloj · casillas</text>
+      <text x="106" y="256" text-anchor="middle" fill="#9FC4DC" font-size="16">contactos favoritos</text>
       <path d="M212,226 L268,226" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
 
       <!-- PIN -->
@@ -51,38 +55,43 @@
       <text x="587" y="215" text-anchor="middle" fill="#FFFFFF" font-size="23" font-weight="700">Ajustes</text>
       <text x="587" y="243" text-anchor="middle" fill="#9FC4DC" font-size="16">para el familiar</text>
 
-      <!-- Conectores a los seis apartados -->
-      <path d="M682,226 C724,226 724,54 762,54" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,122 762,122" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,190 762,190" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,258 762,258" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,326 762,326" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,394 762,394" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <!-- Conectores a los siete apartados -->
+      <path d="M682,226 C724,226 724,44 762,44" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,102 762,102" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,160 762,160" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,218 762,218" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,276 762,276" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,334 762,334" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,392 762,392" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
 
-      <!-- Seis apartados -->
-      <rect x="770" y="26" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="60" fill="#0B1D2E" font-size="19" font-weight="600">Interfaz</text>
-      <text x="1130" y="60" text-anchor="end" fill="#3C5A70" font-size="15">letra · casillas · tema · reloj</text>
+      <!-- Siete apartados -->
+      <rect x="770" y="20" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="50" fill="#0B1D2E" font-size="18" font-weight="600">Interfaz</text>
+      <text x="1130" y="50" text-anchor="end" fill="#3C5A70" font-size="14">letra · casillas · fondo · tema</text>
 
-      <rect x="770" y="94" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="128" fill="#0B1D2E" font-size="19" font-weight="600">Contactos</text>
-      <text x="1130" y="128" text-anchor="end" fill="#3C5A70" font-size="15">accesos directos, hasta 4</text>
+      <rect x="770" y="78" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="108" fill="#0B1D2E" font-size="18" font-weight="600">Contactos</text>
+      <text x="1130" y="108" text-anchor="end" fill="#3C5A70" font-size="14">con foto · llamar o WhatsApp</text>
 
-      <rect x="770" y="162" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="196" fill="#0B1D2E" font-size="19" font-weight="600">Aplicaciones</text>
-      <text x="1130" y="196" text-anchor="end" fill="#3C5A70" font-size="15">qué se ve · instalar</text>
+      <rect x="770" y="136" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="166" fill="#0B1D2E" font-size="18" font-weight="600">Aplicaciones</text>
+      <text x="1130" y="166" text-anchor="end" fill="#3C5A70" font-size="14">qué casillas salen</text>
 
-      <rect x="770" y="230" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="264" fill="#0B1D2E" font-size="19" font-weight="600">Sonido y pantalla</text>
-      <text x="1130" y="264" text-anchor="end" fill="#10618F" font-size="15" font-weight="600">↗ sale a Android</text>
+      <rect x="770" y="194" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="224" fill="#0B1D2E" font-size="18" font-weight="600">Colocar las casillas</text>
+      <text x="1130" y="224" text-anchor="end" fill="#3C5A70" font-size="14">el orden, solo aquí</text>
 
-      <rect x="770" y="298" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#29B6F0" stroke-width="3"></rect>
-      <text x="792" y="332" fill="#0B1D2E" font-size="19" font-weight="600">Modo administrador</text>
-      <text x="1130" y="332" text-anchor="end" fill="#10618F" font-size="15" font-weight="600">↗ sale a Android</text>
+      <rect x="770" y="252" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="282" fill="#0B1D2E" font-size="18" font-weight="600">Sonido y pantalla</text>
+      <text x="1130" y="282" text-anchor="end" fill="#10618F" font-size="14" font-weight="600">↗ sale a Android</text>
 
-      <rect x="770" y="366" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="400" fill="#0B1D2E" font-size="19" font-weight="600">PIN de ajustes</text>
-      <text x="1130" y="400" text-anchor="end" fill="#3C5A70" font-size="15">cambiar las 4 cifras</text>
+      <rect x="770" y="310" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#29B6F0" stroke-width="3"></rect>
+      <text x="792" y="340" fill="#0B1D2E" font-size="18" font-weight="600">Modo administrador</text>
+      <text x="1130" y="340" text-anchor="end" fill="#10618F" font-size="14" font-weight="600">↗ abre Android 15 min</text>
+
+      <rect x="770" y="368" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="398" fill="#0B1D2E" font-size="18" font-weight="600">PIN de ajustes</text>
+      <text x="1130" y="398" text-anchor="end" fill="#3C5A70" font-size="14">cambiar las 4 cifras</text>
 
       <!-- Vuelta a inicio -->
       <path d="M587,292 C587,420 300,430 106,340 L106,296" stroke="#29B6F0" stroke-width="2.5" stroke-dasharray="8 7" fill="none" marker-end="url(#puntacian)"></path>
@@ -102,7 +111,7 @@
   <div class="pie">
     <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">ATRÁS</strong> sube un escalón: de un apartado a Ajustes, y de Ajustes al inicio. En el inicio no hace nada.</p>
     <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">El candado</strong> separa los dos mundos: lo de la izquierda lo usa la persona mayor; lo de la derecha, quien configura.</p>
-    <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">Las dos salidas a Android</strong> solo se abren con el modo administrador desbloqueado.</p>
+    <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">La tienda y los ajustes de Android</strong> solo se abren con el modo administrador. «Sonido y pantalla» lleva directo al sonido.</p>
   </div>
 </div>
 </x-dc>

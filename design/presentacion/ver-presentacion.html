@@ -2,9 +2,12 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Doado de un vistazo</title>
+<title>Coida de un vistazo</title>
 <style>
   /* Generado a partir de las láminas de design/presentacion. No editar a mano. */
+  /* La letra de la marca (D-50), la de la app, que el PDF lleva incrustada. */
+  @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_semibold.ttf) format("truetype"); font-weight: 100 650; }
+  @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_bold.ttf) format("truetype"); font-weight: 651 900; }
   * { box-sizing: border-box; }
   body { margin: 0; background: #06101A; }
   .lamina {
@@ -13,7 +16,8 @@
     margin: 0 auto 26px;
     overflow: hidden;
     position: relative;
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-family: "Coida Inter", Roboto, system-ui, sans-serif;
+    font-feature-settings: "ss04";
   }
   @media print {
     body { background: #FFFFFF; }
@@ -22,14 +26,14 @@
     @page { size: 1280px 720px; margin: 0; }
   }
 /* Portada */
-#l1 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l1 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l1 a { color: #6CCFFA; }
 #l1 a:hover { color: #FFFFFF; }
 #l1 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; display: flex; flex-direction: column; }
 #l1 .chip { border: 2px solid #3D7AA6; border-radius: 999px; padding: 10px 20px; font-size: 17px; font-weight: 600; color: #9FC4DC; }
 
 /* 01 · A quién sirve */
-#l2 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l2 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l2 a { color: #10618F; }
 #l2 a:hover { color: #0B1D2E; }
 #l2 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 30px; }
@@ -42,7 +46,7 @@
 #l2 .mini { font-size: 15px; line-height: 22px; color: #3C5A70; margin: 0; }
 
 /* 02 · Mapa de pantallas */
-#l3 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l3 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l3 a { color: #10618F; }
 #l3 a:hover { color: #0B1D2E; }
 #l3 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
@@ -53,7 +57,7 @@
 #l3 .nota { font-size: 16px; line-height: 23px; color: #3C5A70; margin: 0; }
 
 /* 03 · Flujo de la persona mayor */
-#l4 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l4 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l4 a { color: #10618F; }
 #l4 a:hover { color: #0B1D2E; }
 #l4 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 26px; }
@@ -67,7 +71,7 @@
 #l4 .flecha { display: flex; align-items: center; color: #29B6F0; }
 
 /* 04 · Flujo del familiar */
-#l5 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l5 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l5 a { color: #10618F; }
 #l5 a:hover { color: #0B1D2E; }
 #l5 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
@@ -84,7 +88,7 @@
 #l5 .punto { color: #29B6F0; font-weight: 700; }
 
 /* 05 · Flujo del administrador */
-#l6 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l6 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l6 a { color: #10618F; }
 #l6 a:hover { color: #0B1D2E; }
 #l6 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 26px; }
@@ -97,7 +101,7 @@
 #l6 .chip { border: 2px solid #C9DCE8; border-radius: 12px; padding: 10px 14px; font-size: 15px; font-weight: 600; background: #FFFFFF; display: flex; flex-direction: row; align-items: center; gap: 10px; }
 
 /* 06 · Cómo está construido */
-#l7 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l7 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l7 a { color: #10618F; }
 #l7 a:hover { color: #0B1D2E; }
 #l7 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
@@ -112,7 +116,7 @@
 #l7 .pdet { font-size: 14px; line-height: 21px; color: #3C5A70; margin: 0; }
 
 /* 07 · Sistema visual */
-#l8 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l8 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l8 a { color: #10618F; }
 #l8 a:hover { color: #0B1D2E; }
 #l8 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 44px 56px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 16px; }
@@ -128,7 +132,7 @@
 #l8 .caja { background: #FFFFFF; border: 2px solid #C9DCE8; border-radius: 18px; padding: 16px 20px; }
 
 /* 08 · Estado y límites */
-#l9 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l9 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l9 a { color: #10618F; }
 #l9 a:hover { color: #0B1D2E; }
 #l9 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
@@ -141,7 +145,7 @@
 #l9 .bolita { width: 10px; height: 10px; border-radius: 5px; flex-shrink: 0; margin-top: 7px; }
 
 /* 09 · Cómo queda documentado */
-#l10 { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+#l10 { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
 #l10 a { color: #10618F; }
 #l10 a:hover { color: #0B1D2E; }
 #l10 .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 46px 56px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 18px; }
@@ -158,26 +162,26 @@
 <body>
 <section id="l1" class="lamina" aria-label="Portada">
 <div class="hoja" style="background: #0A1622; color: #F2F7FB; justify-content: space-between;">
-  <div style="font-size: 16px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #6CCFFA;">Documentación del proyecto · 28 de septiembre de 2026</div>
+  <div style="font-size: 16px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: #6CCFFA;">Documentación del proyecto · 24 de noviembre de 2026</div>
 
   <div style="display: flex; flex-direction: row; align-items: center; gap: 56px;">
     <div style="display: flex; flex-direction: column; gap: 20px; flex-grow: 1;">
-      <div style="font-size: 104px; line-height: 108px; font-weight: 700; letter-spacing: -0.02em;">Doado</div>
+      <div style="font-size: 104px; line-height: 108px; font-weight: 700;">Coida</div>
       <div style="font-size: 34px; line-height: 42px; font-weight: 500; color: #9FC4DC;">Una app para tus mayores</div>
       <div style="width: 132px; height: 6px; border-radius: 3px; background: #29B6F0;"></div>
-      <p style="margin: 0; font-size: 23px; line-height: 34px; max-width: 700px;">Pantalla de inicio de Android para personas mayores: menos cosas, más grandes y con más contraste que en un lanzador normal. Con una puerta de ajustes para el familiar que lo configura.</p>
+      <p style="margin: 0; font-size: 23px; line-height: 34px; max-width: 700px;">Pantalla de inicio de Android para personas mayores: menos cosas, más grandes y con más contraste que en un inicio normal. Con unos ajustes detrás de un PIN para el familiar que la configura.</p>
     </div>
     <svg viewBox="0 0 64 64" width="230" height="230" aria-hidden="true" style="flex-shrink: 0;">
-      <path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#29B6F0"></path>
-      <path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#0A1622" stroke-width="2.4" stroke-linecap="square"></path>
+      <path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#29B6F0" stroke-width="9" stroke-linecap="round"></path>
+      <path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#29B6F0" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path>
     </svg>
   </div>
 
   <div style="display: flex; flex-direction: row; gap: 14px;">
-    <div class="chip">8 pantallas implementadas</div>
-    <div class="chip">3 perfiles de usuario</div>
+    <div class="chip">Coida 1.0.1</div>
+    <div class="chip">Probada con dos personas mayores</div>
     <div class="chip">Kotlin + Jetpack Compose</div>
-    <div class="chip" style="border-color: #29B6F0; color: #29B6F0;">Asistente de voz: pendiente</div>
+    <div class="chip" style="border-color: #29B6F0; color: #29B6F0;">Versión pública sin asistente de voz</div>
   </div>
 </div>
 </section>
@@ -187,9 +191,9 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">01 · A quién sirve</div>
-      <h1 class="tit">Tres personas, tres necesidades distintas</h1>
+      <h1 class="tit">Dos personas y un modo con candado</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px;">
@@ -231,7 +235,7 @@
         <p class="txt">Que se toque un ajuste sin querer y la pantalla deje de ser la de siempre.</p>
       </div>
       <div style="margin-top: auto; border-top: 2px solid #C9DCE8; padding-top: 12px;">
-        <p class="mini">En la app: <strong style="color: #0B1D2E;">Ajustes tras el PIN</strong> — interfaz, contactos y apps.</p>
+        <p class="mini">En la app: <strong style="color: #0B1D2E;">Ajustes tras el PIN</strong> — interfaz, contactos, apps y dónde va cada casilla.</p>
       </div>
     </div>
 
@@ -240,19 +244,19 @@
         <div style="width: 52px; height: 52px; border-radius: 26px; background: #E9F3FA; display: flex; align-items: center; justify-content: center;">
           <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#10618F" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3.5 5 6.2v5.3c0 4 2.9 7.6 7 9 4.1-1.4 7-5 7-9V6.2z"></path><path d="M9.2 12.2l2 2 3.6-3.8"></path></svg>
         </div>
-        <div style="font-size: 24px; line-height: 30px; font-weight: 700;">El administrador</div>
+        <div style="font-size: 24px; line-height: 30px; font-weight: 700;">El modo administrador</div>
       </div>
-      <p class="mini">Quien deja el terminal listo</p>
+      <p class="mini">El familiar, cuando toca instalar algo</p>
       <div>
         <p class="rot">Necesita</p>
-        <p class="txt">Instalar WhatsApp o Sofascore, entrar en los ajustes de Android y fijar Doado como inicio.</p>
+        <p class="txt">Instalar WhatsApp u otra app, entrar en los ajustes de Android y fijar Coida como inicio.</p>
       </div>
       <div>
         <p class="rot">Teme</p>
         <p class="txt">Dejarse el móvil abierto de par en par después de configurarlo.</p>
       </div>
       <div style="margin-top: auto; border-top: 2px solid #C9DCE8; padding-top: 12px;">
-        <p class="mini">En la app: <strong style="color: #0B1D2E;">modo administrador</strong>, 15 minutos y se cierra solo.</p>
+        <p class="mini">No es otro usuario: es <strong style="color: #0B1D2E;">un estado de 15 minutos</strong> que se cierra solo.</p>
       </div>
     </div>
   </div>
@@ -264,18 +268,18 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">02 · El programa de un vistazo</div>
-      <h1 class="tit">Ocho pantallas y un candado en medio</h1>
+      <h1 class="tit">El inicio y ocho pantallas tras un candado</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1;">
-    <svg viewBox="0 0 1152 452" width="1152" height="452" style="font-family: 'Segoe UI', system-ui, sans-serif;" aria-label="Mapa de pantallas: del inicio, pasando por el PIN, a los ajustes y sus seis apartados">
+    <svg viewBox="0 0 1152 452" width="1152" height="452" style="font-family: 'Coida Inter', Roboto, system-ui, sans-serif; font-feature-settings: 'ss04';" aria-label="Mapa de pantallas: del inicio, pasando por el PIN, a los ajustes y sus siete apartados">
       <!-- Inicio -->
       <rect x="0" y="160" width="212" height="132" rx="18" fill="#0B1D2E"></rect>
       <text x="106" y="205" text-anchor="middle" fill="#FFFFFF" font-size="23" font-weight="700">Pantalla de inicio</text>
-      <text x="106" y="234" text-anchor="middle" fill="#9FC4DC" font-size="16">reloj · contactos</text>
-      <text x="106" y="256" text-anchor="middle" fill="#9FC4DC" font-size="16">casillas de apps</text>
+      <text x="106" y="234" text-anchor="middle" fill="#9FC4DC" font-size="16">reloj · casillas</text>
+      <text x="106" y="256" text-anchor="middle" fill="#9FC4DC" font-size="16">contactos favoritos</text>
       <path d="M212,226 L268,226" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
 
       <!-- PIN -->
@@ -293,38 +297,43 @@
       <text x="587" y="215" text-anchor="middle" fill="#FFFFFF" font-size="23" font-weight="700">Ajustes</text>
       <text x="587" y="243" text-anchor="middle" fill="#9FC4DC" font-size="16">para el familiar</text>
 
-      <!-- Conectores a los seis apartados -->
-      <path d="M682,226 C724,226 724,54 762,54" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,122 762,122" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,190 762,190" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,258 762,258" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,326 762,326" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
-      <path d="M682,226 C724,226 724,394 762,394" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <!-- Conectores a los siete apartados -->
+      <path d="M682,226 C724,226 724,44 762,44" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,102 762,102" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,160 762,160" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,218 762,218" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,276 762,276" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,334 762,334" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
+      <path d="M682,226 C724,226 724,392 762,392" stroke="#5B87A5" stroke-width="2.5" fill="none" marker-end="url(#punta)"></path>
 
-      <!-- Seis apartados -->
-      <rect x="770" y="26" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="60" fill="#0B1D2E" font-size="19" font-weight="600">Interfaz</text>
-      <text x="1130" y="60" text-anchor="end" fill="#3C5A70" font-size="15">letra · casillas · tema · reloj</text>
+      <!-- Siete apartados -->
+      <rect x="770" y="20" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="50" fill="#0B1D2E" font-size="18" font-weight="600">Interfaz</text>
+      <text x="1130" y="50" text-anchor="end" fill="#3C5A70" font-size="14">letra · casillas · fondo · tema</text>
 
-      <rect x="770" y="94" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="128" fill="#0B1D2E" font-size="19" font-weight="600">Contactos</text>
-      <text x="1130" y="128" text-anchor="end" fill="#3C5A70" font-size="15">accesos directos, hasta 4</text>
+      <rect x="770" y="78" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="108" fill="#0B1D2E" font-size="18" font-weight="600">Contactos</text>
+      <text x="1130" y="108" text-anchor="end" fill="#3C5A70" font-size="14">con foto · llamar o WhatsApp</text>
 
-      <rect x="770" y="162" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="196" fill="#0B1D2E" font-size="19" font-weight="600">Aplicaciones</text>
-      <text x="1130" y="196" text-anchor="end" fill="#3C5A70" font-size="15">qué se ve · instalar</text>
+      <rect x="770" y="136" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="166" fill="#0B1D2E" font-size="18" font-weight="600">Aplicaciones</text>
+      <text x="1130" y="166" text-anchor="end" fill="#3C5A70" font-size="14">qué casillas salen</text>
 
-      <rect x="770" y="230" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="264" fill="#0B1D2E" font-size="19" font-weight="600">Sonido y pantalla</text>
-      <text x="1130" y="264" text-anchor="end" fill="#10618F" font-size="15" font-weight="600">↗ sale a Android</text>
+      <rect x="770" y="194" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="224" fill="#0B1D2E" font-size="18" font-weight="600">Colocar las casillas</text>
+      <text x="1130" y="224" text-anchor="end" fill="#3C5A70" font-size="14">el orden, solo aquí</text>
 
-      <rect x="770" y="298" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#29B6F0" stroke-width="3"></rect>
-      <text x="792" y="332" fill="#0B1D2E" font-size="19" font-weight="600">Modo administrador</text>
-      <text x="1130" y="332" text-anchor="end" fill="#10618F" font-size="15" font-weight="600">↗ sale a Android</text>
+      <rect x="770" y="252" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="282" fill="#0B1D2E" font-size="18" font-weight="600">Sonido y pantalla</text>
+      <text x="1130" y="282" text-anchor="end" fill="#10618F" font-size="14" font-weight="600">↗ sale a Android</text>
 
-      <rect x="770" y="366" width="382" height="56" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
-      <text x="792" y="400" fill="#0B1D2E" font-size="19" font-weight="600">PIN de ajustes</text>
-      <text x="1130" y="400" text-anchor="end" fill="#3C5A70" font-size="15">cambiar las 4 cifras</text>
+      <rect x="770" y="310" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#29B6F0" stroke-width="3"></rect>
+      <text x="792" y="340" fill="#0B1D2E" font-size="18" font-weight="600">Modo administrador</text>
+      <text x="1130" y="340" text-anchor="end" fill="#10618F" font-size="14" font-weight="600">↗ abre Android 15 min</text>
+
+      <rect x="770" y="368" width="382" height="48" rx="14" fill="#FFFFFF" stroke="#C9DCE8" stroke-width="2"></rect>
+      <text x="792" y="398" fill="#0B1D2E" font-size="18" font-weight="600">PIN de ajustes</text>
+      <text x="1130" y="398" text-anchor="end" fill="#3C5A70" font-size="14">cambiar las 4 cifras</text>
 
       <!-- Vuelta a inicio -->
       <path d="M587,292 C587,420 300,430 106,340 L106,296" stroke="#29B6F0" stroke-width="2.5" stroke-dasharray="8 7" fill="none" marker-end="url(#puntacian)"></path>
@@ -344,7 +353,7 @@
   <div class="pie">
     <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">ATRÁS</strong> sube un escalón: de un apartado a Ajustes, y de Ajustes al inicio. En el inicio no hace nada.</p>
     <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">El candado</strong> separa los dos mundos: lo de la izquierda lo usa la persona mayor; lo de la derecha, quien configura.</p>
-    <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">Las dos salidas a Android</strong> solo se abren con el modo administrador desbloqueado.</p>
+    <p class="nota" style="flex: 1;"><strong style="color: #0B1D2E;">La tienda y los ajustes de Android</strong> solo se abren con el modo administrador. «Sonido y pantalla» lleva directo al sonido.</p>
   </div>
 </div>
 </section>
@@ -354,9 +363,9 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">03 · Flujo de la persona mayor</div>
-      <h1 class="tit">Llamar, en tres toques y sin leer nada</h1>
+      <h1 class="tit">Devolver una llamada, sin leer nada</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="display: flex; flex-direction: row; align-items: stretch; gap: 12px;">
@@ -384,8 +393,8 @@
         <rect x="26" y="92" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
         <rect x="62" y="92" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
       </svg>
-      <p class="ptit">Ve la hora y cuatro casillas</p>
-      <p class="pdesc">Nada más. Cada casilla ocupa media mano y siempre está en el mismo sitio.</p>
+      <p class="ptit">Ve la hora y sus casillas</p>
+      <p class="pdesc">Nada más. Cuadradas, grandes y siempre en el mismo sitio.</p>
     </div>
 
     <div class="flecha"><svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="M13 6l6 6-6 6"></path></svg></div>
@@ -401,7 +410,7 @@
         <rect x="62" y="92" width="32" height="42" rx="7" fill="#122A3E" stroke="#3D7AA6" stroke-width="1.6"></rect>
         <circle cx="42" cy="67" r="17" fill="#29B6F0" opacity="0.28"></circle>
       </svg>
-      <p class="ptit">Toca «Llamar»</p>
+      <p class="ptit">Toca «Llamadas»</p>
       <p class="pdesc">El borde se enciende al pulsar: se ve que el toque ha entrado.</p>
     </div>
 
@@ -416,8 +425,8 @@
         <rect x="32" y="100" width="56" height="9" rx="4.5" fill="#C9DCE8"></rect>
         <rect x="40" y="116" width="40" height="9" rx="4.5" fill="#E9F3FA"></rect>
       </svg>
-      <p class="ptit">Se abre el teléfono</p>
-      <p class="pdesc">La app de llamadas que ya trae el móvil, sea de la marca que sea.</p>
+      <p class="ptit">Ve quién le ha llamado</p>
+      <p class="pdesc">El historial del teléfono que ya trae el móvil. Si no lo tiene, se abre el teclado.</p>
     </div>
   </div>
 
@@ -426,12 +435,12 @@
       <div style="width: 54px; height: 54px; border-radius: 27px; background: #17384F; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
         <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#29B6F0" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.6"></circle><path d="M4.8 20c0-3.4 3.2-5.6 7.2-5.6s7.2 2.2 7.2 5.6"></path></svg>
       </div>
-      <p style="margin: 0; font-size: 18px; line-height: 26px;">Y para las personas de siempre, ni eso: arriba del todo hay una casilla con <strong>su nombre</strong>. Un toque y le está llamando.</p>
+      <p style="margin: 0; font-size: 18px; line-height: 26px;">Y para las personas de siempre, ni eso: debajo, en «Contactos favoritos», cada una tiene su casilla con <strong>su nombre y su foto</strong>. Un toque y le está llamando.</p>
     </div>
     <div style="flex: 1; border: 2px solid #C9DCE8; border-radius: 18px; padding: 16px 22px; display: flex; flex-direction: column; justify-content: center; gap: 6px;">
-      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Casilla:</strong> 260 px de alto (el mínimo de la casa son 168)</p>
-      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Texto:</strong> 24 sp, y sube si el móvil lo tiene grande</p>
-      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Contraste:</strong> 13:1 entre texto y casilla</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Casillas:</strong> cuadradas, de 1 a 4 por fila; con cuatro, ~70 dp</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Texto:</strong> cuatro tamaños, y sube si el móvil lo tiene grande</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;"><strong style="color: #0B1D2E;">Contraste:</strong> 13,6:1 entre texto y casilla</p>
     </div>
   </div>
 </div>
@@ -444,15 +453,15 @@
       <div class="num">04 · Flujo del familiar</div>
       <h1 class="tit">Configurarlo sin que se note por fuera</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="display: flex; flex-direction: row; gap: 12px;">
     <div class="paso">
       <div class="bola">1</div>
       <div>
-        <p class="ptit">Toca «Ajustes»</p>
-        <p class="pdesc">Abajo del todo, apagado y con candado: se ve, pero no llama.</p>
+        <p class="ptit">Toca la rueda</p>
+        <p class="pdesc">El botón pequeño de arriba a la derecha: se ve, pero no llama la atención.</p>
       </div>
     </div>
     <div class="paso">
@@ -481,9 +490,9 @@
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px;">
     <div class="caja">
       <p class="rot">Interfaz</p>
-      <p class="li"><span class="punto">·</span><span>Tamaño de letra: normal, grande o muy grande</span></p>
-      <p class="li"><span class="punto">·</span><span>Casillas por fila: una o dos</span></p>
-      <p class="li"><span class="punto">·</span><span>Tema: oscuro o claro</span></p>
+      <p class="li"><span class="punto">·</span><span>Letra: Normal, Grande, Muy grande o Enorme</span></p>
+      <p class="li"><span class="punto">·</span><span>Casillas por fila: de una a cuatro, siempre cuadradas</span></p>
+      <p class="li"><span class="punto">·</span><span>Tema oscuro o claro, y una foto de fondo</span></p>
       <p class="li"><span class="punto">·</span><span>Reloj: se enseña o se quita</span></p>
       <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
         <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Debajo hay una maqueta en pequeño que va cambiando según toca.</p>
@@ -493,21 +502,20 @@
     <div class="caja">
       <p class="rot">Contactos</p>
       <p class="li"><span class="punto">·</span><span>Se eligen del listín del móvil, sin escribir números</span></p>
-      <p class="li"><span class="punto">·</span><span>Cada uno llama o abre WhatsApp</span></p>
-      <p class="li"><span class="punto">·</span><span>Hasta cuatro salen en el inicio</span></p>
-      <p class="li"><span class="punto">·</span><span>El resto se guardan, apagados</span></p>
+      <p class="li"><span class="punto">·</span><span>Cada uno llama, abre WhatsApp o los dos</span></p>
+      <p class="li"><span class="punto">·</span><span>Con permiso, salen con la foto de la agenda</span></p>
       <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
-        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Doado no pide acceso a toda la agenda: solo lee el contacto elegido.</p>
+        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Coida no lee toda la agenda: solo el contacto elegido y, con permiso, la foto de los guardados.</p>
       </div>
     </div>
 
     <div class="caja">
       <p class="rot">Aplicaciones</p>
-      <p class="li"><span class="punto">·</span><span>Las cuatro básicas se encienden y apagan</span></p>
-      <p class="li"><span class="punto">·</span><span>WhatsApp y Sofascore, recomendadas, con botón de instalar</span></p>
+      <p class="li"><span class="punto">·</span><span>Las de fábrica, Emergencias 112 incluida, se encienden y apagan</span></p>
       <p class="li"><span class="punto">·</span><span>Cualquier otra app del móvil puede subir al inicio</span></p>
+      <p class="li"><span class="punto">·</span><span>El orden, en «Colocar las casillas»: solo lo cambia el familiar</span></p>
       <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
-        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Instalar exige modo administrador: es salir de Doado.</p>
+        <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">Instalar una app nueva exige modo administrador: es salir de Coida.</p>
       </div>
     </div>
   </div>
@@ -521,7 +529,7 @@
       <div class="num">05 · Flujo del administrador</div>
       <h1 class="tit">Quince minutos con la puerta abierta</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <svg viewBox="0 0 1152 30" width="1152" height="30" aria-hidden="true">
@@ -570,7 +578,7 @@
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px; align-items: stretch;">
     <div style="flex: 1.3; border: 2px solid #E8B4AE; background: #FDF5F4; border-radius: 18px; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
       <p style="margin: 0; font-size: 18px; font-weight: 700; color: #8C2F26;">Lo que este modo no puede hacer</p>
-      <p style="margin: 0; font-size: 16px; line-height: 24px; color: #0B1D2E;">Doado <strong>no impide salir a Android</strong>: para eso tendría que ser «propietaria del dispositivo», que es otra liga. Lo que hace es cerrar bajo llave <strong>sus propias salidas</strong>, que son por donde se sale en la práctica.</p>
+      <p style="margin: 0; font-size: 16px; line-height: 24px; color: #0B1D2E;">Coida <strong>no impide salir a Android</strong>: para eso tendría que ser «propietaria del dispositivo», que es otra liga. Lo que hace es cerrar bajo llave <strong>sus propias salidas</strong>, que son por donde se sale en la práctica.</p>
     </div>
     <div style="flex: 1; border: 2px solid #C9DCE8; border-radius: 18px; padding: 20px 24px; display: flex; flex-direction: column; gap: 10px;">
       <p style="margin: 0; font-size: 18px; font-weight: 700;">Detalle a tener en cuenta</p>
@@ -585,16 +593,16 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">06 · Cómo está construido</div>
-      <h1 class="tit">Cuatro capas y tres cajones</h1>
+      <h1 class="tit">Cuatro capas y cuatro cajones</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 26px;">
     <div style="flex: 1.5; display: flex; flex-direction: column; gap: 10px;">
       <div class="capa" style="background: #0B1D2E; color: #F2F7FB;">
         <p class="cnom">Pantallas</p>
-        <p class="cdet" style="color: #9FC4DC;"><strong style="color: #F2F7FB;">launcher/</strong> la de inicio · <strong style="color: #F2F7FB;">settings/</strong> las seis de ajustes. Solo pintan: reciben lo que hay que enseñar y avisan de los toques.</p>
+        <p class="cdet" style="color: #9FC4DC;"><strong style="color: #F2F7FB;">launcher/</strong> la de inicio · <strong style="color: #F2F7FB;">settings/</strong> el PIN y los ajustes · <strong style="color: #F2F7FB;">assistant/</strong> solo en depuración. Solo pintan: reciben lo que hay que enseñar y avisan de los toques.</p>
       </div>
       <div style="display: flex; justify-content: center; color: #5B87A5;"><svg viewBox="0 0 24 12" width="34" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v9"></path><path d="M7 6l5 5 5-5"></path></svg></div>
       <div class="capa" style="background: #122A3E; color: #F2F7FB;">
@@ -604,7 +612,7 @@
       <div style="display: flex; justify-content: center; color: #5B87A5;"><svg viewBox="0 0 24 12" width="34" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v9"></path><path d="M7 6l5 5 5-5"></path></svg></div>
       <div class="capa" style="background: #FFFFFF; border: 2px solid #C9DCE8;">
         <p class="cnom">data/</p>
-        <p class="cdet" style="color: #3C5A70;">Un repositorio que habla con el sistema de paquetes y tres almacenes que guardan lo configurado. Es la única puerta a los datos.</p>
+        <p class="cdet" style="color: #3C5A70;">Un repositorio que habla con el sistema de paquetes y los almacenes que guardan lo configurado. Es la única puerta a los datos.</p>
       </div>
       <div style="display: flex; justify-content: center; color: #5B87A5;"><svg viewBox="0 0 24 12" width="34" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v9"></path><path d="M7 6l5 5 5-5"></path></svg></div>
       <div class="capa" style="background: #E9F3FA; border: 2px solid #C9DCE8;">
@@ -621,14 +629,18 @@
       </div>
       <div class="pref">
         <p class="pnom">doado_contacts</p>
-        <p class="pdet">Los accesos directos de personas: nombre, número, si llaman o abren WhatsApp, y si salen en el inicio.</p>
+        <p class="pdet">Las personas del inicio: nombre, número y si llaman o abren WhatsApp.</p>
       </div>
       <div class="pref">
         <p class="pnom">doado_settings</p>
-        <p class="pdet">Tema, tamaño de letra, casillas por fila, reloj, el PIN y hasta cuándo dura el modo administrador.</p>
+        <p class="pdet">Tema, tamaño de letra, casillas por fila, reloj y hasta cuándo dura el modo administrador.</p>
+      </div>
+      <div class="pref">
+        <p class="pnom">doado_security</p>
+        <p class="pdet">El PIN, derivado con PBKDF2 y una sal: nunca en claro.</p>
       </div>
       <div style="margin-top: auto; background: #0B1D2E; border-radius: 16px; padding: 16px 18px;">
-        <p style="margin: 0; font-size: 15px; line-height: 22px; color: #9FC4DC;">Los tres se restauran al cambiar de móvil. Un solo módulo de Gradle, sin base de datos: son pocos datos y así el arranque es inmediato.</p>
+        <p style="margin: 0; font-size: 15px; line-height: 22px; color: #9FC4DC;">Los tres primeros viajan al móvil nuevo; el PIN, nunca. Los nombres guardan el «doado» de antes (D-62).</p>
       </div>
     </div>
   </div>
@@ -642,7 +654,7 @@
       <div class="num">07 · Sistema visual</div>
       <h1 class="tit">Contraste primero, estética después</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div>
@@ -658,13 +670,13 @@
         <div class="tono" style="background: #122A3E;"></div>
         <p class="tnom">Casilla</p>
         <p class="thex">#122A3E</p>
-        <p class="tdet">Superficie elevada · 13:1 con el texto</p>
+        <p class="tdet">Superficie elevada · 13,6:1 con el texto</p>
       </div>
       <div class="muestra">
         <div class="tono" style="background: #3D7AA6;"></div>
         <p class="tnom">Línea</p>
         <p class="thex">#3D7AA6</p>
-        <p class="tdet">Contorno de 2dp · 3,3:1 con la casilla</p>
+        <p class="tdet">Contorno de 2 dp · 3,2:1 con la casilla</p>
       </div>
       <div class="muestra">
         <div class="tono" style="background: #29B6F0;"></div>
@@ -676,13 +688,13 @@
         <div class="tono" style="background: #F2F7FB; border: 2px solid #C9DCE8; box-sizing: border-box;"></div>
         <p class="tnom">Texto</p>
         <p class="thex">#F2F7FB</p>
-        <p class="tdet">16:1 sobre tinta</p>
+        <p class="tdet">16,9:1 sobre tinta</p>
       </div>
       <div class="muestra">
         <div class="tono" style="background: #0B1D2E;"></div>
         <p class="tnom">Marino</p>
         <p class="thex">#0B1D2E</p>
-        <p class="tdet">El del logo · manda en el tema claro</p>
+        <p class="tdet">Fondo del icono · manda en el tema claro</p>
       </div>
     </div>
   </div>
@@ -691,18 +703,18 @@
     <div class="caja" style="flex: 1.1; display: flex; flex-direction: column; gap: 10px;">
       <p class="rot" style="margin: 0;">Texto: una escala 1,5 veces la de Material</p>
       <div style="display: flex; flex-direction: row; align-items: baseline; gap: 16px;">
-        <span style="font-size: 52px; font-weight: 700; line-height: 56px;">7:52</span>
-        <span style="font-size: 14px; color: #3C5A70;">reloj · 52 sp</span>
+        <span style="font-size: 40px; font-weight: 700; line-height: 52px;">7:52</span>
+        <span style="font-size: 14px; color: #3C5A70;">reloj · 40 sp</span>
       </div>
       <div style="display: flex; flex-direction: row; align-items: baseline; gap: 16px;">
-        <span style="font-size: 24px; font-weight: 600;">Llamar</span>
-        <span style="font-size: 14px; color: #3C5A70;">casilla · 24 sp</span>
+        <span style="font-size: 24px; font-weight: 600;">Llamadas</span>
+        <span style="font-size: 14px; color: #3C5A70;">cuerpo · 24 sp</span>
       </div>
       <div style="display: flex; flex-direction: row; align-items: baseline; gap: 16px;">
-        <span style="font-size: 20px; font-weight: 500;">Letra, casillas, tema y reloj</span>
+        <span style="font-size: 20px; font-weight: 600;">Letra, casillas, tema y reloj</span>
         <span style="font-size: 14px; color: #3C5A70;">secundario · 20 sp</span>
       </div>
-      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;">Todo en <strong style="color: #0B1D2E;">sp</strong>, así que crece si el móvil tiene la letra grande. Y encima, el familiar puede subirla otro 30 % desde Ajustes.</p>
+      <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;">Todo en <strong style="color: #0B1D2E;">sp</strong> y en Inter, así que crece si el móvil tiene la letra grande. Y el familiar elige entre cuatro tamaños, de 0,85 a 1,3 veces.</p>
     </div>
 
     <div class="caja" style="flex: 1; display: flex; flex-direction: column; gap: 10px;">
@@ -716,17 +728,17 @@
       </div>
       <p style="margin: 0; font-size: 15px; line-height: 22px; color: #3C5A70;">De trazo, dibujados sobre una rejilla de 24 con grosor 1,7. Nunca emoji: se recolorean y aguantan cualquier tamaño.</p>
       <div style="display: flex; flex-direction: row; gap: 8px; flex-wrap: wrap;">
-        <span style="border: 2px solid #C9DCE8; border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600;">Casilla ≥ 168 dp</span>
+        <span style="border: 2px solid #C9DCE8; border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600;">Casilla cuadrada, ~70 dp con 4 por fila</span>
         <span style="border: 2px solid #C9DCE8; border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600;">Pulsable ≥ 48 dp</span>
         <span style="border: 2px solid #C9DCE8; border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600;">Borde 2 dp</span>
-        <span style="border: 2px solid #C9DCE8; border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600;">Radio 22 dp</span>
+        <span style="border: 2px solid #C9DCE8; border-radius: 999px; padding: 7px 14px; font-size: 14px; font-weight: 600;">Radio: 18 % del lado</span>
       </div>
     </div>
   </div>
 
   <div style="background: #0B1D2E; border-radius: 18px; padding: 14px 20px; display: flex; flex-direction: row; align-items: center; gap: 20px;">
-    <div style="width: 46px; height: 46px; border-radius: 23px; background: #29B6F0; flex-shrink: 0;"></div>
-    <p style="margin: 0; font-size: 17px; line-height: 25px; color: #F2F7FB;">La regla que explica toda la paleta: <strong>el cian de la marca no vale para texto sobre fondo claro</strong> — se queda en 2,2:1. Sobre la tinta sí (7,3:1). Por eso en el tema claro manda el marino y el cian solo pinta superficies grandes.</p>
+    <svg viewBox="0 0 64 64" width="46" height="46" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#29B6F0" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#29B6F0" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+    <p style="margin: 0; font-size: 17px; line-height: 25px; color: #F2F7FB;">La regla que explica toda la paleta: <strong>el cian de la marca no vale para texto sobre fondo claro</strong> — se queda en 2,32:1. Sobre la tinta sí (7,86:1). Por eso en el tema claro manda el marino y el cian solo pinta superficies grandes.</p>
   </div>
 </div>
 </section>
@@ -736,41 +748,40 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">08 · Dónde estamos</div>
-      <h1 class="tit">Lo hecho, lo que falta y lo que duele</h1>
+      <h1 class="tit">Coida 1.0.1: lo hecho y lo que se dejó fuera</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px;">
     <div style="flex: 1; display: flex; flex-direction: column; gap: 14px;">
       <div class="caja" style="border-color: #A9D5B5; background: #F4FBF6;">
-        <p class="rot" style="color: #2E7D4F;">Hecho y probado en el emulador</p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Pantalla de inicio: reloj, contactos y casillas</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>PIN de cuatro cifras, con alta la primera vez</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Interfaz: letra, columnas, tema y reloj</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Contactos que llaman o abren WhatsApp</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Aplicaciones e instalación desde la tienda</span></p>
-        <p class="li" style="margin: 0;"><span class="bolita" style="background: #2E7D4F;"></span><span>Modo administrador con cuenta atrás</span></p>
+        <p class="rot" style="color: #2E7D4F;">Hecho: el launcher, completo</p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Inicio y ocho pantallas de ajustes tras el PIN</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Casillas cuadradas, de 1 a 4 por fila, y cuatro tamaños de letra</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Contactos favoritos con foto, llamada o WhatsApp</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>«Llamadas» abre el historial; el orden lo cambia solo el familiar</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #2E7D4F;"></span><span><strong>Probado con dos personas mayores</strong> el 28/10/2026</span></p>
       </div>
       <div class="caja">
-        <p class="rot" style="color: #10618F;">Pendiente</p>
-        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>Asistente de voz (carpeta vacía)</span></p>
-        <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span>Reordenar casillas y editar contactos</span></p>
+        <p class="rot" style="color: #10618F;">Cómo se reparte</p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span><strong>APK en GitHub</strong> (JaviBrozos/Coida): la release, sin asistente ni internet.</span></p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span><strong>Variante «familia»</strong>: la release más la bola roja de llamadas perdidas en «Llamadas». Se manda a mano (D-66).</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span><strong>Google Play</strong>: preparada; faltan el keystore y la prueba cerrada.</span></p>
       </div>
     </div>
 
-    <div style="flex: 1.25; display: flex; flex-direction: column; gap: 14px;">
+    <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
       <div class="caja" style="border-color: #E8B4AE; background: #FDF5F4;">
-        <p class="rot" style="color: #8C2F26;">Lo que hay que arreglar</p>
-        <p class="li"><span class="bolita" style="background: #B3261E;"></span><span><strong>El PIN se guarda en texto plano</strong> y ese fichero entra en la copia de seguridad en la nube. Toca cifrarlo y sacarlo del backup.</span></p>
-        <p class="li"><span class="bolita" style="background: #C1721E;"></span><span>Cambiar el PIN no pide el anterior.</span></p>
-        <p class="li"><span class="bolita" style="background: #C1721E;"></span><span>Volver desde otra app reabre la pantalla de ajustes donde se estaba, sin pedirlo otra vez.</span></p>
-        <p class="li" style="margin: 0;"><span class="bolita" style="background: #C1721E;"></span><span>«Instalar» se deja pulsar sin modo administrador: avisa y redirige, pero aparenta funcionar.</span></p>
+        <p class="rot" style="color: #8C2F26;">Fuera de la versión pública: el asistente de voz</p>
+        <p class="li"><span class="bolita" style="background: #B3261E;"></span><span><strong>A los mayores no les resultó útil</strong>: usan las casillas y los contactos que ya conocen (D-67).</span></p>
+        <p class="li"><span class="bolita" style="background: #B3261E;"></span><span>Su clave iría dentro de la APK, y sin servidor propio no hay cómo protegerla (D-63).</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #C1721E;"></span><span>Está programado y se queda en la versión de depuración. La pública solo pide llamar y contactos.</span></p>
       </div>
       <div class="caja">
         <p class="rot" style="color: #10618F;">Límites asumidos, escritos para no volver a discutirlos</p>
         <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>El modo administrador no puede impedir salir a Android.</span></p>
-        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>El número de un contacto se congela al añadirlo.</span></p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>La bola de perdidas lee el registro de llamadas: Google Play no se lo deja a un launcher.</span></p>
         <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>No hay videollamada: Android no ofrece una forma estándar.</span></p>
         <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span>No hay pruebas automáticas ni traducciones: solo español.</span></p>
       </div>
@@ -786,17 +797,17 @@
       <div class="num">09 · Cómo queda documentado</div>
       <h1 class="tit">Tres capas, para que nadie repita explicaciones</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px;">
     <div class="capa">
       <p class="cnom">CLAUDE.md</p>
       <span class="cuando" style="background: #0B1D2E; color: #FFFFFF;">Se lee siempre</span>
-      <p class="li"><span class="punto">·</span><span>Qué es Doado y para quién</span></p>
-      <p class="li"><span class="punto">·</span><span>Los tres perfiles y los casos de uso, por su nombre</span></p>
+      <p class="li"><span class="punto">·</span><span>Qué es Coida y para quién</span></p>
+      <p class="li"><span class="punto">·</span><span>Quién la usa y el mapa del proyecto</span></p>
       <p class="li"><span class="punto">·</span><span>Cinco invariantes: lo que si se rompe, rompe el producto</span></p>
-      <p class="li"><span class="punto">·</span><span>Lo que Doado <strong>no</strong> va a hacer</span></p>
+      <p class="li"><span class="punto">·</span><span>Lo que Coida <strong>no</strong> va a hacer</span></p>
       <p class="li"><span class="punto">·</span><span>Comandos y protocolo de rescate</span></p>
       <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
         <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">El índice. Corto a propósito: todo lo que cargue aquí se paga en cada conversación.</p>
@@ -818,11 +829,11 @@
     <div class="capa">
       <p class="cnom">docs/</p>
       <span class="cuando" style="background: #E9F3FA; color: #10618F;">Se abre cuando hace falta</span>
-      <p class="li"><span class="punto">·</span><span><strong>producto</strong> y <strong>casos de uso</strong> con su flujo paso a paso</span></p>
-      <p class="li"><span class="punto">·</span><span><strong>arquitectura:</strong> pantallas, datos, intents, manifiesto</span></p>
+      <p class="li"><span class="punto">·</span><span><strong>ERS:</strong> actores, casos de uso y requisitos</span></p>
+      <p class="li"><span class="punto">·</span><span><strong>arquitectura:</strong> pantallas, datos, intents</span></p>
       <p class="li"><span class="punto">·</span><span><strong>diseño:</strong> paleta, tipografía, componentes</span></p>
-      <p class="li"><span class="punto">·</span><span><strong>decisiones</strong> con su alternativa descartada, y <strong>límites</strong></span></p>
-      <p class="li"><span class="punto">·</span><span><strong>estado:</strong> el único fichero con fecha, que caduca</span></p>
+      <p class="li"><span class="punto">·</span><span><strong>decisiones</strong> y lo que se descartó</span></p>
+      <p class="li"><span class="punto">·</span><span><strong>estado:</strong> el único que caduca</span></p>
       <div style="margin-top: auto; background: #E9F3FA; border-radius: 12px; padding: 12px 14px;">
         <p style="margin: 0; font-size: 14px; line-height: 20px; color: #10618F;">La documentación larga, escrita para personas. No gasta contexto hasta que se abre.</p>
       </div>

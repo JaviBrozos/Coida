@@ -3,12 +3,16 @@
 <head>
   <meta charset="utf-8">
   <script src="./support.js"></script>
+  <style id="fuente">
+    @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_semibold.ttf) format("truetype"); font-weight: 100 650; }
+    @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_bold.ttf) format("truetype"); font-weight: 651 900; }
+  </style>
 </head>
 <body>
 <x-dc>
 <helmet>
   <style>
-    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+    body { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
     a { color: #10618F; } a:hover { color: #0B1D2E; }
     .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
     .cab { display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
@@ -26,16 +30,16 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">06 · Cómo está construido</div>
-      <h1 class="tit">Cuatro capas y tres cajones</h1>
+      <h1 class="tit">Cuatro capas y cuatro cajones</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 26px;">
     <div style="flex: 1.5; display: flex; flex-direction: column; gap: 10px;">
       <div class="capa" style="background: #0B1D2E; color: #F2F7FB;">
         <p class="cnom">Pantallas</p>
-        <p class="cdet" style="color: #9FC4DC;"><strong style="color: #F2F7FB;">launcher/</strong> la de inicio · <strong style="color: #F2F7FB;">settings/</strong> las seis de ajustes. Solo pintan: reciben lo que hay que enseñar y avisan de los toques.</p>
+        <p class="cdet" style="color: #9FC4DC;"><strong style="color: #F2F7FB;">launcher/</strong> la de inicio · <strong style="color: #F2F7FB;">settings/</strong> el PIN y los ajustes · <strong style="color: #F2F7FB;">assistant/</strong> solo en depuración. Solo pintan: reciben lo que hay que enseñar y avisan de los toques.</p>
       </div>
       <div style="display: flex; justify-content: center; color: #5B87A5;"><svg viewBox="0 0 24 12" width="34" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v9"></path><path d="M7 6l5 5 5-5"></path></svg></div>
       <div class="capa" style="background: #122A3E; color: #F2F7FB;">
@@ -45,7 +49,7 @@
       <div style="display: flex; justify-content: center; color: #5B87A5;"><svg viewBox="0 0 24 12" width="34" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v9"></path><path d="M7 6l5 5 5-5"></path></svg></div>
       <div class="capa" style="background: #FFFFFF; border: 2px solid #C9DCE8;">
         <p class="cnom">data/</p>
-        <p class="cdet" style="color: #3C5A70;">Un repositorio que habla con el sistema de paquetes y tres almacenes que guardan lo configurado. Es la única puerta a los datos.</p>
+        <p class="cdet" style="color: #3C5A70;">Un repositorio que habla con el sistema de paquetes y los almacenes que guardan lo configurado. Es la única puerta a los datos.</p>
       </div>
       <div style="display: flex; justify-content: center; color: #5B87A5;"><svg viewBox="0 0 24 12" width="34" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1v9"></path><path d="M7 6l5 5 5-5"></path></svg></div>
       <div class="capa" style="background: #E9F3FA; border: 2px solid #C9DCE8;">
@@ -62,14 +66,18 @@
       </div>
       <div class="pref">
         <p class="pnom">doado_contacts</p>
-        <p class="pdet">Los accesos directos de personas: nombre, número, si llaman o abren WhatsApp, y si salen en el inicio.</p>
+        <p class="pdet">Las personas del inicio: nombre, número y si llaman o abren WhatsApp.</p>
       </div>
       <div class="pref">
         <p class="pnom">doado_settings</p>
-        <p class="pdet">Tema, tamaño de letra, casillas por fila, reloj, el PIN y hasta cuándo dura el modo administrador.</p>
+        <p class="pdet">Tema, tamaño de letra, casillas por fila, reloj y hasta cuándo dura el modo administrador.</p>
+      </div>
+      <div class="pref">
+        <p class="pnom">doado_security</p>
+        <p class="pdet">El PIN, derivado con PBKDF2 y una sal: nunca en claro.</p>
       </div>
       <div style="margin-top: auto; background: #0B1D2E; border-radius: 16px; padding: 16px 18px;">
-        <p style="margin: 0; font-size: 15px; line-height: 22px; color: #9FC4DC;">Los tres se restauran al cambiar de móvil. Un solo módulo de Gradle, sin base de datos: son pocos datos y así el arranque es inmediato.</p>
+        <p style="margin: 0; font-size: 15px; line-height: 22px; color: #9FC4DC;">Los tres primeros viajan al móvil nuevo; el PIN, nunca. Los nombres guardan el «doado» de antes (D-62).</p>
       </div>
     </div>
   </div>

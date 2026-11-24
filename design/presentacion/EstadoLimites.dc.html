@@ -3,12 +3,16 @@
 <head>
   <meta charset="utf-8">
   <script src="./support.js"></script>
+  <style id="fuente">
+    @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_semibold.ttf) format("truetype"); font-weight: 100 650; }
+    @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_bold.ttf) format("truetype"); font-weight: 651 900; }
+  </style>
 </head>
 <body>
 <x-dc>
 <helmet>
   <style>
-    body { margin: 0; font-family: "Segoe UI", system-ui, -apple-system, sans-serif; }
+    body { margin: 0; font-family: "Coida Inter", Roboto, system-ui, sans-serif; font-feature-settings: "ss04"; }
     a { color: #10618F; } a:hover { color: #0B1D2E; }
     .hoja { width: 1280px; height: 720px; box-sizing: border-box; padding: 56px 64px; background: #F7FAFC; color: #0B1D2E; display: flex; flex-direction: column; gap: 24px; }
     .cab { display: flex; flex-direction: row; align-items: flex-end; justify-content: space-between; gap: 24px; }
@@ -24,41 +28,40 @@
   <div class="cab">
     <div style="display: flex; flex-direction: column; gap: 8px;">
       <div class="num">08 · Dónde estamos</div>
-      <h1 class="tit">Lo hecho, lo que falta y lo que duele</h1>
+      <h1 class="tit">Coida 1.0.1: lo hecho y lo que se dejó fuera</h1>
     </div>
-    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M8,6 h22 a26,26 0 0,1 0,52 h-22 z" fill="#0B1D2E"></path><path d="M18.1,34.1 L23.8,39.8 L36,27.8" fill="none" stroke="#FFFFFF" stroke-width="2.4" stroke-linecap="square"></path></svg>
+    <svg viewBox="0 0 64 64" width="44" height="44" aria-hidden="true" style="flex-shrink: 0;"><path d="M45.5,14.68 A20,20 0 1 0 45.5,49.32" fill="none" stroke="#0B1D2E" stroke-width="9" stroke-linecap="round"></path><path d="M31.5,33 L38.5,40 L52.5,25" fill="none" stroke="#0B1D2E" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round"></path></svg>
   </div>
 
   <div style="flex-grow: 1; display: flex; flex-direction: row; gap: 18px;">
     <div style="flex: 1; display: flex; flex-direction: column; gap: 14px;">
       <div class="caja" style="border-color: #A9D5B5; background: #F4FBF6;">
-        <p class="rot" style="color: #2E7D4F;">Hecho y probado en el emulador</p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Pantalla de inicio: reloj, contactos y casillas</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>PIN de cuatro cifras, con alta la primera vez</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Interfaz: letra, columnas, tema y reloj</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Contactos que llaman o abren WhatsApp</span></p>
-        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Aplicaciones e instalación desde la tienda</span></p>
-        <p class="li" style="margin: 0;"><span class="bolita" style="background: #2E7D4F;"></span><span>Modo administrador con cuenta atrás</span></p>
+        <p class="rot" style="color: #2E7D4F;">Hecho: el launcher, completo</p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Inicio y ocho pantallas de ajustes tras el PIN</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Casillas cuadradas, de 1 a 4 por fila, y cuatro tamaños de letra</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>Contactos favoritos con foto, llamada o WhatsApp</span></p>
+        <p class="li"><span class="bolita" style="background: #2E7D4F;"></span><span>«Llamadas» abre el historial; el orden lo cambia solo el familiar</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #2E7D4F;"></span><span><strong>Probado con dos personas mayores</strong> el 28/10/2026</span></p>
       </div>
       <div class="caja">
-        <p class="rot" style="color: #10618F;">Pendiente</p>
-        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>Asistente de voz (carpeta vacía)</span></p>
-        <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span>Reordenar casillas y editar contactos</span></p>
+        <p class="rot" style="color: #10618F;">Cómo se reparte</p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span><strong>APK en GitHub</strong> (JaviBrozos/Coida): la release, sin asistente ni internet.</span></p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span><strong>Variante «familia»</strong>: la release más la bola roja de llamadas perdidas en «Llamadas». Se manda a mano (D-66).</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span><strong>Google Play</strong>: preparada; faltan el keystore y la prueba cerrada.</span></p>
       </div>
     </div>
 
-    <div style="flex: 1.25; display: flex; flex-direction: column; gap: 14px;">
+    <div style="flex: 1.15; display: flex; flex-direction: column; gap: 14px;">
       <div class="caja" style="border-color: #E8B4AE; background: #FDF5F4;">
-        <p class="rot" style="color: #8C2F26;">Lo que hay que arreglar</p>
-        <p class="li"><span class="bolita" style="background: #B3261E;"></span><span><strong>El PIN se guarda en texto plano</strong> y ese fichero entra en la copia de seguridad en la nube. Toca cifrarlo y sacarlo del backup.</span></p>
-        <p class="li"><span class="bolita" style="background: #C1721E;"></span><span>Cambiar el PIN no pide el anterior.</span></p>
-        <p class="li"><span class="bolita" style="background: #C1721E;"></span><span>Volver desde otra app reabre la pantalla de ajustes donde se estaba, sin pedirlo otra vez.</span></p>
-        <p class="li" style="margin: 0;"><span class="bolita" style="background: #C1721E;"></span><span>«Instalar» se deja pulsar sin modo administrador: avisa y redirige, pero aparenta funcionar.</span></p>
+        <p class="rot" style="color: #8C2F26;">Fuera de la versión pública: el asistente de voz</p>
+        <p class="li"><span class="bolita" style="background: #B3261E;"></span><span><strong>A los mayores no les resultó útil</strong>: usan las casillas y los contactos que ya conocen (D-67).</span></p>
+        <p class="li"><span class="bolita" style="background: #B3261E;"></span><span>Su clave iría dentro de la APK, y sin servidor propio no hay cómo protegerla (D-63).</span></p>
+        <p class="li" style="margin: 0;"><span class="bolita" style="background: #C1721E;"></span><span>Está programado y se queda en la versión de depuración. La pública solo pide llamar y contactos.</span></p>
       </div>
       <div class="caja">
         <p class="rot" style="color: #10618F;">Límites asumidos, escritos para no volver a discutirlos</p>
         <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>El modo administrador no puede impedir salir a Android.</span></p>
-        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>El número de un contacto se congela al añadirlo.</span></p>
+        <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>La bola de perdidas lee el registro de llamadas: Google Play no se lo deja a un launcher.</span></p>
         <p class="li"><span class="bolita" style="background: #5B87A5;"></span><span>No hay videollamada: Android no ofrece una forma estándar.</span></p>
         <p class="li" style="margin: 0;"><span class="bolita" style="background: #5B87A5;"></span><span>No hay pruebas automáticas ni traducciones: solo español.</span></p>
       </div>

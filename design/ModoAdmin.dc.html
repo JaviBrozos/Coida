@@ -35,7 +35,7 @@
     </div>
     <div style="display: {{estado.cuentaAtras}}; flex-direction: row; align-items: baseline; gap: 12px;">
       <span style="font-size: 56px; line-height: 64px; font-weight: 700; letter-spacing: -0.01em; color: #29B6F0;">{{estado.reloj}}</span>
-      <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">hasta que Doado vuelva solo</span>
+      <span style="font-size: 20px; line-height: 28px; font-weight: 500; color: #9FC4DC;">hasta que Coida vuelva solo</span>
     </div>
     <div class="pulsable" role="button" tabindex="0" onClick="{{cambia}}" style="height: 76px; display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 12px; border-radius: 18px; background: {{estado.boton.fondo}}; color: {{estado.boton.color}}; border: 2px solid {{estado.boton.borde}};">
       <span style="font-size: 22px; line-height: 30px; font-weight: 600;">{{estado.boton.etiqueta}}</span>
@@ -57,7 +57,7 @@
 
   <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 12px; padding: 16px; background: transparent; border: 2px solid #3D7AA6; border-radius: 18px;">
     <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#29B6F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="8.5"></circle><path d="M12 8.2v4.6"></path><path d="M12 15.8h.01"></path></svg>
-    <span style="font-size: 19px; line-height: 26px; font-weight: 500; color: #9FC4DC;">Mientras está desbloqueado, el móvil funciona como un Android normal: puedes instalar WhatsApp, Sofascore o lo que haga falta. Al acabar el tiempo, Doado vuelve a ser la pantalla de inicio sin tocar nada.</span>
+    <span style="font-size: 19px; line-height: 26px; font-weight: 500; color: #9FC4DC;">Mientras está desbloqueado, el móvil funciona como un Android normal: puedes instalar WhatsApp, Sofascore o lo que haga falta. Al acabar el tiempo, Coida vuelve a ser la pantalla de inicio sin tocar nada.</span>
   </div>
 
   <div style="flex-grow: 1;"></div>
@@ -89,14 +89,14 @@ class Component extends DCLogic {
     return {
       cambia: function () { self.setState({ activo: !activo, restante: 900 }); },
       estado: {
-        titulo: activo ? 'Móvil desbloqueado' : 'Doado está al mando',
-        detalle: activo ? 'Puedes salir de Doado e instalar lo que necesites' : 'La pantalla de inicio no se puede cambiar ni salir de ella',
+        titulo: activo ? 'Móvil desbloqueado' : 'Coida está al mando',
+        detalle: activo ? 'Puedes salir de Coida e instalar lo que necesites' : 'La pantalla de inicio no se puede cambiar ni salir de ella',
         borde: activo ? '#29B6F0' : '#3D7AA6',
         acento: activo ? '#29B6F0' : '#9FC4DC',
         cuentaAtras: activo ? 'flex' : 'none',
         reloj: reloj,
         boton: activo
-          ? { etiqueta: 'Volver a Doado ahora', fondo: 'transparent', color: '#F2F7FB', borde: '#3D7AA6' }
+          ? { etiqueta: 'Volver a Coida ahora', fondo: 'transparent', color: '#F2F7FB', borde: '#3D7AA6' }
           : { etiqueta: 'Desbloquear 15 minutos', fondo: '#29B6F0', color: '#0A1622', borde: '#29B6F0' }
       },
       acciones: {

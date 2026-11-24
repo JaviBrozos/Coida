@@ -72,9 +72,12 @@ const salida = `<!doctype html>
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<title>Doado de un vistazo</title>
+<title>Coida de un vistazo</title>
 <style>
   /* Generado a partir de las láminas de design/presentacion. No editar a mano. */
+  /* La letra de la marca (D-50), la de la app, que el PDF lleva incrustada. */
+  @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_semibold.ttf) format("truetype"); font-weight: 100 650; }
+  @font-face { font-family: "Coida Inter"; src: url(../../app/src/main/res/font/inter_bold.ttf) format("truetype"); font-weight: 651 900; }
   * { box-sizing: border-box; }
   body { margin: 0; background: #06101A; }
   .lamina {
@@ -83,7 +86,8 @@ const salida = `<!doctype html>
     margin: 0 auto 26px;
     overflow: hidden;
     position: relative;
-    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    font-family: "Coida Inter", Roboto, system-ui, sans-serif;
+    font-feature-settings: "ss04";
   }
   @media print {
     body { background: #FFFFFF; }
