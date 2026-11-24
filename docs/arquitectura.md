@@ -95,6 +95,7 @@ ni cambia de tipo**: se añade otra y se migra leyendo la antigua.
 | `show_clock` | Boolean | `true` |
 | `contacts_layout` | String (`GRID` | `PAGE`, D-46) | `GRID` |
 | `home_notice_dismissed` | Boolean: el familiar cerró el aviso del inicio de D-48 | `false` |
+| `missed_calls_badge` | Boolean: el familiar encendió la bola de llamadas perdidas (D-66). Solo cuenta en debug y familia, y con el permiso concedido | `false` |
 | `admin_unlocked_until` | Long (epoch ms) | `0` |
 | `assistant_enabled` | Boolean | `false` |
 | `assistant_mode` | String (`ACT` \| `GUIDE`) | `ACT` (D-56) |
@@ -243,6 +244,7 @@ llano. **Ningún intent hacia fuera se lanza a pelo.**
 | Acción | Intento principal | Reserva |
 | --- | --- | --- |
 | Abrir casilla | Plantilla del favorito, o `getLaunchIntentForPackage` | Aviso con el nombre de la app |
+| Casilla «Llamadas» (D-65) | `ACTION_VIEW` sobre `CallLog.Calls.CONTENT_URI` con tipo `vnd.android.cursor.dir/calls` (el historial) | `ACTION_DIAL` (el teclado) si nadie atiende el historial |
 | Llamar a un contacto | `ACTION_CALL` si hay permiso | `ACTION_DIAL` con el número puesto |
 | WhatsApp a un contacto | `ACTION_VIEW` sobre `https://wa.me/<E164>` con `setPackage` | Aviso |
 | Instalar una app | `market://details?id=…` | La misma ficha en `play.google.com` |
@@ -266,6 +268,7 @@ país usable, se manda tal cual, quitando lo que no sea dígito.
   mayor. Sin el primero, las llamadas caen al marcador; sin el segundo, los
   contactos salen con su inicial, y Ajustes → Contactos ofrece pedirlo otra vez.
   `READ_CONTACTS` solo se usa para la foto de los números guardados (D-57).
+- **`READ_CALL_LOG`**, solo en depuración y en la variante `familia` (`src/familia/AndroidManifest.xml`, D-66), nunca en `main`: Google Play no se lo deja a un launcher. Se pide al encender «Avisar de llamadas perdidas» en Ajustes → Aplicaciones. Solo se cuentan las perdidas sin ver, para la bola de «Llamadas».
 - **Solo en depuración** (`src/debug/AndroidManifest.xml`, D-63): lo que sigue del
   asistente. La versión publicada no lo lleva.
 - **`RECORD_AUDIO`** también es peligroso y se pide **al encender el asistente**

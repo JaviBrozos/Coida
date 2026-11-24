@@ -1107,3 +1107,52 @@ instalar, la app no sale en el cajón y el familiar no tiene cómo llegar al avi
 que la pone de inicio (D-48) sin pasar por los ajustes de Android.
 **Consecuencia**: Coida aparece también en el cajón de aplicaciones del launcher
 que se use mientras no sea la de inicio.
+
+### D-65 · La casilla del teléfono se llama «Llamadas» y abre el historial (11/11/2026)
+
+**Contexto**: la casilla «Llamar» abría el teclado (`ACTION_DIAL`). Javier pidió, para
+sus abuelos, que se llame «Llamadas» y abra el historial: lo primero que buscan es
+quién les ha llamado, y desde ahí se devuelve la llamada con un toque.
+**Decisión**: la intención es `ACTION_VIEW` con `CallLog.Calls.CONTENT_URI` y el
+tipo `vnd.android.cursor.dir/calls`. Las casillas de fábrica pueden llevar una
+reserva (`FavoriteTemplate.fallback`): si nadie atiende el historial, la casilla abre
+el teclado como antes, en vez de salir apagada.
+**Descartado**: el tipo sin la dirección `content://`. Google Phone solo atiende el
+historial con dirección, y con el tipo a secas se lo quedaba una pantalla de
+Contactos pensada para tabletas, que se cerraba sin enseñar nada. Fijar el paquete
+del marcador, que rompe la regla de definir los favoritos por acción.
+**Consecuencia**: el asistente, al guiar hacia el 112 sin la casilla de emergencias,
+dice que abra el teclado; y al guiar una llamada, que busque a la persona en la lista
+o en los contactos del teléfono.
+
+### D-66 · Bola roja de llamadas perdidas solo en una variante «familia», fuera de Google Play (11/11/2026)
+
+**Contexto**: Javier pidió que la casilla «Llamadas», y solo esa, avise de las
+llamadas perdidas con una bola roja y el número. Saberlo exige leer el registro de
+llamadas (`READ_CALL_LOG`), y Google Play solo se lo permite a la app de teléfono por
+defecto y a unas pocas excepciones, entre las que no está un launcher.
+**Decisión**:
+- El permiso no va en el manifiesto de `main`: va en `src/debug` y en
+  `src/familia/AndroidManifest.xml`. `BuildConfig.MISSED_CALLS_ENABLED` lo dice en el
+  código: verdadero en depuración y familia, falso en release.
+- `familia` es un tipo de compilación nuevo: la release tal cual (sin asistente, con
+  R8 y la misma firma) más la bola. Es la APK que se manda a mano a la familia:
+  `./gradlew assembleFamilia`.
+- Lo enciende el familiar en Ajustes → Aplicaciones y el permiso se pide ahí, con él
+  delante. Solo se cuentan las perdidas con `NEW = 1`, que la app de teléfono da por
+  vistas al abrir el historial. Un `ContentObserver` las actualiza con el inicio en
+  pantalla.
+- Además de la bola, debajo del nombre pone «2 perdidas»: con cuatro por fila la
+  cifra de la bola es pequeña, y así no depende solo de ella ni del color. En el tema
+  oscuro la bola es del rojo claro de `error` (#FFB4AB): el rojo oscuro se quedaba a
+  1,6:1 contra la casilla.
+**Descartado**: el permiso en `main`, que deja la release fuera de Google Play. Leer
+las notificaciones de llamada perdida (acceso a notificaciones), que sí valdría para
+Play, pero pide al familiar un permiso que asusta («leer todas tus notificaciones»),
+cambia la política de privacidad y da números distintos según cómo agrupe los avisos
+cada marca. Poner la bola en todas las casillas, que Javier no quiere.
+**Consecuencia**: la versión pública sigue con dos permisos y `publishing/` no
+cambia. Hoy, sin `keystore.properties`, la familia se firma con la clave de
+depuración. Cuando exista el keystore de Play pasará a firmarse con él, y **no podrá
+instalarse encima de una APK firmada con la de depuración**: habrá que desinstalar, y
+se pierden PIN, contactos y casillas.

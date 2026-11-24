@@ -4,7 +4,7 @@
 > compartidos. Enlaza desde otros documentos; no copies las cifras. Quien manda
 > de verdad es `core/ui/`: si esto no cuadra con el código, **gana el código**.
 >
-> Última revisión: 28/10/2026.
+> Última revisión: 11/11/2026.
 
 El principio está en la ERS como requisitos medibles (RNF-ACC-01 a RNF-ACC-07).
 Aquí está el cómo.
@@ -118,6 +118,7 @@ para cuando hagan falta; no los borres sin mirar.
 | `TilePaddingRatio` · `TilePaddingMin` / `TilePaddingMax` | 0,08 · 4 / 16 dp | Margen interior de la casilla cuadrada; entre icono y nombre, la mitad |
 | `TileCornerRatio` · `TileCornerRadius` | 0,18 · 28 dp | Radio de casilla y de contacto: proporcional al lado, como mucho 28 dp |
 | `TileRowHeight` / `TileIconSizeCompact` | 112 / 54 dp | Casilla de una por fila, en horizontal y de alto fijo, y su icono |
+| `MissedBadgeMin` / `MissedBadgeMax` | 20 / 44 dp | Bola de llamadas perdidas de «Llamadas» (D-66): 0,6 del icono, entre los dos |
 | `AvatarSize` | 52 dp | Foto o inicial de un contacto en Ajustes → Contactos |
 | `CardCornerRadius` | 20 dp | Radio de fila, tarjeta y botón |
 | `ControlCornerRadius` | 14 dp | Radio de control pequeño |
@@ -204,6 +205,12 @@ reglas: **el visto no toca la C**, o se lee como una «e»; **los colores son lo
 - **Emergencias 112** (D-51): una casilla como las demás, con la sirena
   (`ic_emergency`) en `error` y el nombre en `onSurface`. Se distingue por el
   icono y el texto, no solo por el color. Apagada de fábrica.
+- **Llamadas perdidas** (D-66, solo en debug y familia): en la casilla «Llamadas»,
+  una bola `error` con la cifra en `onError` (6,54:1 en claro, 7,72:1 en oscuro;
+  contra la casilla, 6,54:1 y 8,67:1) y un aro `surfaceContainer`, arriba a la
+  derecha del icono. Mide 0,6 del icono, entre `MissedBadgeMin` y `MissedBadgeMax`;
+  desde 10, «9+». Debajo del nombre pone «2 perdidas». En oscuro, el rojo claro: el
+  oscuro se queda a 1,6:1 contra la casilla.
 - **Casillas por fila**: de una a cuatro, siempre ofrecidas (D-54). Con dos o
   más, **cuadradas**, todas iguales y sin estirarse nunca: el icono, los márgenes
   y el radio van en proporción al lado, y el nombre (`labelLarge`) baja lo que

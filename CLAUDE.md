@@ -146,6 +146,7 @@ La clase `R` es `com.coida.R`.
 
 ```bash
 ./gradlew assembleDebug     # compila el APK de depuración
+./gradlew assembleFamilia   # la APK que se manda a mano a la familia (D-66)
 ./gradlew installDebug      # lo instala en el dispositivo/emulador conectado
 ./gradlew lint              # análisis estático: se espera 0 errores
 adb shell cmd package set-home-activity com.coida.launcher/.LauncherActivity   # fijarlo como inicio
@@ -182,6 +183,10 @@ recuperación configurada, es la única salida si se olvida el PIN.
 - El asistente va detrás de `BuildConfig.ASSISTANT_ENABLED` (falso en release) y
   sus permisos (micrófono, internet) solo en `src/debug/AndroidManifest.xml`
   (D-63). El manifiesto de `main` es lo que se publica.
+- La bola de llamadas perdidas de «Llamadas» va detrás de
+  `BuildConfig.MISSED_CALLS_ENABLED`, y `READ_CALL_LOG` solo en `src/debug` y
+  `src/familia`: Google Play no se lo deja a un launcher. La variante `familia` es
+  la release más la bola, y es la APK que se manda a mano (D-66).
 - La release se firma con `keystore.properties` (fuera de git, como el `.jks`).
   Sin él se firma con la clave de depuración, que Play rechaza.
   `./gradlew bundleRelease` deja el `.aab` en `app/build/outputs/bundle/release/`.

@@ -5,8 +5,8 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | Campo | Valor |
 | --- | --- |
 | Proyecto | DOADO — launcher de Android para personas mayores con asistente de IA |
-| Versión | 0.11 (borrador) |
-| Fecha | 28/10/2026 |
+| Versión | 0.13 (borrador) |
+| Fecha | 11/11/2026 |
 | Autores | Gonzalo Gómez Blanco y Javier Brozos Martínez |
 | Estado | Borrador |
 
@@ -26,6 +26,7 @@ Borrador inicial de la ERS de DOADO: recoge lo ya construido en el repositorio y
 | 0.10 | 21/10/2026 | CU-17 nuevo: la casilla «Emergencias 112», que abre el teléfono con el 112 marcado y la pone el familiar (D-51). CU-04: ante una emergencia, el asistente lleva a esa casilla si está | Gonzalo Gómez Blanco |
 | 0.11 | 28/10/2026 | Tras probar con dos personas mayores. RNF-ACC-02 y RNF-ACC-03: casillas siempre cuadradas, de 1 a 4 por fila, y un tamaño de letra por debajo del de siempre, con el texto encogiéndose sin partir palabras (D-54, D-55). CU-05, CU-04 y CU-15: el asistente dice lo que va a hacer y lo hace sin pedir un «Sí», y solo vuelve a escuchar para que se le repita la orden; de fábrica, «Lo hace» (D-56). RNF-USA-03: tiempos nuevos (D-58). CU-02 y RNF-PRI-01: rótulo «Contactos favoritos» y foto de la agenda (D-57). CU-10: el familiar coloca las casillas (D-59) | Javier Brozos Martínez |
 | 0.12 | 09/11/2026 | El producto pasa a llamarse Coida (D-62). CON-06 sigue abierto, pero ya no bloquea publicar: la versión 1.0.0 de Google Play sale sin asistente (D-63). CU-04, CU-05 y CU-15 siguen «En pruebas», solo en la versión de depuración | Javier Brozos Martínez |
+| 0.13 | 11/11/2026 | CU-01: la casilla del teléfono se llama «Llamadas» y abre el historial de llamadas, no el teclado (D-65). CU-18 nuevo: bola roja con las llamadas perdidas sin ver en esa casilla, solo en la variante «familia» y en la de depuración, nunca en la de Google Play (D-66). RNF-PRI-03 nuevo | Javier Brozos Martínez |
 
 ## 1. Introducción
 
@@ -115,6 +116,9 @@ El modo administrador no es un actor aparte: es un estado temporal en el que el 
 | CU-15 | Configurar el asistente | ACT-02 | Media | En pruebas | Propuesta |
 | CU-16 | Recuperar un PIN olvidado | ACT-02 | Media | Implementado | Código |
 | CU-17 | Llamar a emergencias desde el inicio | ACT-01 | Alta | En pruebas | Propuesta |
+| CU-18 | Ver que hay llamadas perdidas desde el inicio | ACT-01, ACT-02 | Media | En pruebas | Propuesta |
+
+En CU-01, la casilla «Llamadas» abre el historial de la app de teléfono, que es lo primero que se busca, y desde ahí se devuelve la llamada; si esa app no tiene historial que abrir, abre el teclado (D-65).
 
 CU-07 figuraba como parcial en la versión 0.1 y se completó el 29/09/2026: pide ahora el PIN anterior antes de cambiarlo.
 
@@ -303,6 +307,31 @@ Comentario: si la duda es sobre algo de Doado («¿cómo llamo a María?»), se 
 
 Comentario: Android no deja a una app llamar sola a un número de emergencias; el paso por el teléfono es obligado, y además evita llamadas por error (D-51). El asistente puede abrir esta casilla tras decirlo o guiar hasta ella (CU-04), pero no marca nunca. Mandar la ubicación por SMS queda fuera: pediría permisos nuevos.
 
+##### CU-18. Ver que hay llamadas perdidas desde el inicio
+
+| Campo | Valor |
+| --- | --- |
+| Actor | ACT-01 Persona mayor; ACT-02 Familiar, que lo enciende |
+| Descripción | Si hay llamadas perdidas sin ver, la casilla «Llamadas» lleva una bola roja con el número en la esquina de arriba a la derecha del icono, y debajo del nombre pone «2 perdidas». Ninguna otra casilla lleva bola. |
+| Precondición | La versión es la de la familia o la de depuración: la de Google Play no lo trae (D-66). El familiar lo ha encendido en Ajustes → Aplicaciones → «Avisar de llamadas perdidas» y ha dado el permiso de ver el historial de llamadas. |
+| Postcondición | La persona mayor sabe, sin abrir nada, que alguien la ha llamado. |
+| Importancia | Media |
+
+**Secuencia normal**
+
+1. Entra una llamada que no se coge.
+2. El sistema pone la bola en la casilla «Llamadas», también si el inicio ya estaba en pantalla.
+3. El usuario pulsa la casilla y ve el historial (CU-01).
+4. Al volver al inicio, la bola ya no está: la app de teléfono las ha dado por vistas.
+
+**Excepciones**
+
+- 1: El familiar deniega el permiso: no hay bola, el interruptor sigue apagado y debajo explica cómo darlo.
+- 2: La casilla está apagada (no hay app de teléfono) o el asistente la señala: no lleva bola.
+- 3: Más de nueve perdidas: la bola dice «9+» y el texto, el número exacto.
+
+Comentario: Google Play solo deja leer el registro de llamadas a la app de teléfono y a unas pocas excepciones, y un launcher no es una de ellas. Por eso el permiso no está en la versión pública.
+
 ### 4.2 Requisitos no funcionales
 
 En DOADO los no funcionales son el núcleo del producto, no un añadido: la accesibilidad es lo que lo diferencia de un launcher normal. Cada requisito lleva un criterio que se puede comprobar.
@@ -323,6 +352,7 @@ En DOADO los no funcionales son el núcleo del producto, no un añadido: la acce
 | RNF-SEG-02 | Seguridad | Los ajustes no quedan abiertos | Salir de Doado cierra los ajustes: al volver hay que repetir el PIN. Se exceptúa la ida y vuelta que inicia el propio Doado (tienda, selector de contactos, ajustes de Android). Cumplido desde el 29/09/2026 | README (límite conocido) |
 | RNF-SEG-03 | Seguridad | No se puede probar el PIN a ciegas | Un solo contador de fallos para el PIN y la respuesta de recuperación. Los fallos 1 a 4 no bloquean y, desde el cuarto de la misma visita, se ofrece volver al inicio con un botón grande; el 5.º bloquea 30 s, el 6.º 1 min, el 7.º 5 min, el 8.º 15 min y del 9.º en adelante 1 h. El bloqueo sobrevive a cerrar la app, a cambiar la hora y a reiniciar, y no afecta al inicio. Cumplido desde el 30/09/2026 | Propuesta (D-24) |
 | RNF-PRI-01 | Privacidad | Acceso mínimo a la agenda | El nombre y el número salen del contacto elegido en el selector. Con el permiso de contactos (D-57), solo se busca la foto de los números guardados en Doado, uno a uno; nunca se recorre la agenda. Las fotos no salen del móvil ni se guardan en disco | Código |
+| RNF-PRI-03 | Privacidad | Acceso mínimo al registro de llamadas | Solo en las versiones de la familia y de depuración, y si el familiar lo enciende (CU-18). Solo se cuentan las perdidas sin ver: no se leen números, nombres ni duraciones, y nada sale del móvil ni se guarda | Propuesta |
 | RNF-PRI-02 | Privacidad | Tratamiento de datos del asistente conforme al RGPD | Al servicio externo solo salen el audio de cada frase, su transcripción, las últimas frases de la conversación en curso y los nombres de contactos y casillas; nunca los números de teléfono. Ni el audio ni la conversación se guardan en el móvil: se olvidan al cerrar el asistente. El familiar lo acepta al activar el asistente, tras leer la nota. Pendiente antes de publicar: base legal formal y contrato con el proveedor | Propuesta |
 | RNF-DIS-01 | Disponibilidad | Las funciones básicas funcionan sin conexión | Abrir apps y llamar no dependen de internet. Sin conexión, el asistente dice en lenguaje llano que la necesita y que los botones siguen funcionando | Propuesta |
 | RNF-COM-01 | Compatibilidad | Funciona en móviles de cualquier marca | minSdk 24; favoritos definidos por acción de Android, no por paquete | CLAUDE.md |
@@ -349,6 +379,7 @@ Cada caso de uso se enlaza con el origen que lo justifica. Los marcados como «P
 | CU-15. Configurar el asistente |  |  | X |
 | CU-16. Recuperar un PIN olvidado | X | X |  |
 | CU-17. Llamar a emergencias desde el inicio |  |  | X |
+| CU-18. Ver que hay llamadas perdidas desde el inicio |  |  | X |
 
 ## 6. Glosario de términos
 
